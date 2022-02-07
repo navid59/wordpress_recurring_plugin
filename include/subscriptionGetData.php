@@ -1,10 +1,6 @@
 <?php
 $a = new recurringAdmin();
 $arrayData = $a->getSubscriptionList();
-// echo "<pre>";
-// var_dump($this);
-// echo "</pre>";
-// die(1);
 
 if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
     echo '
@@ -26,7 +22,7 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$subscription['Member']['UserID']);
             printf("<td>%1s</td>",$subscription['Plan']['PlanName']);
             printf("<td>%1s</td>",$subscription['NextPaymentDate']);
-            printf("<td>%1s</td>",$subscription['Status']);
+            printf("<td>%1s</td>",$a->getStatusStr('subscription',$subscription['Status']));
             printf("<td>%1s</td>",$subscription['Plan']['StartDate']);
         echo "</tr>";
     }

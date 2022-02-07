@@ -9,5 +9,5 @@ jQuery(document).ready(function () {
 
 
 function getSubscriptions() {
-    alert('SUBSCRIPTION JSON PRIN AJAX')
+    alert('Reload Data by AJAX - Admin - not implimented!')
 }

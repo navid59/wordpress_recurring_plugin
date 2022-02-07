@@ -9,5 +9,59 @@
         function getApiKey() {
             return get_option($this->slug.'_api_key', array());
         }
+
+        function getData($url, $requestData) {
+            $authenticationToken = $this->getApiKey();
+
+            $ch = curl_init($url); 
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','token: '.$authenticationToken));
+            $result = curl_exec($ch);
+            $jsonDate = $result;
+            $arrayData = json_decode($jsonDate, true);
+
+            return($arrayData);
+        }
+
+        function getStatusStr($section, $statusCode) {
+            switch ($section) {
+                case 'subscription':
+                    switch ($statusCode) {
+                        case '0':
+                            $statusStr = 'New';
+                            break;
+                        case '1':
+                            $statusStr = 'Active';
+                            break;
+                        case '2':
+                            $statusStr = 'Unsubscribed';
+                            break;
+                        default:
+                            $statusStr = $statusCode;
+                    }
+                break;
+                case 'plan':
+                    $statusStr = $statusCode;
+                break;
+                case 'report':
+                    switch ($statusCode) {
+                        case '3':
+                            $statusStr = 'Paid';
+                            break;
+                        case '12':
+                            $statusStr = 'Not paid';
+                            break;
+                        case '15':
+                            $statusStr = 'Authorizing';
+                            break;
+                        default:
+                            $statusStr = $statusCode;
+                    }
+                break;
+            }
+            return $statusStr;
+         }
     }
 ?>

@@ -3,19 +3,6 @@ class NetopiapaymentsRecurringPayment extends recurring
 {
     protected $page_title = 'NETOPIA Payments Recurring Plugin';
         protected $menu_title = 'Recurring v1';
-        
-        // protected $submenu_page_title1 = 'Subscription management';
-        // protected $submenu_title1 = 'Subscription';
-        // protected $submenu_slug1 = 'recurring_subscription';
-
-        // protected $submenu_page_title2 = 'Plan management';
-        // protected $submenu_title2 = 'Plans';
-        // protected $submenu_slug2 = 'recurring_plan';
-
-        // protected $submenu_page_title3 = 'Reports';
-        // protected $submenu_title3 = 'Report';
-        // protected $submenu_slug3 = 'recurring_report';
-
         protected $menuItems;
         
     public function __construct()
@@ -454,10 +441,14 @@ class NetopiapaymentsRecurringPayment extends recurring
                     <a href="#" class="nav-tab nav-tab-active"><?php echo __('Plan list','ntpRp')?></a>
                 </h2>
             </div>
-            <div class="row">
-                <p>Plan</p>
+            
+            <div class="row float-right">
+                <nav class="">
+                    <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
+                </nav>
             </div>
-        <div>    
+            <?php include_once('include/plans.php');?>
+        <div>
         <?php
     }
 
@@ -470,13 +461,17 @@ class NetopiapaymentsRecurringPayment extends recurring
             </div>
             <div class="row">
                 <h2 class="nav-tab-wrapper">
-                    <a href="#" class="nav-tab nav-tab-active"><?php echo __('Reports list','ntpRp')?></a>
+                    <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
                 </h2>
             </div>
-            <div class="row">
-                <p>Reports</p>
+            
+            <div class="row float-right">
+                <nav class="">
+                    <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
+                </nav>
             </div>
-        <div>   
+            <?php include_once('include/reports.php');?>
+        <div> 
         <?php
     }
 

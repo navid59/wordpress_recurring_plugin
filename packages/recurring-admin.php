@@ -6,19 +6,36 @@ class recurringAdmin extends recurring {
             'Signature' => self::getSignature()
         );
     
-        $postdata = json_encode($data);
+        $postData = json_encode($data);
     
-        $ch = curl_init($url); 
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBQUFBLUFBQUEtQUFBQS1BQUFBLUFBQUEiLCJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiJOYXZpZCBUb3JhYmF6YXJpIiwiZXhwIjoxNjQ0MDE2OTYxfQ.Lmlztx3BZHvAynv4cSrGXlSTitjJlYVDZTCQokDObZA'));
-        $result = curl_exec($ch);
-        $jsonDate = $result;
-        $arrayData = json_decode($jsonDate, true);
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
+
+    function getPlanList(){
+        $url = BASE_URL_RECURRING_API.'plan/list';
+        $data = array(
+            'Signature' => self::getSignature(),
+            "PlanStatus" => "All"
+        );
     
-        return $arrayData;
+        $postData = json_encode($data);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
+
+    function getReportList(){
+        $url = BASE_URL_RECURRING_API.'payment/list';
+        $data = array(
+            'Signature' => self::getSignature(),
+            "PaymentStatus" => "All"
+        );
+    
+        $postData = json_encode($data);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
     }
 }
-
 ?>
