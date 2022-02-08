@@ -2,8 +2,8 @@
 class NetopiapaymentsRecurringPayment extends recurring
 {
     protected $page_title = 'NETOPIA Payments Recurring Plugin';
-        protected $menu_title = 'Recurring v1';
-        protected $menuItems;
+    protected $menu_title = 'Recurring v1';
+    protected $menuItems;
         
     public function __construct()
     {
@@ -413,11 +413,9 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['subscription']['pageTitle'] ?></span>
             </div>
-            <div class="row">
-                <h2 class="nav-tab-wrapper">
-                    <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
-                </h2>
-            </div>
+            <h2 class="nav-tab-wrapper">
+                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
+            </h2>
             
             <div class="row float-right">
                 <nav class="">
@@ -430,24 +428,29 @@ class NetopiapaymentsRecurringPayment extends recurring
     }
 
     public function plan_UI() {
+        @$active_tab = $_GET[ 'tab' ] ? $_GET[ 'tab' ] : null;
         ?>
         <div class="wrap">
             <div class="row">
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['plan']['pageTitle'] ?></span>
             </div>
-            <div class="row">
-                <h2 class="nav-tab-wrapper">
-                    <a href="#" class="nav-tab nav-tab-active"><?php echo __('Plan list','ntpRp')?></a>
-                </h2>
-            </div>
-            
-            <div class="row float-right">
-                <nav class="">
-                    <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
-                </nav>
-            </div>
-            <?php include_once('include/plans.php');?>
+            <h2 class="nav-tab-wrapper">
+                <a href="?page=recurring_plan&tab=plan_list" class="nav-tab <?php echo $active_tab == 'plan_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Plan list','ntpRp')?></a>
+                <a href="?page=recurring_plan&tab=add_plan" class="nav-tab <?php echo $active_tab == 'add_plan' ? 'nav-tab-active' : ''; ?>"><?php echo __('Add / Edit Plan','ntpRp')?></a>
+            </h2>
+            <?php 
+            if($active_tab == 'add_plan') {
+                include_once('include/planAddEditForm.php');
+            }else {
+                echo '<div class="row float-right">
+                        <nav class="">
+                            <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
+                        </nav>
+                     </div>';
+            include_once('include/plans.php');
+            }
+            ?>
         <div>
         <?php
     }
@@ -459,11 +462,9 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['report']['pageTitle'] ?></span>
             </div>
-            <div class="row">
-                <h2 class="nav-tab-wrapper">
-                    <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
-                </h2>
-            </div>
+            <h2 class="nav-tab-wrapper">
+                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
+            </h2>
             
             <div class="row float-right">
                 <nav class="">
@@ -476,11 +477,45 @@ class NetopiapaymentsRecurringPayment extends recurring
     }
 
     public function tmp_UI() {
-        echo "<pre>";
-        echo "<h1>TEST Section</h1>";
-        var_dump($this->getSignature());
-        var_dump($this->getApiKey());
-        echo "</pre>";
+        @$active_tab = $_GET[ 'tab' ] ? $_GET[ 'tab' ] : null;
+        ?>
+        <div class="wrap">
+            <div class="row">
+                <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="150" style="padding: 20px 25px 0px 0px;">
+                <span style="font-size: xx-large"><?=$this->page_title ?></span>
+            </div>
+            <h2 class="nav-tab-wrapper">
+                <a href="?page=recurring_test&tab=display_tmp_0" class="nav-tab <?php echo $active_tab == 'display_tmp_0' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 0','ntpRp')?></a>
+                <a href="?page=recurring_test&tab=display_tmp_1" class="nav-tab <?php echo $active_tab == 'display_tmp_1' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 1','ntpRp')?></a>
+                <a href="?page=recurring_test&tab=display_tmp_2" class="nav-tab <?php echo $active_tab == 'display_tmp_2' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 2','ntpRp')?></a>
+                <a href="?page=recurring_test&tab=display_tmp_3" class="nav-tab <?php echo $active_tab == 'display_tmp_3' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 3','ntpRp')?></a>
+            </h2>
+            <?php
+                if( $active_tab == 'display_tmp_0' ) {
+                    echo "AAAA";
+                    echo "<pre>";
+                    echo "<h1>TEST Section</h1>";
+                    var_dump($this->getSignature());
+                    var_dump($this->getApiKey());
+                    echo "</pre>";
+                }elseif($active_tab == 'display_tmp_1') {
+                    echo "BBBB";
+                }elseif($active_tab == 'display_tmp_2') {
+                    echo "CCCC";
+                } elseif($active_tab == 'display_tmp_3') {
+                    echo "DDDD";
+                } else {
+                    echo "EEEE";
+                }
+            ?>
+        </div>
+        <?php
     }
-
 }
+
+function recurring_process_ajax() {
+    echo json_encode($_POST);
+    // return (array('status'=>"YEYEYEYE")) ;
+    die();
+}
+add_action('wp_ajax_ajax_test', 'recurring_process_ajax');
