@@ -512,10 +512,3 @@ class NetopiapaymentsRecurringPayment extends recurring
         <?php
     }
 }
-
-function recurring_process_ajax() {
-    echo json_encode($_POST);
-    // return (array('status'=>"YEYEYEYE")) ;
-    die();
-}
-add_action('wp_ajax_ajax_test', 'recurring_process_ajax');

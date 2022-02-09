@@ -2,11 +2,6 @@
 $a = new recurringAdmin();
 $arrayData = $a->getPlanList();
 
-// echo "<pre>";
-// var_dump($arrayData);
-// echo "</pre>";
-// die(1);
-
 if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
     echo '
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
