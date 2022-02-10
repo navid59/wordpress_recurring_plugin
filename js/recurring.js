@@ -1,3 +1,3 @@
-function myFunction() {
-    alert('Is NETOPIA Payments Recurring action 22222222222222')
+function addSubscription() {
+    alert('Is NETOPIA Payments Recurring - action - add new subscription')
 }

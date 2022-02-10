@@ -417,11 +417,11 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
             </h2>
             
-            <div class="row float-right">
+            <!-- <div class="row float-right">
                 <nav class="">
                     <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
                 </nav>
-            </div>
+            </div> -->
             <?php include_once('include/subscriptions.php');?>
         <div>    
         <?php
@@ -443,11 +443,11 @@ class NetopiapaymentsRecurringPayment extends recurring
             if($active_tab == 'add_plan') {
                 include_once('include/planAddEditForm.php');
             }else {
-                echo '<div class="row float-right">
-                        <nav class="">
-                            <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
-                        </nav>
-                     </div>';
+                // echo '<div class="row float-right">
+                //         <nav class="">
+                //             <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
+                //         </nav>
+                //      </div>';
             include_once('include/plans.php');
             }
             ?>
@@ -465,12 +465,11 @@ class NetopiapaymentsRecurringPayment extends recurring
             <h2 class="nav-tab-wrapper">
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
             </h2>
-            
-            <div class="row float-right">
+            <!-- <div class="row float-right">
                 <nav class="">
                     <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
                 </nav>
-            </div>
+            </div> -->
             <?php include_once('include/reports.php');?>
         <div> 
         <?php

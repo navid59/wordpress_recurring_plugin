@@ -18,6 +18,7 @@ Domain Path: /languages/
 defined( 'ABSPATH' ) or die('Access denied');
 /** To assign short code */
 add_shortcode('NTP-Recurring', 'assignToRecurring');
+// add_shortcode('NTP-Recurring', 'recurringButton');
 
 /** To loade the language */
 load_plugin_textdomain( 'ntpRp', false, dirname( plugin_basename( __FILE__ ) ) . '/i18n/languages/' );
