@@ -24,6 +24,8 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$plan['GracePeriod']);
             printf("<td>%1s</td>",$plan['InitialPayment'] ? "Yes" : "No");
             printf("<td>%1s</td>",$plan['CreatedAt']);
+            printf('<td><button type="button" class="btn btn-secondary" onclick="editPlan('.$plan['Id'].')"><i class="fa fa-home">E</i></button></td>');
+            printf('<td><button type="button" class="btn btn-danger" onclick="delPlan('.$plan['Id'].')"><i class="fa fa-home">D</i></button></td>');
         echo "</tr>";
     }
 }

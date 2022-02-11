@@ -12,6 +12,14 @@ function getSubscriptions() {
     alert('Reload Data by AJAX - Admin - not implimented!')
 }
 
+function delPlan(planId) {
+    alert('Delete plan '+ planId +'- by AJAX - Admin!')
+}
+
+function editPlan(planId) {
+    alert('Edit plan '+ planId +'- by AJAX - Admin!')
+}
+
 jQuery("#recurring-plan-form").submit(function (e) {
     var planTitile = jQuery("#planTitile").val();
     var planDescription = jQuery("#planDescription").val();

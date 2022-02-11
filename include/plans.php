@@ -11,6 +11,8 @@
             <th>Grace Period</th>
             <th>Initial Paymen</th>
             <th>CreatedAt</th>
+            <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -26,6 +28,8 @@
             <th>Grace Period</th>
             <th>Initial Paymen</th>
             <th>CreatedAt</th>
+            <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </tfoot>
       </table>
