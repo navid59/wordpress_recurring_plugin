@@ -37,33 +37,31 @@
 
 
 function assignToRecurring ($data) {
-        // $current_user = wp_get_current_user();
-        // $str = "<pre>".print_r($current_user, true)."</pre>";
-        // $str .= "<hr>";
-        // $str .= "<h5> Last name: ".$current_user->last_name."</h5>";
-        // $str .= "<h5> First name: ".$current_user->first_name."</h5>";
-        // $str .= "<h5> Email: ".$current_user->user_email."</h5>";
-        // $str .= "<h5> User_login: ".$current_user->user_login."</h5>";
-        // $str .= "<hr>";
-        // $str .= "<h2>Data: ".print_r($data, true)."</h2>";
-        // $str .= "<h2>Plan ID: ".$data['plan_id']."</h2>";
-        // $str .= "<h2>Subscription ID: ".$data['subscription_id']."</h2>";
-        $title = isset($data['title']) && $data['title'] !== null ? $data['title'] : null; 
-        $str = recurringModal ($title);
+        $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
+        $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
+        $planId = isset($data['plan_id']) && $data['plan_id'] !== null ? $data['plan_id'] : null;
+        if(!is_null($planId)) {
+            $str = recurringModal ($planId, $button, $title);
+        } else {
+            $str = ''; 
+        } 
     return $str;
 }
 
-function recurringModal($title) {
+function recurringModal($planId , $button, $title) {
     $current_user = wp_get_current_user();
+    $buttonTitile = !is_null($button) ? $button : __('Subscription','ntpRp');
     $modalTitle = !is_null($title) ? $title : __('Subscription details','ntpRp');
-    getJudete();
-    echo "<hr>";
-    $modal ='
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal">
-        Subscription
-    </button>
-
+    $planData = planInfo($planId);
+    $isEnable = count($planData) && $planData['Status'] === 1 ? '' : 'disabled';
+    $buttonHtml = '
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal" '.$isEnable.'>
+            '.$buttonTitile.'
+        </button>
+    ';
+    if($isEnable != 'disabled') {
+        $modalHtml ='
     <!-- Modal -->
     <div class="modal fade" id="recurringModal" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -79,9 +77,23 @@ function recurringModal($title) {
                         <div class="col-md-12 order-md-1">
                         <h4 class="mb-3">'.__('Subscription detail','ntpRp').'</h4>
                         <form class="needs-validation" novalidate>
-                            <div class="custom-control custom-checkbox">
-                                <h3><b>Lorem Ipsum Plan</b></h3>
-                                <h4>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in lacinia tortor, molestie porta nisl. Praesent dignissim eleifend purus, a mollis diam suscipit eu. Sed cursus, ante nec mollis lobortis, leo enim facilisis est, vitae sagittis massa nisi at sem.</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <h3><b>'.$planData['Title'].'</b></h3>
+                                        <h4>'.$planData['Description'].'</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card mb-4 box-shadow">
+                                        <div class="card-header">
+                                            <h4 class="my-0 font-weight-normal">'.__('Amount','ntpRp').'</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <h1 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h1>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <hr class="mb-4">
                             <h4 class="mb-3">'.__('Personal information').'</h4>
@@ -183,20 +195,20 @@ function recurringModal($title) {
                             </div>
                             </div>
                             <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="cc-expiration">Expiration</label>
-                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                                <div class="invalid-feedback">
-                                Expiration date required
+                                <div class="col-md-3 mb-3">
+                                    <label for="cc-expiration">Expiration</label>
+                                    <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                                    <div class="invalid-feedback">
+                                    Expiration date required
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="cc-expiration">CVV</label>
-                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                                <div class="invalid-feedback">
-                                Security code required
+                                <div class="col-md-3 mb-3">
+                                    <label for="cc-expiration">CVV</label>
+                                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                                    <div class="invalid-feedback">
+                                    Security code required
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                             <hr class="mb-4">
                             <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="addSubscription(); false;">Continue to checkout</button>
@@ -211,8 +223,11 @@ function recurringModal($title) {
         </div>
     </div>
     ';
+    } else {
+        $modalHtml = '';
+    }
 
-    return $modal;
+    return $buttonHtml.$modalHtml;
 }
 
 function getJudete() {
@@ -267,4 +282,31 @@ function getJudete() {
     return $strObtion;
 }
 
+function planInfo($planId) {
+    $a = new recurringFront();
+    $arrayData = $a->getPlan($planId);
+
+    if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
+        $planData = array();
+    } else {
+        $plan = $arrayData['plan'];
+        $planData = array(
+            "Title" => $plan['Title'],
+            "Description" => $plan['Description'],
+            "Amount" => $plan['Amount'],
+            "Currency" => $plan['Currency'],
+            "RecurrenceType" => $plan['RecurrenceType'],
+            "Frequency" => array (
+                "Type" => $plan['Frequency']['Type'],
+                "Value" => $plan['Frequency']['Value']
+            ),
+            "GracePeriod" => $plan['GracePeriod'],
+            "InitialPayment" => $plan['InitialPayment'],
+            "Status" => $plan['Status']
+        );
+    }
+   
+   
+    return $planData;
+}
 ?>
