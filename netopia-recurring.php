@@ -32,10 +32,3 @@ include_once( 'wc-netopiapayments-recurring-front.php' );
 
 
 $recurringPlugin = new NetopiapaymentsRecurringPayment();
-
-
-
-
-
-
-

@@ -1,39 +1,98 @@
 <?php
  add_action( 'wp_enqueue_scripts', 'enqueue_and_register_ntp_recurring_js_scripts' );
- add_action( 'admin_enqueue_scripts', 'enqueue_and_register_ntp_recurring_admin_js_scripts' );
+
+ add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
+ add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
+
+
+
 
  function enqueue_and_register_ntp_recurring_js_scripts(){
-    wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'2.0' ,false);
+    wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
     
-    wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.0.0', true );
+    wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.1.0', true );
     wp_enqueue_script( 'ntp_recurring_script' );
 
-    wp_register_script( 'ntp_recurring_front_script', plugin_dir_url( __FILE__ ) . 'js/recurring.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_front_script' );
+   
+
  }
 
- function enqueue_and_register_ntp_recurring_admin_js_scripts(){
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/mdb.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/style.css',array(),'3.3.0' ,false);
+ function my_resource() {
+    // wp_register_script( 'ntp_recurring_front_script', plugin_dir_url( __FILE__ ) . 'js/recurringFront.js', array('jquery'), '1.1.0', true );
+    // wp_localize_script( 'ntp_recurring_front_script', 'recurring_front_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' )));
+    // wp_enqueue_script( 'ntp_recurring_front_script' );
 
+    wp_enqueue_script('my-jquery',plugin_dir_url( __FILE__ ).'js/recurringFront.js', array('jquery'));
+    wp_localize_script( 'my-jquery', 'myback', array('ajax_url' => admin_url( 'admin-ajax.php' )));
     
-    wp_register_script( 'ntp_recurring_admin_script-popper', plugin_dir_url( __FILE__ ) . 'js/popper.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script-popper' );
+    }
 
-    wp_register_script( 'ntp_recurring_admin_script-bootstrap', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.min.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script-bootstrap' );
+add_action('wp_enqueue_scripts', 'my_resource');
 
-    wp_register_script( 'ntp_recurring_admin_script-mdb', plugin_dir_url( __FILE__ ) . 'js/mdb.js', array(), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script-mdb' );
+ function getsomething(){
+     $mySimulatedResult = array(
+            'status'=> $jsonResultData['code'] === "00" ? true : false,
+            'msg'=> "ALALALA33333333333LALALAL", //$jsonResultData['message'],
+            );
+    echo json_encode($mySimulatedResult);
+    wp_die();
+  }
 
-    wp_register_script( 'ntp_recurring_admin_script-datatables', plugin_dir_url( __FILE__ ) . 'js/addons/datatables.min.js', array(), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script-datatables' );
+//   add_action('wp_ajax_nopriv_getsomething', 'getsomething');
+//   add_action('wp_ajax_getsomething', 'getsomething');
 
-    wp_register_script( 'ntp_recurring_admin_script', plugin_dir_url( __FILE__ ) . 'js/recurringAdmin.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script' );
- }
+
+function recurring_addSubscription() {
+    $a = new recurringFront();
+    $subscriptionData = array(
+        "Member" => array (
+            "UserID" => $_POST['UserID'],
+            "Name" => $_POST['Name'],
+            "LastName" => $_POST['LastName'],
+            "Email" => $_POST['Email'],
+            "Address" => $_POST['Address'],
+            "City" => $_POST['City'],
+            "Tel" => strval($_POST['Tel'])
+        ),
+        "Merchant" => array(
+            "Signature" => $a->getSignature(),
+            "NotifyUrl" => $a->getNotifyUrl(),
+            "Tolerance" =>  true,
+            "IntervalRetry" => 3
+        ),
+        "Plan" =>  array(
+            "PlanId" => $_POST['PlanID']+0, 
+            "StartDate" => $_POST['StartDate']."T00:00:00-00:00",
+            "EndDate" => ""
+        ),
+        "PaymentConfig" => array(
+            "Instrument" => array (
+                "Type" => "card",
+                "Account" => strval($_POST['Account']),
+                "ExpMonth" => $_POST['ExpMonth']+0,
+                "ExpYear" => $_POST['ExpYear']+0,
+                "SecretCode" => strval($_POST['SecretCode']),
+                "Token" => ""
+            ),
+            "ThreeDS2" => null
+        )
+      );
+
+    $jsonResultData = $a->setSubscription($subscriptionData);
+    
+
+    $mySimulatedResult = array(
+        'status'=> $jsonResultData['code'] === "00" ? true : false,
+        'msg'=> $jsonResultData['message'],
+        // 'data'=> $a->getNotifyUrl(),
+        );
+    echo json_encode($mySimulatedResult);
+    wp_die();
+}
+
+  add_action('wp_ajax_nopriv_getsomething', 'recurring_addSubscription');
+  add_action('wp_ajax_getsomething', 'recurring_addSubscription');
+
 
 
 function assignToRecurring ($data) {
@@ -58,8 +117,8 @@ function recurringModal($planId , $button, $title) {
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal" '.$isEnable.'>
             '.$buttonTitile.'
-        </button>
-    ';
+        </button>';
+
     if($isEnable != 'disabled') {
         $modalHtml ='
     <!-- Modal -->
@@ -91,6 +150,7 @@ function recurringModal($planId , $button, $title) {
                                         </div>
                                         <div class="card-body">
                                             <h1 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h1>
+                                            <input type="hidden" class="form-control" id="planID" value="'.$planId.'">
                                         </div>
                                     </div>
                                 </div>
@@ -113,7 +173,7 @@ function recurringModal($planId , $button, $title) {
                                     </div>
                                 </div>
                             </div>
-
+                            
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="username">'.__('Username','ntpRp').'</label>
@@ -175,8 +235,26 @@ function recurringModal($planId , $button, $title) {
                             </div>
 
                             <hr class="mb-4">
-                            <h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
+                            <h4 class="mb-3">'.__('Duration').'</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName">'.__('Subscription start date','ntpRp').'</label>
+                                    <input type="date" class="form-control" id="StartDate" placeholder="" value="" required>
+                                    <div class="invalid-feedback">
+                                        Valid start date is required.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName">'.__('Subscription end date','ntpRp').'</label>
+                                    <input type="date" class="form-control" id="EndDate" placeholder="" value="" disabled>
+                                    <div class="invalid-feedback">
+                                        Valid end date is required.
+                                    </div>
+                                </div>
+                            </div>
 
+                            <hr class="mb-4">
+                            <h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
                             <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="cc-name">Name on card</label>
@@ -196,8 +274,15 @@ function recurringModal($planId , $button, $title) {
                             </div>
                             <div class="row">
                                 <div class="col-md-3 mb-3">
-                                    <label for="cc-expiration">Expiration</label>
-                                    <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                                    <label for="cc-expiration-month">'.__('Expiration Month','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="cc-expiration-month" placeholder="" required>
+                                    <div class="invalid-feedback">
+                                    Expiration date required
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="cc-expiration-year">'.__('Expiration Year','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="cc-expiration-year" placeholder="" required>
                                     <div class="invalid-feedback">
                                     Expiration date required
                                     </div>
@@ -209,12 +294,28 @@ function recurringModal($planId , $button, $title) {
                                     Security code required
                                     </div>
                                 </div>
+                                <div class="col-md-3 mb-3">
+                                &nbsp;
+                                </div>
                             </div>
                             <hr class="mb-4">
-                            <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="addSubscription(); false;">Continue to checkout</button>
+                            <button class="btn btn-primary btn-lg btn-block" type="button" onclick="addSubscription(); return false;">Continue to checkout</button>
                         </form>
                         </div>
                     </div>
+                    <!-- 
+                    <div class="alert alert-success" role="alert">
+                        This is a success alert with <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
+                    </div>
+                    <div class="alert alert-danger" role="alert">
+                        This is a danger alert with <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
+                    </div>
+                    -->
+                    
+                        <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                            <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                        </div>
+                    
                 </div>
                 <div class="modal-footer">
                 <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 5px 0px 0px;">
@@ -304,9 +405,9 @@ function planInfo($planId) {
             "InitialPayment" => $plan['InitialPayment'],
             "Status" => $plan['Status']
         );
-    }
-   
-   
+    } 
     return $planData;
 }
+
+
 ?>

@@ -89,4 +89,6 @@ function recurring_addPlan() {
     die();
 }
 add_action('wp_ajax_addPlan', 'recurring_addPlan');
+
+
 ?>

@@ -10,6 +10,10 @@
             return get_option($this->slug.'_api_key', array());
         }
 
+        function getNotifyUrl() {
+            return get_site_url()."/".get_option($this->slug.'_notify_url', array());
+        }
+
         function getData($url, $requestData) {
             $authenticationToken = $this->getApiKey();
 
@@ -63,5 +67,5 @@
             }
             return $statusStr;
          }
-    }
+    }    
 ?>
