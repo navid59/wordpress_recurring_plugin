@@ -468,6 +468,15 @@ class NetopiapaymentsRecurringPayment extends recurring
             if($active_tab == 'add_plan') {
                 include_once('include/planAddEditForm.php');
             }else {
+                include_once('include/partial/modalClipboard.php');
+                include_once('include/partial/modalDeletePlan.php');
+                include_once('include/partial/modalEditPlan.php');
+            //     echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            //     <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+            //     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            //       <span aria-hidden="true">&times;</span>
+            //     </button>
+            //   </div>';
                 // echo '<div class="row float-right">
                 //         <nav class="">
                 //             <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>

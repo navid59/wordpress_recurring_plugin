@@ -23,9 +23,11 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s / %2s</td>",$plan['Frequency']['Type'], $plan['Frequency']['Value']);
             printf("<td>%1s</td>",$plan['GracePeriod']);
             printf("<td>%1s</td>",$plan['InitialPayment'] ? "Yes" : "No");
-            printf("<td>%1s</td>",$plan['CreatedAt']);
+            $date = new DateTime($plan['CreatedAt']);
+            printf("<td>%1s</td>",$date->format('Y-m-d'));
+            printf('<td><button type="button" class="btn btn-success" onclick="copyPlan('.$plan['Id'].',\''.$plan['Title'].'\')"><i class="fa fa-home">C</i></button></td>');
             printf('<td><button type="button" class="btn btn-secondary" onclick="editPlan('.$plan['Id'].')"><i class="fa fa-home">E</i></button></td>');
-            printf('<td><button type="button" class="btn btn-danger" onclick="delPlan('.$plan['Id'].')"><i class="fa fa-home">D</i></button></td>');
+            printf('<td><button type="button" class="btn btn-danger" onclick="delPlan('.$plan['Id'].');"><i class="fa fa-home">D</i></button></td>');
         echo "</tr>";
     }
 }

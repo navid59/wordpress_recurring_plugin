@@ -11,6 +11,7 @@
             <th>Grace Period</th>
             <th>Initial Paymen</th>
             <th>CreatedAt</th>
+            <th>Copy</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>
@@ -28,6 +29,7 @@
             <th>Grace Period</th>
             <th>Initial Paymen</th>
             <th>CreatedAt</th>
+            <th>Copy</th>
             <th>Edit</th>
             <th>Delete</th>
           </tr>

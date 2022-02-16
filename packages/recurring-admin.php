@@ -16,7 +16,7 @@ class recurringAdmin extends recurring {
         $url = BASE_URL_RECURRING_API.'plan/list';
         $data = array(
             'Signature' => self::getSignature(),
-            "PlanStatus" => "All"
+            "PlanStatus" => "Active"
         );
     
         $postData = json_encode($data);
@@ -61,6 +61,20 @@ class recurringAdmin extends recurring {
         $resultData = self::getData($url, $postData);
         return $resultData;
     }
+
+    function delPlan($formData){
+        $url = BASE_URL_RECURRING_API.'plan/delete'; 
+        $planData = array(
+            "PlanId" => $formData['PlanId']+0,
+            "Signature" => self::getSignature(),
+            "Unsubscribe" => $formData['Unsubscribe']
+        );
+    
+        $postData = json_encode($planData);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
 }
 
 function recurring_addPlan() {
@@ -89,6 +103,26 @@ function recurring_addPlan() {
     die();
 }
 add_action('wp_ajax_addPlan', 'recurring_addPlan');
+
+
+function recurring_delPlan() {
+    $a = new recurringAdmin();
+    $planData = array(
+            "PlanId" => $_POST['planId']+0,
+            "Unsubscribe" => $_POST['unsubscribe'] === 'true' ? true : false
+    );
+
+    $jsonResultData = $a->delPlan($planData);
+    
+    $mySimulatedResult = array(
+            'status'=> $jsonResultData['code'] === "00" ? true : false,
+            'msg'=> $jsonResultData['message'],
+            'data' => $planData, 
+            );
+    echo json_encode($mySimulatedResult);
+    die();
+}
+add_action('wp_ajax_delPlan', 'recurring_delPlan');
 
 
 ?>

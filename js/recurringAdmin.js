@@ -13,11 +13,77 @@ function getSubscriptions() {
 }
 
 function delPlan(planId) {
-    alert('Delete plan '+ planId +'- by AJAX - Admin!')
+    jQuery('#msgDelete').html('Are you sure you want to delete the plan ?');
+    jQuery('#planId').val(planId);
+    jQuery('#deletePlanModal').modal('toggle');
+    jQuery('#deletePlanModal').modal('show');
+
+
+    jQuery("#deletePlan").click(function (e) {
+        var planId = jQuery("#planId").val();
+        if (jQuery("#unsubscribe").prop("checked")) {
+            var unsubscribe = true;
+        } else {
+            var unsubscribe = false;
+        }
+        
+        if (jQuery("#conditions").prop("checked")) {
+            var acceptedConditions = true;
+        } else {
+            var acceptedConditions = false;
+        }
+
+        data = {
+            action : 'delPlan',
+            planId : planId,
+            unsubscribe : unsubscribe,
+        };
+
+        if(acceptedConditions) {
+            jQuery.post(ajaxurl, data, function(response){
+                console.log(data.action);
+                jsonResponse = JSON.parse(response);
+                if(jsonResponse.status) {
+                    jQuery('#msgBlock').addClass('alert-success');
+                    jQuery('#alertTitle').html('Congratulation!');
+                    jQuery('#msgContent').html(jsonResponse.msg);
+                    jQuery('#msgBlock').addClass('show');
+
+                    // Refresh page after close Modal
+                    jQuery('#deletePlanModal').on('hidden.bs.modal', function() {
+                        window.location.reload();
+                    });
+
+                } else {
+                    jQuery('#msgBlock').addClass('alert-warning');
+                    jQuery('#alertTitle').html('Error!');
+                    jQuery('#msgContent').html(jsonResponse.msg);
+                    jQuery('#msgBlock').addClass('show');
+                }
+                console.log(jsonResponse);
+            });
+        } else {
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html('You should to accept terms & conditions!');
+            jQuery('#msgBlock').addClass('show');
+        }
+    });
+    return false;
 }
 
-function editPlan(planId) {
-    alert('Edit plan '+ planId +'- by AJAX - Admin!')
+function editPlan(planId) {  
+    jQuery('#msgEdit').html('Edit plan '+ planId +'- by AJAX - Admin!');
+    jQuery('#editPlanModal').modal('toggle');
+    jQuery('#editPlanModal').modal('show');
+}
+
+function copyPlan(planId, planTitile) {
+    var shortCode = '[NTP-Recurring plan_id='+ planId +' button="Subscribe" title="'+ planTitile +'"]';
+    navigator.clipboard.writeText(shortCode);
+    jQuery('#shortcode').html(shortCode);
+    jQuery('#copyShortCodeModal').modal('toggle');
+    jQuery('#copyShortCodeModal').modal('show');
 }
 
 jQuery("#recurring-plan-form").submit(function (e) {
@@ -52,16 +118,6 @@ jQuery("#recurring-plan-form").submit(function (e) {
     jQuery.post(ajaxurl, data, function(response){
         console.log(data.action);
         jsonResponse = JSON.parse(response);
-        // alert('1:'+planTitile);
-        // alert('2:'+planDescription);
-        // alert('3:'+RecurrenceType);
-        // alert('4:'+FrequencyType);
-        // alert('5:'+FrequencyValue);
-        // alert('6:'+Amount);
-        // alert('7:'+Currency);
-        // alert('8:'+InitialPayment);
-        // alert('9:'+GracePeriod);
-        // alert('10:'+jsonResponse.msg);
         if(jsonResponse.status) {
             jQuery('#msgBlock').addClass('alert-success');
             jQuery('#alertTitle').html('Congratulation!');
@@ -77,22 +133,3 @@ jQuery("#recurring-plan-form").submit(function (e) {
 
     return false;
 });
-
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-// (function() {
-//     'use strict';
-//     window.addEventListener('load', function() {
-//       // Fetch all the forms we want to apply custom Bootstrap validation styles to
-//       var forms = document.getElementsByClassName('needs-validation');
-//       // Loop over them and prevent submission
-//       var validation = Array.prototype.filter.call(forms, function(form) {
-//         form.addEventListener('submit', function(event) {
-//           if (form.checkValidity() === false) {
-//             event.preventDefault();
-//             event.stopPropagation();
-//           }
-//           form.classList.add('was-validated');
-//         }, false);
-//       });
-//     }, false);
-//   })();
