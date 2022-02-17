@@ -4,13 +4,15 @@
         <thead>
           <tr>
             <th>Subscription ID</th>
-            <th>Name</th>
+            <th>Full Name</th>
             <th>Email</th>
+            <th>Phone</th>
             <th>UserID</th>
             <th>Plan</th>
             <th>Next Payment</th>
             <th>Status</th>
             <th>Start At</th>
+            <th>History</th>
           </tr>
         </thead>
         <tbody>
@@ -19,13 +21,15 @@
         <tfoot>
           <tr>
           <th>Subscription ID</th>
-            <th>Name</th>
+            <th>Full Name</th>
             <th>Email</th>
+            <th>Phone</th>
             <th>UserID</th>
             <th>Plan</th>
             <th>Next Payment</th>
             <th>Status</th>
             <th>Start At</th>
+            <th>History</th>
           </tr>
         </tfoot>
       </table>

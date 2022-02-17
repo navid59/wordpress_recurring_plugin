@@ -75,6 +75,32 @@ class recurringAdmin extends recurring {
         $resultData = self::getData($url, $postData);
         return $resultData;
     }
+
+    function editPlan($formData){
+        $url = BASE_URL_RECURRING_API.'plan/update'; 
+        $planData = array(
+            "PlanId" => $formData['PlanId'], 
+            "Signature" => self::getSignature(),
+            "Title" => $formData['Title'],
+            "RecurrenceType" => $formData['RecurrenceType'],
+            "Frequency" => [
+                "Type" => $formData['Frequency']['Type'],
+                "Value" => $formData['Frequency']['Value']+0 // Is added to ZERO to have result as INT
+            ],
+            "Description"=> $formData['Description'],
+            "GracePeriod"=> $formData['GracePeriod']+0, // Is added to ZERO to have result as INT
+            "Amount"=> $formData['Amount']+0, // Is added to ZERO to have result as FLOAT
+            "Currency"=> $formData['Currency'],
+            "InitialPayment" => $formData['InitialPayment'],
+            "Taxable"=> false ,
+            "TermAndConditionAccepted" => $formData['TermAndConditionAccepted']
+        );
+
+        $postData = json_encode($planData);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
 }
 
 function recurring_addPlan() {
@@ -117,12 +143,40 @@ function recurring_delPlan() {
     $mySimulatedResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],
-            'data' => $planData, 
             );
     echo json_encode($mySimulatedResult);
     die();
 }
 add_action('wp_ajax_delPlan', 'recurring_delPlan');
+
+function recurring_editPlan() {
+    $a = new recurringAdmin();
+    $planData = array(
+            "PlanId" => $_POST['planId']+0,
+            "Title" => $_POST['planTitile'],
+            "RecurrenceType" =>  $_POST['RecurrenceType'],
+            "Frequency" => array (
+                "Type" => $_POST['FrequencyType'],
+                "Value" => $_POST['FrequencyValue']
+            ),
+            "Description" => $_POST['planDescription'],
+            "GracePeriod" => $_POST['GracePeriod'],
+            "Amount" => $_POST['Amount'] ,
+            "Currency" => $_POST['Currency'],
+            "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false,
+            "TermAndConditionAccepted" => $_POST['TermAndConditionAccepted'] === 'true' ? true : false
+    );
+
+    $jsonResultData = $a->editPlan($planData);
+    
+    $mySimulatedResult = array(
+            'status'=> $jsonResultData['code'] === "00" ? true : false,
+            'msg'=> $jsonResultData['message'],
+            );
+    echo json_encode($mySimulatedResult);
+    die();
+}
+add_action('wp_ajax_editPlan', 'recurring_editPlan');
 
 
 ?>

@@ -74,7 +74,7 @@
         <hr>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <button type="submit" class="btn btn-primary"><?php echo __('Submmit', 'ntpRp');?></button>
+                <button type="submit" id="addPlan" class="btn btn-primary"><?php echo __('Submmit', 'ntpRp');?></button>
             </div>
             <div class="form-group col-md-8">
                 <div class="alert alert-dismissible fade" id="msgBlock" role="alert">

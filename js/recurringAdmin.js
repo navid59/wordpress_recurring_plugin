@@ -1,7 +1,3 @@
-function myFunction() {
-    alert('Is NETOPIA Payments Recurring action 3333333333333333333')
-}
-
 jQuery(document).ready(function () {
     jQuery('#dtBasicExample').DataTable();
     jQuery('.dataTables_length').addClass('bs-select');
@@ -10,6 +6,10 @@ jQuery(document).ready(function () {
 
 function getSubscriptions() {
     alert('Reload Data by AJAX - Admin - not implimented!')
+}
+
+function subscriptionHistory(subscriptionId) {
+    alert('History of subscription with ID :' + subscriptionId);
 }
 
 function delPlan(planId) {
@@ -53,7 +53,6 @@ function delPlan(planId) {
                     jQuery('#deletePlanModal').on('hidden.bs.modal', function() {
                         window.location.reload();
                     });
-
                 } else {
                     jQuery('#msgBlock').addClass('alert-warning');
                     jQuery('#alertTitle').html('Error!');
@@ -74,8 +73,93 @@ function delPlan(planId) {
 
 function editPlan(planId) {  
     jQuery('#msgEdit').html('Edit plan '+ planId +'- by AJAX - Admin!');
+    jQuery("#editPlanId").val(planId);
     jQuery('#editPlanModal').modal('toggle');
     jQuery('#editPlanModal').modal('show');
+
+    jQuery("#editPlan").click(function (e) {
+        // alert("kakakakakakaakak");
+
+        var planId = jQuery("#editPlanId").val();
+        var planTitile = jQuery("#planTitile").val();
+        var planDescription = jQuery("#planDescription").val();
+        var RecurrenceType = jQuery("#RecurrenceType").val();
+        var FrequencyType = jQuery("#FrequencyType").val();
+        var FrequencyValue = jQuery("#FrequencyValue").val();
+        var Amount = jQuery("#Amount").val();
+        var Currency = jQuery("#Currency").val();
+        var GracePeriod = jQuery("#GracePeriod").val();
+        if (jQuery("#InitialPayment").prop("checked")) {
+            var InitialPayment = true;
+        } else {
+            var InitialPayment = false;
+        }
+        if (jQuery("#conditions").prop("checked")) {
+            var acceptedConditions = true;
+        } else {
+            var acceptedConditions = false;
+        }
+
+        data = {
+            action : 'editPlan',
+            planId : planId,
+            planTitile : planTitile,
+            planDescription : planDescription,
+            RecurrenceType : RecurrenceType,
+            FrequencyType : FrequencyType,
+            FrequencyValue : FrequencyValue,
+            Amount : Amount,
+            Currency : Currency,
+            GracePeriod : GracePeriod,
+            InitialPayment : InitialPayment,
+            TermAndConditionAccepted : acceptedConditions,
+        };
+
+        alert(data.action);
+        // alert(data.planId);
+        // alert(data.planTitile);
+        // alert(data.planDescription);
+        // alert(data.RecurrenceType);
+        // alert(data.FrequencyType);
+        // alert(data.FrequencyValue);
+        // alert(data.Amount);
+        // alert(data.Currency);
+        // alert(data.GracePeriod);
+        // alert(data.InitialPayment);
+        // alert("show : "+data.TermAndConditionAccepted);
+        // alert("acceptedConditions : "+acceptedConditions);
+        
+        if(acceptedConditions) {
+            jQuery.post(ajaxurl, data, function(response){
+                console.log(data.action);
+                jsonResponse = JSON.parse(response);
+                if(jsonResponse.status) {
+                    jQuery('#editMsgBlock').addClass('alert-success');
+                    jQuery('#editAlertTitle').html('Congratulation!');
+                    jQuery('#editMsgContent').html(jsonResponse.msg);
+                    jQuery('#editMsgBlock').addClass('show');
+
+                    // Refresh page after close Modal
+                    jQuery('#editPlanModal').on('hidden.bs.modal', function() {
+                        window.location.reload();
+                    });
+                }else {
+                    jQuery('#editMsgBlock').addClass('alert-warning');
+                    jQuery('#editAlertTitle').html('Error!');
+                    jQuery('#editMsgContent').html(jsonResponse.msg);
+                    jQuery('#editMsgBlock').addClass('show'); 
+                }
+            });
+        } else {
+            jQuery('#editMsgBlock').addClass('alert-warning');
+            jQuery('#editAlertTitle').html('Error!');
+            jQuery('#editMsgContent').html('You should to accept terms & conditions!');
+            jQuery('#editMsgBlock').addClass('show');
+        }
+
+    });
+    
+    return false;
 }
 
 function copyPlan(planId, planTitile) {
@@ -123,6 +207,15 @@ jQuery("#recurring-plan-form").submit(function (e) {
             jQuery('#alertTitle').html('Congratulation!');
             jQuery('#msgContent').html(jsonResponse.msg);
             jQuery('#msgBlock').addClass('show');
+
+            jQuery('#addPlan').html('Add new plan');
+            document.getElementById("recurring-plan-form").reset();
+            // setTimeout(function() {
+            //    alert('add new Plan');
+            //    document.getElementById("recurring-plan-form").reset();
+            // }, 3000);
+            
+
         }else {
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
