@@ -408,6 +408,4 @@ function planInfo($planId) {
     } 
     return $planData;
 }
-
-
 ?>

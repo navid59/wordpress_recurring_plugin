@@ -81,20 +81,20 @@ function editPlan(planId) {
         // alert("kakakakakakaakak");
 
         var planId = jQuery("#editPlanId").val();
-        var planTitile = jQuery("#planTitile").val();
-        var planDescription = jQuery("#planDescription").val();
-        var RecurrenceType = jQuery("#RecurrenceType").val();
-        var FrequencyType = jQuery("#FrequencyType").val();
-        var FrequencyValue = jQuery("#FrequencyValue").val();
-        var Amount = jQuery("#Amount").val();
-        var Currency = jQuery("#Currency").val();
-        var GracePeriod = jQuery("#GracePeriod").val();
-        if (jQuery("#InitialPayment").prop("checked")) {
+        var planTitile = jQuery("#editPlanTitile").val();
+        var planDescription = jQuery("#editPlanDescription").val();
+        var RecurrenceType = jQuery("#editRecurrenceType").val();
+        var FrequencyType = jQuery("#editFrequencyType").val();
+        var FrequencyValue = jQuery("#editFrequencyValue").val();
+        var Amount = jQuery("#editAmount").val();
+        var Currency = jQuery("#editCurrency").val();
+        var GracePeriod = jQuery("#editGracePeriod").val();
+        if (jQuery("#editInitialPayment").prop("checked")) {
             var InitialPayment = true;
         } else {
             var InitialPayment = false;
         }
-        if (jQuery("#conditions").prop("checked")) {
+        if (jQuery("#editConditions").prop("checked")) {
             var acceptedConditions = true;
         } else {
             var acceptedConditions = false;
@@ -115,7 +115,7 @@ function editPlan(planId) {
             TermAndConditionAccepted : acceptedConditions,
         };
 
-        alert(data.action);
+        // alert(data.action);
         // alert(data.planId);
         // alert(data.planTitile);
         // alert(data.planDescription);
@@ -127,17 +127,31 @@ function editPlan(planId) {
         // alert(data.GracePeriod);
         // alert(data.InitialPayment);
         // alert("show : "+data.TermAndConditionAccepted);
-        // alert("acceptedConditions : "+acceptedConditions);
+        // alert("acceptedConditions : "+ acceptedConditions);
         
         if(acceptedConditions) {
             jQuery.post(ajaxurl, data, function(response){
                 console.log(data.action);
                 jsonResponse = JSON.parse(response);
+                console.log(jsonResponse);
                 if(jsonResponse.status) {
                     jQuery('#editMsgBlock').addClass('alert-success');
                     jQuery('#editAlertTitle').html('Congratulation!');
                     jQuery('#editMsgContent').html(jsonResponse.msg);
                     jQuery('#editMsgBlock').addClass('show');
+
+                    // Disable the input items & remove submmit
+                    jQuery('#editPlan').addClass('hiede');
+                    jQuery("#editPlanId").addClass('disabled');
+                    jQuery("#editPlanTitile").addClass('disabled');
+                    jQuery("#editPlanDescription").addClass('disabled');
+                    jQuery("#editRecurrenceType").addClass('disabled');
+                    jQuery("#editFrequencyType").addClass('disabled');
+                    jQuery("#editFrequencyValue").addClass('disabled');
+                    jQuery("#editAmount").addClass('disabled');
+                    jQuery("#editCurrency").addClass('disabled');
+                    jQuery("#editGracePeriod").addClass('disabled');
+                    jQuery("#editInitialPayment").addClass('disabled');
 
                     // Refresh page after close Modal
                     jQuery('#editPlanModal').on('hidden.bs.modal', function() {

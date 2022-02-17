@@ -157,11 +157,11 @@ function recurring_editPlan() {
             "RecurrenceType" =>  $_POST['RecurrenceType'],
             "Frequency" => array (
                 "Type" => $_POST['FrequencyType'],
-                "Value" => $_POST['FrequencyValue']
+                "Value" => $_POST['FrequencyValue']+0
             ),
             "Description" => $_POST['planDescription'],
-            "GracePeriod" => $_POST['GracePeriod'],
-            "Amount" => $_POST['Amount'] ,
+            "GracePeriod" => $_POST['GracePeriod']+0,
+            "Amount" => $_POST['Amount']+0 ,
             "Currency" => $_POST['Currency'],
             "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false,
             "TermAndConditionAccepted" => $_POST['TermAndConditionAccepted'] === 'true' ? true : false
@@ -172,11 +172,10 @@ function recurring_editPlan() {
     $mySimulatedResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],
+            'data'=> $planData,
             );
     echo json_encode($mySimulatedResult);
     die();
 }
 add_action('wp_ajax_editPlan', 'recurring_editPlan');
-
-
 ?>

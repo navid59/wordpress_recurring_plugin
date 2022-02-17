@@ -18,21 +18,21 @@
                         <div class="invalid-feedback"><?php echo __('Please fill out plan title.','ntpRp'); ?></div>
                     </div>
                     <div class="form-group">
-                        <label for="planTitile">Plan Title</label>
-                        <input type="text" class="form-control" id="planTitile" placeholder="<?php echo __('Your plan title', 'ntpRp');?>" required>
+                        <label for="editPlanTitile">Plan Title</label>
+                        <input type="text" class="form-control" id="editPlanTitile" placeholder="<?php echo __('Your plan title', 'ntpRp');?>" required>
                         <div class="valid-feedback"><?php echo __('Valid plan title.','ntpRp'); ?></div>
                         <div class="invalid-feedback"><?php echo __('Please fill out plan title.','ntpRp'); ?></div>
                     </div>
                     <div class="form-group">
-                        <label for="planDescription">Plan Description</label>
-                        <textarea class="form-control" id="planDescription" rows="3" placeholder="<?php echo __('The short description of Plan', 'ntpRp');?>" required></textarea>
+                        <label for="editPlanDescription">Plan Description</label>
+                        <textarea class="form-control" id="editPlanDescription" rows="3" placeholder="<?php echo __('The short description of Plan', 'ntpRp');?>" required></textarea>
                         <div class="valid-feedback"><?php echo __('Valid plan description.','ntpRp'); ?></div>
                         <div class="invalid-feedback"><?php echo __('Please fill out plan description.','ntpRp'); ?></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="RecurrenceType"><?php echo __('Recurrence Type','ntpRp'); ?></label>
-                            <select id="RecurrenceType" class="form-control" required>
+                            <label for="editRecurrenceType"><?php echo __('Recurrence Type','ntpRp'); ?></label>
+                            <select id="editRecurrenceType" class="form-control" required>
                                 <option value=""><?php echo __('Choose...','ntpRp'); ?></option>
                                 <option value="Dynamic" selected><?php echo __('Dynamic','ntpRp'); ?></option>
                                 <option value="Fix"><?php echo __('Fix','ntpRp'); ?></option>
@@ -41,8 +41,8 @@
                             <div class="invalid-feedback"><?php echo __('Please choose recurrence type.','ntpRp'); ?></div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="FrequencyType"><?php echo __('Frequency Type','ntpRp'); ?></label>
-                            <select id="FrequencyType" class="form-control" required>
+                            <label for="editFrequencyType"><?php echo __('Frequency Type','ntpRp'); ?></label>
+                            <select id="editFrequencyType" class="form-control" required>
                                 <option value=""><?php echo __('Choose...','ntpRp'); ?></option>
                                 <option value="Day"><?php echo __('Daily','ntpRp'); ?></option>
                                 <option value="Month" selected><?php echo __('Monthly','ntpRp'); ?></option>
@@ -52,22 +52,22 @@
                             <div class="invalid-feedback"><?php echo __('Please choose frequency type.','ntpRp'); ?></div>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="FrequencyValue"><?php echo __('Frequency Value','ntpRp'); ?></label>
-                            <input type="text" class="form-control" id="FrequencyValue" placeholder="<?php echo __('Your plan Frequency Value', 'ntpRp');?>" required>
+                            <label for="editFrequencyValue"><?php echo __('Frequency Value','ntpRp'); ?></label>
+                            <input type="text" class="form-control" id="editFrequencyValue" placeholder="<?php echo __('Your plan Frequency Value', 'ntpRp');?>" required>
                             <div class="valid-feedback"><?php echo __('Valid plan frequency value.','ntpRp'); ?></div>
                             <div class="invalid-feedback"><?php echo __('Please fill out plan frequency value.','ntpRp'); ?></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
-                            <label for="Amount"><?php echo __('Amount','ntpRp'); ?></label>
-                            <input type="text" class="form-control" id="Amount" placeholder="<?php echo __('The plan value', 'ntpRp');?>" required>
+                            <label for="editAmount"><?php echo __('Amount','ntpRp'); ?></label>
+                            <input type="text" class="form-control" id="editAmount" placeholder="<?php echo __('The plan value', 'ntpRp');?>" required>
                             <div class="valid-feedback"><?php echo __('Valid plan amount.','ntpRp'); ?></div>
                             <div class="invalid-feedback"><?php echo __('Please fill out plan amount.','ntpRp'); ?></div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="Currency"><?php echo __('Currency','ntpRp'); ?></label>
-                            <select id="Currency" class="form-control" required>
+                            <label for="editCurrency"><?php echo __('Currency','ntpRp'); ?></label>
+                            <select id="editCurrency" class="form-control" required>
                                 <option value=""><?php echo __('Choose...','ntpRp'); ?></option>
                                 <option value="RON" selected><?php echo __('RON','ntpRp'); ?></option>
                             </select>
@@ -75,15 +75,15 @@
                             <div class="invalid-feedback"><?php echo __('Please choose Currency.','ntpRp'); ?></div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="GracePeriod"><?php echo __('Grace Period','ntpRp'); ?></label>
-                            <input type="text" class="form-control" id="GracePeriod" placeholder="<?php echo __('The grace period', 'ntpRp');?>" required>
+                            <label for="editGracePeriod"><?php echo __('Grace Period','ntpRp'); ?></label>
+                            <input type="text" class="form-control" id="editGracePeriod" placeholder="<?php echo __('The grace period', 'ntpRp');?>" required>
                             <div class="valid-feedback"><?php echo __('Valid plan grace period.','ntpRp'); ?></div>
                             <div class="invalid-feedback"><?php echo __('Please fill out plan grace period.','ntpRp'); ?></div>
                         </div>
                         <div class="form-group col-md-3">
-                            <label for="InitialPayment"><?php echo __('InitialPayment','ntpRp'); ?></label><br>
+                            <label for="editInitialPayment"><?php echo __('InitialPayment','ntpRp'); ?></label><br>
                             <p>
-                                <input type="checkbox" class="form-control" id="InitialPayment" value="true">
+                                <input type="checkbox" class="form-control" id="editInitialPayment" value="true">
                                 <?php echo __('check if payment at subscription time, is mandatory.','ntpRp');?>
                             </p>
                         </div>
@@ -91,14 +91,15 @@
                     <hr>
                     <div class="form-row">
                         <div class="form-group col-md-8">
-                            <label for="conditions"><?php echo __('Term & Conditions','ntpRp'); ?></label><br>
+                            <label for="editConditions"><?php echo __('Term & Conditions','ntpRp'); ?></label><br>
                             <p>
-                                <input type="checkbox" class="form-control" id="conditions" value="true" required>
+                                <input type="checkbox" class="form-control" id="editConditions" value="true" required>
                                 <?php echo __('Accept to inform subscribers about deleting this plan.','ntpRp');?>
                             </p>
                         </div>    
                         <div class="form-group col-md-4">
-                            <button type="button" id="editPlan" class="btn btn-primary"><?php echo __('Submmit', 'ntpRp');?></button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <button type="button" id="editPlan" class="btn btn-success"><?php echo __('Submmit', 'ntpRp');?></button>
                         </div>                        
                     </div>
                     <!-- <div class="form-row col-md-10"> -->
