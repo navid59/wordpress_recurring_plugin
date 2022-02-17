@@ -72,14 +72,34 @@ function delPlan(planId) {
 }
 
 function editPlan(planId) {  
-    jQuery('#msgEdit').html('Edit plan '+ planId +'- by AJAX - Admin!');
     jQuery("#editPlanId").val(planId);
+    
+    getPlanData = {
+        action : 'getPlanInfo',
+        planIdentity: planId,
+    }
+    jQuery.post(ajaxurl, getPlanData, function(response){
+        console.log(getPlanData.action);
+        jsonResponse = JSON.parse(response);
+        if(jsonResponse.status) {
+            jQuery("#editPlanTitile").val(jsonResponse.data.Title);
+            jQuery("#editPlanDescription").val(jsonResponse.data.Description);
+            jQuery("#editRecurrenceType").val(jsonResponse.data.RecurrenceType);
+            jQuery("#editFrequencyType").val(jsonResponse.data.Frequency.Type);
+            jQuery("#editFrequencyValue").val(jsonResponse.data.Frequency.Value);
+            jQuery("#editAmount").val(jsonResponse.data.Amount);
+            jQuery("#editCurrency").val(jsonResponse.data.Currency);
+            jQuery("#editGracePeriod").val(jsonResponse.data.GracePeriod);
+        } else {
+            // Alert &  exit
+        }
+    });
+
+
     jQuery('#editPlanModal').modal('toggle');
     jQuery('#editPlanModal').modal('show');
 
     jQuery("#editPlan").click(function (e) {
-        // alert("kakakakakakaakak");
-
         var planId = jQuery("#editPlanId").val();
         var planTitile = jQuery("#editPlanTitile").val();
         var planDescription = jQuery("#editPlanDescription").val();
@@ -114,20 +134,6 @@ function editPlan(planId) {
             InitialPayment : InitialPayment,
             TermAndConditionAccepted : acceptedConditions,
         };
-
-        // alert(data.action);
-        // alert(data.planId);
-        // alert(data.planTitile);
-        // alert(data.planDescription);
-        // alert(data.RecurrenceType);
-        // alert(data.FrequencyType);
-        // alert(data.FrequencyValue);
-        // alert(data.Amount);
-        // alert(data.Currency);
-        // alert(data.GracePeriod);
-        // alert(data.InitialPayment);
-        // alert("show : "+data.TermAndConditionAccepted);
-        // alert("acceptedConditions : "+ acceptedConditions);
         
         if(acceptedConditions) {
             jQuery.post(ajaxurl, data, function(response){
@@ -140,18 +146,20 @@ function editPlan(planId) {
                     jQuery('#editMsgContent').html(jsonResponse.msg);
                     jQuery('#editMsgBlock').addClass('show');
 
-                    // Disable the input items & remove submmit
-                    jQuery('#editPlan').addClass('hiede');
-                    jQuery("#editPlanId").addClass('disabled');
-                    jQuery("#editPlanTitile").addClass('disabled');
-                    jQuery("#editPlanDescription").addClass('disabled');
-                    jQuery("#editRecurrenceType").addClass('disabled');
-                    jQuery("#editFrequencyType").addClass('disabled');
-                    jQuery("#editFrequencyValue").addClass('disabled');
-                    jQuery("#editAmount").addClass('disabled');
-                    jQuery("#editCurrency").addClass('disabled');
-                    jQuery("#editGracePeriod").addClass('disabled');
-                    jQuery("#editInitialPayment").addClass('disabled');
+                    // Disable after success update
+                    jQuery("#editPlanTitile").prop('readonly', true);
+                    jQuery("#editPlanDescription").prop('readonly', true);
+                    jQuery("#editRecurrenceType").attr("disabled", true); 
+                    jQuery("#editFrequencyType").attr("disabled", true); 
+                    jQuery("#editFrequencyValue").prop('readonly', true);
+                    jQuery("#editAmount").prop('readonly', true);
+                    jQuery("#editCurrency").attr("disabled", true); 
+                    jQuery("#editGracePeriod").prop('readonly', true);
+                    jQuery("#editInitialPayment").prop('readonly', true);
+                    jQuery("#editConditions").prop('readonly', true);
+                    
+                    // Remove submit button after success
+                    jQuery("#editPlan").hide();
 
                     // Refresh page after close Modal
                     jQuery('#editPlanModal').on('hidden.bs.modal', function() {

@@ -8,14 +8,9 @@
               </button>
             </div>
             <div class="modal-body">
-              <span id="msgEdit"></span>
-              <hr>
                 <form id="recurring-edit-plan-form" method="post" class="was-validated">
                     <div class="form-group">
-                        <label for="editPlanId">Plan Title</label>
-                        <input type="text" class="form-control" id="editPlanId" value="NAVIDNAVID" required>
-                        <div class="valid-feedback"><?php echo __('Valid plan ID.','ntpRp'); ?></div>
-                        <div class="invalid-feedback"><?php echo __('Please fill out plan title.','ntpRp'); ?></div>
+                        <input type="hidden" class="form-control" id="editPlanId" value="" readonly="readonly">
                     </div>
                     <div class="form-group">
                         <label for="editPlanTitile">Plan Title</label>
@@ -98,8 +93,8 @@
                             </p>
                         </div>    
                         <div class="form-group col-md-4">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                             <button type="button" id="editPlan" class="btn btn-success"><?php echo __('Submmit', 'ntpRp');?></button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                         </div>                        
                     </div>
                     <!-- <div class="form-row col-md-10"> -->

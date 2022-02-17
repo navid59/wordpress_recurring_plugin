@@ -178,4 +178,42 @@ function recurring_editPlan() {
     die();
 }
 add_action('wp_ajax_editPlan', 'recurring_editPlan');
+
+function getPlanInfo() {
+    $planId = $_POST['planIdentity'];
+
+    $planObj = new recurringFront();
+    $arrayData = $planObj->getPlan($planId);
+
+    if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
+        $status = false;
+        $planData = array();
+    } else {
+        $status = true;
+        $plan = $arrayData['plan'];
+        $planData = array(
+            "Title" => $plan['Title'],
+            "Description" => $plan['Description'],
+            "Amount" => $plan['Amount'],
+            "Currency" => $plan['Currency'],
+            "RecurrenceType" => $plan['RecurrenceType'],
+            "Frequency" => array (
+                "Type" => $plan['Frequency']['Type'],
+                "Value" => $plan['Frequency']['Value']
+            ),
+            "GracePeriod" => $plan['GracePeriod'],
+            "InitialPayment" => $plan['InitialPayment'],
+            "Status" => $plan['Status']
+        );
+    }
+
+    echo json_encode(array(
+        'status' => $status,
+        'data'  => $planData
+    ));
+    die();
+}
+
+add_action('wp_ajax_getPlanInfo', 'getPlanInfo');
+
 ?>
