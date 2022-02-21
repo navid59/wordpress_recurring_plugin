@@ -27,8 +27,10 @@ include_once( 'config/static.php' );
 include_once( 'packages/recurring.php' );
 include_once( 'packages/recurring-admin.php' );
 include_once( 'packages/recurring-front.php' );
+include_once( 'wc-netopiapayments-recurring-install.php' );
 include_once( 'wc-netopiapayments-recurring.php' );
 include_once( 'wc-netopiapayments-recurring-front.php' );
 
 
 $recurringPlugin = new NetopiapaymentsRecurringPayment();
+register_activation_hook( __FILE__, 'recurring_install' );
