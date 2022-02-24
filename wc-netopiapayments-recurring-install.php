@@ -64,5 +64,5 @@ dbDelta( $sql_plan );
 dbDelta( $sql_history );
 
 add_option( 'recurring_db_version', "1.0" );
- }
+}
 ?>
