@@ -31,7 +31,7 @@ class NetopiapaymentsRecurringPayment extends recurring
     protected $menuItems;
         
     public function __construct()
-    {
+    {  
     add_action( 'admin_menu', array( $this, 'create_plugin_settings' ));
     add_action( 'admin_init', array( $this, 'recurring_setup_section' ));
     add_action( 'admin_init', array( $this, 'recurring_setup_fields' ));
@@ -42,6 +42,7 @@ class NetopiapaymentsRecurringPayment extends recurring
     add_action( 'admin_init', array( $this, 'recurring_notify_section' ));
     add_action( 'admin_init', array( $this, 'recurring_notify_fields' ));
     }
+
 
     public function getSlug(){
         return $this->slug;

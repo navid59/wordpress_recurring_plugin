@@ -16,13 +16,13 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
 } else {
     foreach($arrayData['members']  as $subscription) {
         echo "<tr>";
-            printf("<td>%1s</td>",$subscription['Id']);
             printf("<td>%1s %2s</td>",$subscription['Member']['Name'],$subscription['Member']['LastName']);
             printf("<td>%1s</td>",$subscription['Member']['Email']);
             printf("<td>%1s</td>",$subscription['Member']['Tel']);
             printf("<td>%1s</td>",$subscription['Member']['UserID']);
             printf("<td>%1s</td>",$subscription['Plan']['PlanName']);
-            printf("<td>%1s</td>",$subscription['NextPaymentDate']);
+            $nextPaymentDate = new DateTime($subscription['NextPaymentDate']); 
+            printf("<td>%1s</td>",$nextPaymentDate->format('Y-m-d'));
             printf("<td>%1s</td>",$a->getStatusStr('subscription',$subscription['Status']));
             $date = new DateTime($subscription['Plan']['StartDate']);
             printf("<td>%1s</td>",$date->format('Y-m-d'));

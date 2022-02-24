@@ -1,6 +1,58 @@
+function unsubscription() {
+    jQuery('#loading').addClass('show');
+    jQuery('#unsubscriptionButton').hide();
+
+    var SubscriptionId = jQuery("#Subscription_Id").val();
+    var Id = jQuery("#Id").val();
+
+    data = {
+        action : 'unsubscription',
+        Id : Id,
+        SubscriptionId : SubscriptionId,
+    }
+
+    jQuery.ajax({
+        url: myback.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            if(response.status) {
+                jQuery('#msgBlock').addClass('alert-success');
+                jQuery('#alertTitle').html('Congratulation!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#loading').removeClass('show');
+                jQuery('#unsubscription-form').hide();               
+                
+                // Refresh page after close Modal
+                jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });                
+            } else {
+                jQuery('#msgBlock').addClass('alert-warning');
+                jQuery('#alertTitle').html('Error!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#unsubscriptionButton').show();
+                jQuery('#loading').removeClass('show');
+            }
+        },
+        error: function( error ){
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(response.msg);
+            jQuery('#msgBlock').addClass('show');
+            jQuery('#unsubscriptionButton').show();
+            jQuery('#loading').removeClass('show');
+        }
+    });
+}
+
 function addSubscription() {
-    // alert('Is NETOPIA Payments Recurring - action - add new subscription');
-    
+    jQuery('#loading').addClass('show');
+    jQuery('#addSubscriptionButton').hide();
+
     var PlanID = jQuery("#planID").val();
     var UserID = jQuery("#username").val();
     var Name = jQuery("#firstName").val();
@@ -19,10 +71,10 @@ function addSubscription() {
     var ExpYear = jQuery("#cc-expiration-year").val();
     var SecretCode = jQuery("#cc-cvv").val();
 
-
+    var ThreeDS = sendClientBrowserInfo();
+    
     data = {
-        // action : 'addNewSubscription',
-        action : 'getsomething',
+        action : 'addNewSubscription',
         PlanID : PlanID,
         UserID : UserID,
         Name : Name,
@@ -38,56 +90,61 @@ function addSubscription() {
         ExpMonth : ExpMonth,
         ExpYear : ExpYear,
         SecretCode : SecretCode,
+        ThreeDS : ThreeDS,
     };
 
-    // alert('PlanID : '+ PlanID);
-    // alert('action'+ data.action);
-    // alert('UserID'+ UserID);
-    // alert('Name'+ Name);
-    // alert('LastName'+ LastName);
-    // alert('Email'+ Email);
-    // alert('Address'+ Address);
-    // alert('City'+ City);
-    // alert('Tel'+ Tel);
-    // alert('PlanId'+ PlanId);
-    alert('StartDate'+ StartDate);
-    // alert('EndDate'+ EndDate);
-    // alert('Account'+ Account);
-    // alert('ExpMonth'+ ExpMonth);
-    // alert('ExpYear'+ ExpYear);
-    // alert('SecretCode'+ SecretCode);
-
-
-    // console.log('Continue to checkout');
     jQuery.ajax({
         url: myback.ajax_url,
         type: 'POST',
         dataType: 'json',
         data: data,
         success: function( response ){
-            console.log("This is Navid response...");
-            console.log(response);
             if(response.status) {
                 jQuery('#msgBlock').addClass('alert-success');
                 jQuery('#alertTitle').html('Congratulation!');
                 jQuery('#msgContent').html(response.msg);
                 jQuery('#msgBlock').addClass('show');
+                jQuery('#loading').removeClass('show');
+
+                /** Make form Read only on success */
+                jQuery("#planID").prop('readonly', true);
+                jQuery("#username").prop('readonly', true);
+                jQuery("#firstName").prop('readonly', true);
+                jQuery("#lastName").prop('readonly', true);
+                jQuery("#email").prop('readonly', true);
+                jQuery("#address").prop('readonly', true);
+                jQuery("#country").attr("disabled", true); 
+                jQuery("#state").attr("disabled", true); 
+                jQuery("#tel").prop('readonly', true);
+                jQuery("#PlanId").prop('readonly', true);
+                jQuery("#StartDate").prop('readonly', true);
+                jQuery("#EndDate").prop('readonly', true);
+                jQuery("#cc-name").prop('readonly', true);
+                jQuery("#cc-number").prop('readonly', true);
+                jQuery("#cc-expiration-month").prop('readonly', true);
+                jQuery("#cc-expiration-year").prop('readonly', true);
+                jQuery("#cc-cvv").prop('readonly', true);
+
+                // Refresh page after close Modal
+                jQuery('#recurringModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });
             } else {
                 jQuery('#msgBlock').addClass('alert-warning');
                 jQuery('#alertTitle').html('Error!');
                 jQuery('#msgContent').html(response.msg);
                 jQuery('#msgBlock').addClass('show');
+                jQuery('#addSubscriptionButton').show();
+                jQuery('#loading').removeClass('show');
             }
         },
         error: function( error ){
-            // console.log('AJAX error NAVID callback....');
-            // console.log(error);
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
             jQuery('#msgContent').html(response.msg);
             jQuery('#msgBlock').addClass('show');
+            jQuery('#addSubscriptionButton').show();
+            jQuery('#loading').removeClass('show');
         }
-    });
-
-    
+    });    
 }

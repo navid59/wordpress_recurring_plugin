@@ -3,7 +3,6 @@
       <table id="dtBasicExample" class="table" width="100%">
         <thead>
           <tr>
-            <th>Subscription ID</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Phone</th>
@@ -20,7 +19,6 @@
         </tbody>
         <tfoot>
           <tr>
-          <th>Subscription ID</th>
             <th>Full Name</th>
             <th>Email</th>
             <th>Phone</th>
