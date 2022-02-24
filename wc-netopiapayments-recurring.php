@@ -93,17 +93,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             'pageTitle' => "Report management",
             'menuTitle' => 'Reports',
             'menuSlug' => 'recurring_repport'
-        ),        
-        'temporary'=> array(
-            'capability' => 'manage_options',
-            'callback' => array( $this, 'tmp_UI' ),
-            'icon' => 'dashicons-format-status',
-            'position' => 103,
-            'pageTitle' => "test temporary",
-            'menuTitle' => 'TEMPRARY PAGE',
-            'menuSlug' => 'TEMPRARY_PAGE'
-        )
-            
+        )            
     );
 
 
@@ -281,34 +271,34 @@ class NetopiapaymentsRecurringPayment extends recurring
         }
     }
 
-    public function section_callback( $arguments )
-    {
-        switch( $arguments['id'] ){
-            case 'general':
-                echo '';
-                break;
-            case 'conditions':
-                echo '';
-                break;
-            case 'declaration':
-                echo '';
-                break;
-            case 'ssl':
-                echo '';
-                break;
-            case 'img':
-                echo '';
-                break;
-            case 'cerere':
-                echo '<spam style="padding-right: 20px;" >Currenty you have <strong>'.rand(0,100).' creadit</strong> 
-                        <br> witch meanse you have possibility to send <strong>'.rand(0,1000).' SMS </strong> total&nbsp;&nbsp;&nbsp;';
-                echo '<br>So you can simply ask for charge by clicking at <a href="https://www.web2sms.ro/balance/feed/products" target="_blank">here</a></spam>';
-                break;
-            case 'msg2sms':
-                echo '';
-                break;
-        }
-    }
+    // public function section_callback( $arguments )
+    // {
+    //     switch( $arguments['id'] ){
+    //         case 'general':
+    //             echo '';
+    //             break;
+    //         case 'conditions':
+    //             echo '';
+    //             break;
+    //         case 'declaration':
+    //             echo '';
+    //             break;
+    //         case 'ssl':
+    //             echo '';
+    //             break;
+    //         case 'img':
+    //             echo '';
+    //             break;
+    //         case 'cerere':
+    //             echo '<spam style="padding-right: 20px;" >Currenty you have <strong>'.rand(0,100).' creadit</strong> 
+    //                     <br> witch meanse you have possibility to send <strong>'.rand(0,1000).' SMS </strong> total&nbsp;&nbsp;&nbsp;';
+    //             echo '<br>So you can simply ask for charge by clicking at <a href="https://www.web2sms.ro/balance/feed/products" target="_blank">here</a></spam>';
+    //             break;
+    //         case 'msg2sms':
+    //             echo '';
+    //             break;
+    //     }
+    // }
 
     public function field_callback( $arguments ) {
         $value = get_option( $arguments['uid'] ); // Get the current value, if there is one
@@ -368,14 +358,14 @@ class NetopiapaymentsRecurringPayment extends recurring
             case 'link': // If it is a text field
                 printf( '<span><b>%1$s%2$s%3$s</b></span>', 'https://',$_SERVER['HTTP_HOST'], '/' );
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], 'text', $arguments['placeholder'], $value );
-                printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
-                break;
-            case 'send_request': // Ask NETOPIA Payments
-                //
-                break;
-                case 'send_button': // Send SMS to All
-                    printf('<button type="button" id="%2$s_send" class="button button-primary">%1$s</button>', 'send to all ;-)', $arguments['uid']);
-                    break;
+                // printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
+            break;
+            // case 'send_request': // Ask NETOPIA Payments
+            //     //
+            //     break;
+            //     case 'send_button': // Send SMS to All
+            //         printf('<button type="button" id="%2$s_send" class="button button-primary">%1$s</button>', 'send to all ;-)', $arguments['uid']);
+            //         break;
         }
 
         // If there is help text
@@ -443,11 +433,6 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
             </h2>
             
-            <!-- <div class="row float-right">
-                <nav class="">
-                    <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
-                </nav>
-            </div> -->
             <?php include_once('include/subscriptions.php');?>
         <div>    
         <?php
@@ -472,18 +457,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 include_once('include/partial/modalClipboard.php');
                 include_once('include/partial/modalDeletePlan.php');
                 include_once('include/partial/modalEditPlan.php');
-            //     echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            //     <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-            //     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            //       <span aria-hidden="true">&times;</span>
-            //     </button>
-            //   </div>';
-                // echo '<div class="row float-right">
-                //         <nav class="">
-                //             <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
-                //         </nav>
-                //      </div>';
-            include_once('include/plans.php');
+                include_once('include/plans.php');
             }
             ?>
         <div>
@@ -500,49 +474,9 @@ class NetopiapaymentsRecurringPayment extends recurring
             <h2 class="nav-tab-wrapper">
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
             </h2>
-            <!-- <div class="row float-right">
-                <nav class="">
-                    <button type="button" class="btn btn-warning" onclick="getSubscriptions()">Sync Data</button>
-                </nav>
-            </div> -->
+            
             <?php include_once('include/reports.php');?>
         <div> 
-        <?php
-    }
-
-    public function tmp_UI() {
-        @$active_tab = $_GET[ 'tab' ] ? $_GET[ 'tab' ] : null;
-        ?>
-        <div class="wrap">
-            <div class="row">
-                <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="150" style="padding: 20px 25px 0px 0px;">
-                <span style="font-size: xx-large"><?=$this->page_title ?></span>
-            </div>
-            <h2 class="nav-tab-wrapper">
-                <a href="?page=recurring_test&tab=display_tmp_0" class="nav-tab <?php echo $active_tab == 'display_tmp_0' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 0','ntpRp')?></a>
-                <a href="?page=recurring_test&tab=display_tmp_1" class="nav-tab <?php echo $active_tab == 'display_tmp_1' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 1','ntpRp')?></a>
-                <a href="?page=recurring_test&tab=display_tmp_2" class="nav-tab <?php echo $active_tab == 'display_tmp_2' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 2','ntpRp')?></a>
-                <a href="?page=recurring_test&tab=display_tmp_3" class="nav-tab <?php echo $active_tab == 'display_tmp_3' ? 'nav-tab-active' : ''; ?>"><?php echo __('TMP 3','ntpRp')?></a>
-            </h2>
-            <?php
-                if( $active_tab == 'display_tmp_0' ) {
-                    echo "AAAA";
-                    echo "<pre>";
-                    echo "<h1>TEST Section</h1>";
-                    var_dump($this->getSignature());
-                    var_dump($this->getApiKey());
-                    echo "</pre>";
-                }elseif($active_tab == 'display_tmp_1') {
-                    echo "BBBB";
-                }elseif($active_tab == 'display_tmp_2') {
-                    echo "CCCC";
-                } elseif($active_tab == 'display_tmp_3') {
-                    echo "DDDD";
-                } else {
-                    echo "EEEE";
-                }
-            ?>
-        </div>
         <?php
     }
 }

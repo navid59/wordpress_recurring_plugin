@@ -104,6 +104,8 @@ class recurringAdmin extends recurring {
 }
 
 function recurring_addPlan() {
+    global $wpdb;
+
     $a = new recurringAdmin();
     $planData = array(
         "Title" => $_POST['planTitile'],
@@ -121,6 +123,27 @@ function recurring_addPlan() {
 
     $jsonResultData = $a->setPlan($planData);
     
+    // Add subscription to DB 
+    if($jsonResultData['code'] === "00") {
+        $wpdb->insert( 
+            $wpdb->prefix . "ntp_plans", 
+            array( 
+                'Plan_Id'         => $jsonResultData['data']['planId'],
+                'Title'           => $jsonResultData['data']['Title'],
+                'Amount'          => $_POST['Amount'],
+                'Description'     => $_POST['planDescription'],
+                'Recurrence_Type' => $_POST['RecurrenceType'],
+                'Frequency_Type'  => $_POST['FrequencyType'],
+                'Frequency_Value' => $_POST['FrequencyValue'],
+                'Grace_Period'    => $_POST['GracePeriod'],
+                'Initial_Paymen'  => $_POST['InitialPayment'] === 'true' ? true : false,
+                'Status'          => $jsonResultData['data']['Status'],
+                'CreatedAt'       => date("Y-m-d"),
+                'UpdatedAt'       => date("Y-m-d")
+            )
+        );
+    }
+
     $mySimulatedResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],

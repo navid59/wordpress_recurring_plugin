@@ -4,10 +4,6 @@ jQuery(document).ready(function () {
 });
 
 
-function getSubscriptions() {
-    alert('Reload Data by AJAX - Admin - not implimented!')
-}
-
 function subscriptionHistory(subscriptionId) {
     alert('History of subscription with ID :' + subscriptionId);
 }
@@ -232,10 +228,6 @@ jQuery("#recurring-plan-form").submit(function (e) {
 
             jQuery('#addPlan').html('Add new plan');
             document.getElementById("recurring-plan-form").reset();
-            // setTimeout(function() {
-            //    alert('add new Plan');
-            //    document.getElementById("recurring-plan-form").reset();
-            // }, 3000);
             
 
         }else {
