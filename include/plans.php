@@ -3,17 +3,14 @@
       <table id="dtBasicExample" class="table" width="100%">
         <thead>
           <tr>
-            <th>Plan ID</th>
-            <th>Title</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Frequency</th>
-            <th>Grace Period</th>
-            <th>Initial Paymen</th>
-            <th>CreatedAt</th>
-            <th>Copy</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th><?php echo __('Title','ntpRp');?></th>
+            <th><?php echo __('Amount','ntpRp');?></th>
+            <th><?php echo __('Description','ntpRp');?></th>
+            <th><?php echo __('Frequency','ntpRp');?></th>
+            <th><?php echo __('Grace Period','ntpRp');?></th>
+            <th><?php echo __('Initial Payment','ntpRp');?></th>
+            <th><?php echo __('CreatedAt','ntpRp');?></th>
+            <th><?php echo __('Action','ntpRp');?></th>
           </tr>
         </thead>
         <tbody>
@@ -21,17 +18,14 @@
         </tbody>
         <tfoot>
           <tr>
-            <th>Plan ID</th>
-            <th>Title</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Frequency</th>
-            <th>Grace Period</th>
-            <th>Initial Paymen</th>
-            <th>CreatedAt</th>
-            <th>Copy</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th><?php echo __('Title','ntpRp');?></th>
+            <th><?php echo __('Amount','ntpRp');?></th>
+            <th><?php echo __('Description','ntpRp');?></th>
+            <th><?php echo __('Frequency','ntpRp');?></th>
+            <th><?php echo __('Grace Period','ntpRp');?></th>
+            <th><?php echo __('Initial Payment','ntpRp');?></th>
+            <th><?php echo __('CreatedAt','ntpRp');?></th>
+            <th><?php echo __('Action','ntpRp');?></th>
           </tr>
         </tfoot>
       </table>

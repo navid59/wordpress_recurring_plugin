@@ -1,6 +1,6 @@
 <?php
 class recurringAdmin extends recurring {
-    function getSubscriptionList(){
+    function getSubscriptionListLive(){
         $url = BASE_URL_RECURRING_API.'subscription/list';
         $data = array(
             'Signature' => self::getSignature()
@@ -12,7 +12,26 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
-    function getPlanList(){
+    function getSubscriptionList(){
+        global $wpdb;
+        $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        if(count($subscriptions)) {
+            $errorCode = "00";
+            $errorMsg = "";
+        } else {
+            $errorCode = "11";
+            $errorMsg = __('There is no any subscription, yet','ntpRp');
+        }
+    
+        $resultData = array(
+            "code" => $errorCode,
+            "message" => $errorMsg,
+            "members" => $subscriptions
+            );
+        return $resultData;
+    }
+
+    function getPlanListLive(){
         $url = BASE_URL_RECURRING_API.'plan/list';
         $data = array(
             'Signature' => self::getSignature(),
@@ -22,6 +41,25 @@ class recurringAdmin extends recurring {
         $postData = json_encode($data);
     
         $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
+
+    function getPlanList(){
+        global $wpdb;
+        $plans = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_plans WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        if(count($plans)) {
+            $errorCode = "00";
+            $errorMsg = "";
+        } else {
+            $errorCode = "11";
+            $errorMsg = __('There is no any Plan, yet','ntpRp');
+        }
+    
+        $resultData = array(
+            "code" => $errorCode,
+            "message" => $errorMsg,
+            "plans" => $plans
+            );
         return $resultData;
     }
 
@@ -155,6 +193,7 @@ add_action('wp_ajax_addPlan', 'recurring_addPlan');
 
 
 function recurring_delPlan() {
+    global $wpdb;
     $a = new recurringAdmin();
     $planData = array(
             "PlanId" => $_POST['planId']+0,
@@ -163,6 +202,20 @@ function recurring_delPlan() {
 
     $jsonResultData = $a->delPlan($planData);
     
+    /** To delete a plan */
+    if($jsonResultData['code'] === "00") {
+        $wpdb->update( 
+            $wpdb->prefix . "ntp_plans", 
+            array( 
+                "Status"             => 2,
+                'UpdatedAt'         => date("Y-m-d")
+            ),
+            array(
+                'Plan_Id' => $_POST['planId']+0
+            )
+        );
+    }
+
     $mySimulatedResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],
@@ -173,6 +226,8 @@ function recurring_delPlan() {
 add_action('wp_ajax_delPlan', 'recurring_delPlan');
 
 function recurring_editPlan() {
+    global $wpdb;
+
     $a = new recurringAdmin();
     $planData = array(
             "PlanId" => $_POST['planId']+0,
@@ -191,6 +246,28 @@ function recurring_editPlan() {
     );
 
     $jsonResultData = $a->editPlan($planData);
+
+    /** To Update the plan locally as well */
+    if($jsonResultData['code'] === "00") {
+        $wpdb->update( 
+            $wpdb->prefix . "ntp_plans", 
+            array( 
+                "Title"             => $_POST['planTitile'],
+                "Description"       => $_POST['planDescription'],
+                "Amount"            => $_POST['Amount']+0 ,
+                "Recurrence_Type"   => $_POST['RecurrenceType'],
+                "Frequency_Type"    => $_POST['FrequencyType'],
+                "Frequency_Value"   => $_POST['FrequencyValue']+0,
+                "Grace_Period"      => $_POST['GracePeriod']+0,
+                "Initial_Paymen"    => $_POST['InitialPayment'] === 'true' ? true : false,
+                'UpdatedAt'         => date("Y-m-d")
+            ),
+            array(
+                'Plan_Id' => $_POST['planId']+0
+            )
+        );
+    }
+
     
     $mySimulatedResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,

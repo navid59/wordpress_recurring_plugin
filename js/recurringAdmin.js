@@ -8,6 +8,14 @@ function subscriptionHistory(subscriptionId) {
     alert('History of subscription with ID :' + subscriptionId);
 }
 
+function subscriptionDetails(subscriptionId) {
+    alert('Details of subscription with ID :' + subscriptionId);
+}
+
+function subscriptionNextPayment(subscriptionId) {
+    alert('NextPayment of subscription with ID :' + subscriptionId);
+}
+
 function delPlan(planId) {
     jQuery('#msgDelete').html('Are you sure you want to delete the plan ?');
     jQuery('#planId').val(planId);
@@ -86,6 +94,12 @@ function editPlan(planId) {
             jQuery("#editAmount").val(jsonResponse.data.Amount);
             jQuery("#editCurrency").val(jsonResponse.data.Currency);
             jQuery("#editGracePeriod").val(jsonResponse.data.GracePeriod);
+            
+            if(jsonResponse.data.InitialPayment === true) {
+                jQuery('#editInitialPayment').prop( "checked", true );
+            }else {
+                jQuery('#editInitialPayment').prop( "checked", false );
+            }
         } else {
             // Alert &  exit
         }

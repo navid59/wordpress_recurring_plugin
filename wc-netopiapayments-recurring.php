@@ -2,9 +2,10 @@
 add_action( 'admin_enqueue_scripts', 'enqueue_and_register_ntp_recurring_admin_js_scripts' );
 function enqueue_and_register_ntp_recurring_admin_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/mdb.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
-    wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/style.css',array(),'3.3.0' ,false);
+    wp_enqueue_style( 'ntp_recurring_admin_css_fontawesome', plugin_dir_url( __FILE__ ) . 'css/fontawesome/css/all.css',array(),'2.0' ,false);
+    // wp_enqueue_style( 'ntp_recurring_admin_css_mdb', plugin_dir_url( __FILE__ ) . 'css/mdb.css',array(),'2.0' ,false);
+    wp_enqueue_style( 'ntp_recurring_admin_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
+    wp_enqueue_style( 'ntp_recurring_admin_css_custom', plugin_dir_url( __FILE__ ) . 'css/style.css',array(),'3.0.0' ,false);
 
     
     wp_register_script( 'ntp_recurring_admin_script-popper', plugin_dir_url( __FILE__ ) . 'js/popper.js', array('jquery'), '1.0.0', true );
