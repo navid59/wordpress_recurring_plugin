@@ -14,7 +14,26 @@ class recurringAdmin extends recurring {
 
     function getSubscriptionList(){
         global $wpdb;
-        $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        /**
+         * Just Template 
+         * SELECT s.id, s.Subscription_Id, s.First_Name, s.Last_Name, s.Email, s.Tel, s.UserID, p.Title, p.Amount, s.StartDate, s.status FROM wp_ntp_subscriptions as s   INNER JOIN wp_ntp_plans as p WHERE s.PlanId = p.Plan_Id
+         */
+        // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        $subscriptions = $wpdb->get_results("SELECT s.id,
+                                                    s.Subscription_Id,
+                                                    s.First_Name,
+                                                    s.Last_Name,
+                                                    s.Email,
+                                                    s.Tel,
+                                                    s.UserID,
+                                                    p.Title,
+                                                    p.Amount,
+                                                    s.StartDate,
+                                                    s.status
+                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+                                                INNER JOIN wp_ntp_plans as p 
+                                                WHERE s.PlanId = p.Plan_Id 
+                                                ORDER BY s.CreatedAt DESC", "ARRAY_A");
         if(count($subscriptions)) {
             $errorCode = "00";
             $errorMsg = "";
@@ -46,7 +65,7 @@ class recurringAdmin extends recurring {
 
     function getPlanList(){
         global $wpdb;
-        $plans = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_plans WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        $plans = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_plans WHERE `Status` = 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
         if(count($plans)) {
             $errorCode = "00";
             $errorMsg = "";
@@ -169,6 +188,7 @@ function recurring_addPlan() {
                 'Plan_Id'         => $jsonResultData['data']['planId'],
                 'Title'           => $jsonResultData['data']['Title'],
                 'Amount'          => $_POST['Amount'],
+                'Currency'        => $_POST['Currency'],
                 'Description'     => $_POST['planDescription'],
                 'Recurrence_Type' => $_POST['RecurrenceType'],
                 'Frequency_Type'  => $_POST['FrequencyType'],

@@ -6,14 +6,20 @@ jQuery(document).ready(function () {
 
 function subscriptionHistory(subscriptionId) {
     alert('History of subscription with ID :' + subscriptionId);
+    jQuery('#subscriberHistorytModal').modal('toggle');
+    jQuery('#subscriberHistorytModal').modal('show');
 }
 
 function subscriptionDetails(subscriptionId) {
     alert('Details of subscription with ID :' + subscriptionId);
+    jQuery('#subscriberInfotModal').modal('toggle');
+    jQuery('#subscriberInfotModal').modal('show');
 }
 
-function subscriptionNextPayment(subscriptionId) {
-    alert('NextPayment of subscription with ID :' + subscriptionId);
+function subscriptionNextPayment(subscriptionId, subscriberName) {
+    jQuery('#subscriberName').html(subscriberName);
+    jQuery('#nextPaymentModal').modal('toggle');
+    jQuery('#nextPaymentModal').modal('show');
 }
 
 function delPlan(planId) {

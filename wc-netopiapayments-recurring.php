@@ -102,7 +102,6 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['plan']['pageTitle'], $this->menuItems['plan']['menuTitle'], $this->menuItems['plan']['capability'], $this->menuItems['plan']['menuSlug'], $this->menuItems['plan']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
-        add_submenu_page($this->slug, 'Tempory test title', 'Tempory test', $this->menuItems['temporary']['capability'], 'recurring_test', $this->menuItems['temporary']['callback'] );
     }
 
 
@@ -434,7 +433,12 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
             </h2>
             
-            <?php include_once('include/subscriptions.php');?>
+            <?php 
+            include_once('include/subscriptions.php');
+            include_once('include/partial/modalNextPayment.php');
+            include_once('include/partial/modalSubscriberInfo.php');
+            include_once('include/partial/modalSubscriberHistory.php');
+            ?>
         <div>    
         <?php
     }

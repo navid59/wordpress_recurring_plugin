@@ -18,13 +18,14 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$subscription['Email']);
             printf("<td>%1s</td>",$subscription['Tel']);
             printf("<td>%1s</td>",$subscription['UserID']);
-            printf("<td>%1s</td>",$subscription['PlanId']);
-            $nextPaymentDate = new DateTime($subscription['NextPaymentDate']); 
-            printf("<td>%1s</td>",$nextPaymentDate->format('Y-m-d'));
-            printf("<td>%1s</td>",$a->getStatusStr('subscription',$subscription['Status']));
+            printf("<td>%1s</td>",$subscription['Title']);
+            printf("<td>%1s</td>",$subscription['Amount']);
+            printf("<td>%1s</td>",$a->getStatusStr('subscription',$subscription['status']));
+            $tartDate = new DateTime($subscription['StartDate']); 
+            printf("<td>%1s</td>",$tartDate->format('Y-m-d'));
             printf('<td><button type="button" class="btn btn-secondary" onclick="subscriptionHistory('.$subscription['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-history"></i></button>');
             printf('<button type="button" class="btn btn-success" onclick="subscriptionDetails('.$subscription['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-info"></i></button>');
-            printf('<button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscription['Subscription_Id'].')"><i class="fa fa-credit-card"></i></button></td>');
+            printf('<button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscription['Subscription_Id'].',\''.$subscription['First_Name'].' '.$subscription['Last_Name'].'\')"><i class="fa fa-credit-card"></i></button></td>');
         echo "</tr>";
     }
 }

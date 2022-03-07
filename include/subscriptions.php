@@ -9,6 +9,7 @@
             <th><?php echo __('Phone','ntpRp');?></th>
             <th><?php echo __('UserID','ntpRp');?></th>
             <th><?php echo __('Plan','ntpRp');?></th>
+            <th><?php echo __('Amount','ntpRp');?></th>
             <th><?php echo __('Status','ntpRp');?></th>
             <th><?php echo __('Start At','ntpRp');?></th>
             <th><?php echo __('Action','ntpRp');?></th>
@@ -25,6 +26,7 @@
             <th><?php echo __('Phone','ntpRp');?></th>
             <th><?php echo __('UserID','ntpRp');?></th>
             <th><?php echo __('Plan','ntpRp');?></th>
+            <th><?php echo __('Amount','ntpRp');?></th>
             <th><?php echo __('Status','ntpRp');?></th>
             <th><?php echo __('Start At','ntpRp');?></th>
             <th><?php echo __('Action','ntpRp');?></th>
