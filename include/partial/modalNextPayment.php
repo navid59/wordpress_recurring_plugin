@@ -17,11 +17,14 @@
                 </strong>
               </div>        
               <div>
-                <h5>Date : YYYY</h5>
-                <h5>Status : xxxx</h5>
+                <h5><?php echo __('Date', 'ntpRp'); ?> <span id="nextPaymentDate"> - </span></h5>
+                <h5><?php echo __('Status', 'ntpRp'); ?> <span id="nextPaymentStatus"> - </span></h5>
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+              <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                  <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
               </div>
             </div>
         </div>

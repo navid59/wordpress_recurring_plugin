@@ -67,6 +67,31 @@ function subscriptionDetails(subscriptionId) {
 
 function subscriptionNextPayment(subscriptionId, subscriberName) {
     jQuery('#subscriberName').html(subscriberName);
+
+
+    getNextPaymentData = {
+        action : 'getNextPayment',
+        subscriptionId: subscriptionId,
+    }
+    jQuery.post(ajaxurl, getNextPaymentData, function(response){
+        jsonResponse = JSON.parse(response);
+        console.log(jsonResponse);
+        if(jsonResponse.status) {
+            if(jsonResponse.data.isValid) {
+                jQuery("#nextPaymentStatus").html('Active');
+            } else {
+                jQuery("#nextPaymentStatus").html('Inactive');
+            }
+            
+            jQuery("#nextPaymentDate").html(jsonResponse.data.nextPayment);
+        } else {
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(jsonResponse.msg);
+            jQuery('#msgBlock').addClass('show');
+        }
+    });
+
     jQuery('#nextPaymentModal').modal('toggle');
     jQuery('#nextPaymentModal').modal('show');
 }

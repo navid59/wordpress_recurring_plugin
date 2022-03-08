@@ -196,6 +196,20 @@ class recurringAdmin extends recurring {
         $resultData = self::getData($url, $postData);
         return $resultData;
     }
+
+    function getNextPayment($formData){
+        $url = BASE_URL_RECURRING_API.'schedule/payment';
+        $data = array(
+            'Signature' => self::getSignature(),
+            "SubscriptionId" => $formData['SubscriptionId']
+        );
+    
+        $postData = json_encode($data);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
+
 }
 
 function recurring_addPlan() {
@@ -429,5 +443,26 @@ function getInfinitSubscribtion() {
 }
 
 add_action('wp_ajax_getInfinitSubscribtion', 'getInfinitSubscribtion');
+
+function recurring_getNextPayment() {
+    
+    $a = new recurringAdmin();
+    $nextPaymentData = array(
+            "SubscriptionId" => $_POST['subscriptionId']+0
+    );
+
+    $jsonResultData = $a->getNextPayment($nextPaymentData);
+    
+    $mySimulatedResult = array(
+            'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
+            'msg'=> $jsonResultData['message'],
+            'data' =>  $jsonResultData
+            );
+    echo json_encode($mySimulatedResult);
+    die();
+}
+add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
+
+
 
 ?>
