@@ -19,6 +19,12 @@ function enqueue_and_register_ntp_recurring_admin_js_scripts(){
 
     wp_register_script( 'ntp_recurring_admin_script-datatables', plugin_dir_url( __FILE__ ) . 'js/addons/datatables.min.js', array(), '1.0.0', true );
     wp_enqueue_script( 'ntp_recurring_admin_script-datatables' );
+    
+    wp_register_script( 'ntp_recurring_admin_script-jquery-dataTables', plugin_dir_url( __FILE__ ) . 'js/jquery.dataTables.js', array(), '1.0.0', true );
+    wp_enqueue_script( 'ntp_recurring_admin_script-jquery-dataTables' );
+    
+    wp_register_script( 'ntp_recurring_admin_script-dataTables-scroller', plugin_dir_url( __FILE__ ) . 'js/dataTables.scroller.js', array(), '1.0.0', true );
+    wp_enqueue_script( 'ntp_recurring_admin_script-dataTables-scroller' );
 
     wp_register_script( 'ntp_recurring_admin_script', plugin_dir_url( __FILE__ ) . 'js/recurringAdmin.js', array('jquery'), '1.0.0', true );
     wp_enqueue_script( 'ntp_recurring_admin_script' );
@@ -94,7 +100,16 @@ class NetopiapaymentsRecurringPayment extends recurring
             'pageTitle' => "Report management",
             'menuTitle' => 'Reports',
             'menuSlug' => 'recurring_repport'
-        )            
+        ),
+        'subscriptionAjax'=> array(
+            'capability' => 'manage_options',
+            'callback' => array( $this, 'subscription_UI_Ajax' ),
+            'icon' => 'dashicons-format-status',
+            'position' => 104,
+            'pageTitle' => "Subscription management with scrolling infinite",
+            'menuTitle' => 'Subscription Infinite',
+            'menuSlug' => 'recurring_subscription_ajax'
+        )           
     );
 
 
@@ -102,6 +117,7 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['plan']['pageTitle'], $this->menuItems['plan']['menuTitle'], $this->menuItems['plan']['capability'], $this->menuItems['plan']['menuSlug'], $this->menuItems['plan']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
+        add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
     }
 
 
@@ -435,6 +451,27 @@ class NetopiapaymentsRecurringPayment extends recurring
             
             <?php 
             include_once('include/subscriptions.php');
+            include_once('include/partial/modalNextPayment.php');
+            include_once('include/partial/modalSubscriberInfo.php');
+            include_once('include/partial/modalSubscriberHistory.php');
+            ?>
+        <div>    
+        <?php
+    }
+
+    public function subscription_UI_Ajax() {
+        ?>
+        <div class="wrap">
+            <div class="row">
+                <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
+                <span style="font-size: xx-large"><?=$this->menuItems['subscriptionAjax']['pageTitle'] ?></span>
+            </div>
+            <h2 class="nav-tab-wrapper">
+                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription infinit list','ntpRp')?></a>
+            </h2>
+            
+            <?php 
+            include_once('include/subscriptionsInfinite.php');
             include_once('include/partial/modalNextPayment.php');
             include_once('include/partial/modalSubscriberInfo.php');
             include_once('include/partial/modalSubscriberHistory.php');

@@ -50,6 +50,44 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
+    function getSubscriptionInfinite(){
+        global $wpdb;
+        /**
+         * Just Template 
+         * SELECT s.id, s.Subscription_Id, s.First_Name, s.Last_Name, s.Email, s.Tel, s.UserID, p.Title, p.Amount, s.StartDate, s.status FROM wp_ntp_subscriptions as s   INNER JOIN wp_ntp_plans as p WHERE s.PlanId = p.Plan_Id
+         */
+        // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        $subscriptions = $wpdb->get_results("SELECT s.id,
+                                                    s.Subscription_Id,
+                                                    s.First_Name,
+                                                    s.Last_Name,
+                                                    s.Email,
+                                                    s.Tel,
+                                                    s.UserID,
+                                                    p.Title,
+                                                    p.Amount,
+                                                    s.StartDate,
+                                                    s.status
+                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+                                                INNER JOIN wp_ntp_plans as p 
+                                                WHERE s.PlanId = p.Plan_Id 
+                                                ORDER BY s.CreatedAt DESC", "ARRAY_A");
+        if(count($subscriptions)) {
+            $errorCode = "00";
+            $errorMsg = "";
+        } else {
+            $errorCode = "11";
+            $errorMsg = __('There is no any subscription, yet','ntpRp');
+        }
+    
+        $resultData = array(
+            "code" => $errorCode,
+            "message" => $errorMsg,
+            "members" => $subscriptions
+            );
+        return $resultData;
+    }
+
     function getPlanListLive(){
         $url = BASE_URL_RECURRING_API.'plan/list';
         $data = array(
@@ -335,5 +373,65 @@ function getPlanInfo() {
 }
 
 add_action('wp_ajax_getPlanInfo', 'getPlanInfo');
+
+function getInfinitSubscribtion() {
+    $start = $_POST['start']; 
+    $limit = $_POST['limit']; 
+    global $wpdb;
+        /**
+         * Query by pagination 
+         * 
+         * 	{ "data": "First_Name" },
+		 * 	{ "data": "Last_Name" },
+		 * 	{ "data": "Email" },
+		 * 	{ "data": "Tel" },
+		 * 	{ "data": "UserID" },
+		 * 	{ "data": "Title" },
+		 * 	{ "data": "Amount" },
+		 * 	{ "data": "Status" },
+		 * 	{ "data": "StartDate" },
+		 * 	{ "data": "Subscription_Id" }
+         * 
+         * 
+         */
+        $subscriptions = $wpdb->get_results("SELECT s.id,
+                                                    s.First_Name,
+                                                    s.Last_Name,
+                                                    s.Email,
+                                                    s.Tel,
+                                                    s.UserID,
+                                                    p.Title,
+                                                    p.Amount,
+                                                    s.Status,
+                                                    s.StartDate,
+                                                    s.Subscription_Id
+                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+                                                INNER JOIN wp_ntp_plans as p WHERE s.PlanId = p.Plan_Id 
+                                                ORDER BY s.id DESC LIMIT ".$start.",".$limit, "ARRAY_A");
+
+        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  ".$wpdb->prefix . "ntp_subscriptions", "ARRAY_A");
+
+    $resultData = array (
+        'recordsTotal' => $subscriptionsTotalCount[0]['count'],
+        'data' => $subscriptions
+      );
+
+    echo json_encode($resultData);
+    die();
+}
+
+add_action('wp_ajax_getInfinitSubscribtion', 'getInfinitSubscribtion');
+
+
+
+function getSubscribtionCount() {
+    global $wpdb;
+        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ", "ARRAY_A");
+        echo ($subscriptionsTotalCount[0]['count']);
+        die();
+}
+
+
+add_action('wp_ajax_getSubscribtionCount', 'getSubscribtionCount');
 
 ?>
