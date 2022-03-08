@@ -21,7 +21,7 @@ jQuery(document).ready(function () {
 
             // Get Subscriptions by AJAX 
             jQuery.post(ajaxurl, ntpPluginSetting, function(response){
-                console.log(ntpPluginSetting.action + ' | start: ' + ntpPluginSetting.start + ' | limit : '+ ntpPluginSetting.limit);
+                // console.log(ntpPluginSetting.action + ' | start: ' + ntpPluginSetting.start + ' | limit : '+ ntpPluginSetting.limit);
                 const responseObj = JSON.parse(response);
    
                 callback( {
@@ -44,7 +44,7 @@ jQuery(document).ready(function () {
 			{ "data": "Amount" },
 			{ "data": "Status" },
 			{ "data": "StartDate" },
-			{ "data": "Subscription_Id" }
+			{ "data": "Action" },
 		]
 	} );
  
@@ -100,7 +100,6 @@ function delPlan(planId) {
 
         if(acceptedConditions) {
             jQuery.post(ajaxurl, data, function(response){
-                console.log(data.action);
                 jsonResponse = JSON.parse(response);
                 if(jsonResponse.status) {
                     jQuery('#msgBlock').addClass('alert-success');
@@ -118,7 +117,6 @@ function delPlan(planId) {
                     jQuery('#msgContent').html(jsonResponse.msg);
                     jQuery('#msgBlock').addClass('show');
                 }
-                console.log(jsonResponse);
             });
         } else {
             jQuery('#msgBlock').addClass('alert-warning');
@@ -138,7 +136,6 @@ function editPlan(planId) {
         planIdentity: planId,
     }
     jQuery.post(ajaxurl, getPlanData, function(response){
-        console.log(getPlanData.action);
         jsonResponse = JSON.parse(response);
         if(jsonResponse.status) {
             jQuery("#editPlanTitile").val(jsonResponse.data.Title);
@@ -202,9 +199,7 @@ function editPlan(planId) {
         
         if(acceptedConditions) {
             jQuery.post(ajaxurl, data, function(response){
-                console.log(data.action);
                 jsonResponse = JSON.parse(response);
-                console.log(jsonResponse);
                 if(jsonResponse.status) {
                     jQuery('#editMsgBlock').addClass('alert-success');
                     jQuery('#editAlertTitle').html('Congratulation!');
@@ -287,7 +282,6 @@ jQuery("#recurring-plan-form").submit(function (e) {
     };
 
     jQuery.post(ajaxurl, data, function(response){
-        console.log(data.action);
         jsonResponse = JSON.parse(response);
         if(jsonResponse.status) {
             jQuery('#msgBlock').addClass('alert-success');

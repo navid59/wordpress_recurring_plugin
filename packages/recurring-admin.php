@@ -411,6 +411,14 @@ function getInfinitSubscribtion() {
 
         $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  ".$wpdb->prefix . "ntp_subscriptions", "ARRAY_A");
 
+
+    for ($i = 0 ; $i < count($subscriptions) ; $i++) {
+        $subscriptions[$i]['Action'] = '
+        <button type="button" class="btn btn-secondary" onclick="subscriptionHistory('.$subscriptions[$i]['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
+        <button type="button" class="btn btn-success" onclick="subscriptionDetails('.$subscriptions[$i]['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
+        <button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscriptions[$i]['Subscription_Id'].',\''.$subscriptions[$i]['First_Name'].' '.$subscriptions[$i]['Last_Name'].'\')"><i class="fa fa-credit-card"></i></button>';
+    }
+    
     $resultData = array (
         'recordsTotal' => $subscriptionsTotalCount[0]['count'],
         'data' => $subscriptions
@@ -421,17 +429,5 @@ function getInfinitSubscribtion() {
 }
 
 add_action('wp_ajax_getInfinitSubscribtion', 'getInfinitSubscribtion');
-
-
-
-function getSubscribtionCount() {
-    global $wpdb;
-        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ", "ARRAY_A");
-        echo ($subscriptionsTotalCount[0]['count']);
-        die();
-}
-
-
-add_action('wp_ajax_getSubscribtionCount', 'getSubscribtionCount');
 
 ?>
