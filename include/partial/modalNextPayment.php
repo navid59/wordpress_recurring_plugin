@@ -17,8 +17,8 @@
                 </strong>
               </div>        
               <div>
-                <h5><?php echo __('Date', 'ntpRp'); ?> <span id="nextPaymentDate"> - </span></h5>
-                <h5><?php echo __('Status', 'ntpRp'); ?> <span id="nextPaymentStatus"> - </span></h5>
+                <h5><?php echo __('Date', 'ntpRp'); ?> : <span id="nextPaymentDate"> - </span></h5>
+                <h5><?php echo __('Status', 'ntpRp'); ?> : <span id="nextPaymentStatus"> - </span></h5>
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

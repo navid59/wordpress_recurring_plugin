@@ -60,7 +60,34 @@ function subscriptionHistory(subscriptionId) {
 }
 
 function subscriptionDetails(subscriptionId) {
-    alert('Details of subscription with ID :' + subscriptionId);
+    subscriptionDetailData = {
+        action : 'getSubscriptionDetail',
+        subscriptionId: subscriptionId
+    }
+    jQuery.post(ajaxurl, subscriptionDetailData, function(response){
+        // console.log(response);
+        jsonResponse = JSON.parse(response);
+        console.log(jsonResponse);
+        if(jsonResponse.code == "00") {
+            jQuery("#SubscriberInfo_FirstaName").html(jsonResponse.data[0]['First_Name']);
+            jQuery("#SubscriberInfo_LastName").html(jsonResponse.data[0]['Last_Name']);
+            jQuery("#SubscriberInfo_UserId").html(jsonResponse.data[0]['UserID']);
+            jQuery("#SubscriberInfo_Tel").html(jsonResponse.data[0]['Tel']);
+            jQuery("#SubscriberInfo_Email").html(jsonResponse.data[0]['Email']);
+            jQuery("#SubscriberInfo_Address").html(jsonResponse.data[0]['Address']);
+            jQuery("#SubscriberInfo_City").html(jsonResponse.data[0]['City']);
+            jQuery("#SubscriberInfo_PlanTitle").html(jsonResponse.data[0]['Title']);
+            jQuery("#SubscriberInfo_PlanAmount").html(jsonResponse.data[0]['Amount']);
+            jQuery("#SubscriberInfo_StartDate").html(jsonResponse.data[0]['StartDate']);
+            jQuery("#SubscriberInfo_Status").html(jsonResponse.data[0]['status']);
+        } else {
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(jsonResponse.msg);
+            jQuery('#msgBlock').addClass('show');
+        }
+    });
+
     jQuery('#subscriberInfotModal').modal('toggle');
     jQuery('#subscriberInfotModal').modal('show');
 }

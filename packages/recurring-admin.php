@@ -463,6 +463,45 @@ function recurring_getNextPayment() {
 }
 add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
 
+function recurring_getSubscriptionDetail(){
+    global $wpdb;
+    $subscriptionId = $_POST['subscriptionId'];
+    $subscription = $wpdb->get_results("SELECT s.id,
+                                                s.Subscription_Id,
+                                                s.First_Name,
+                                                s.Last_Name,
+                                                s.Email,
+                                                s.Tel,
+                                                s.UserID,
+                                                s.Address,
+                                                s.City,
+                                                p.Title,
+                                                p.Amount,
+                                                s.StartDate,
+                                                s.status
+                                            FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+                                            INNER JOIN wp_ntp_plans as p 
+                                            ON s.PlanId = p.Plan_Id 
+                                            WHERE s.Subscription_Id = $subscriptionId
+                                            LIMIT 1", "ARRAY_A");
+    if(count($subscription)) {
+        $a = new recurringAdmin();
+        $subscription[0]['status'] = $a->getStatusStr('subscription', $subscription[0]['status']);
+        $errorCode = "00";
+        $errorMsg = "";
+    } else {
+        $errorCode = "11";
+        $errorMsg = __('Subscription is not found','ntpRp');
+    }
 
+    $resultData = array(
+        "code" => $errorCode,
+        "message" => $errorMsg,
+        "data" => $subscription
+        );
+    echo json_encode($resultData);
+    die();
+}
+add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
 
 ?>

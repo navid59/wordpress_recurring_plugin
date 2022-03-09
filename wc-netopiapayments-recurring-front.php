@@ -157,7 +157,7 @@ function recurringModal($planId , $button, $title) {
     $isEnable = count($planData) && $planData['Status'] === 1 ? '' : 'disabled';
 
     /** Check if user already exist */
-    $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.'ntp_subscriptions'."` WHERE `Email` LIKE '".$current_user->user_email."' and `Status` <> 2 LIMIT 1");
+    $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.'ntp_subscriptions'."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
     if(count($subscription)) {
             /** Display Unsubscription button & Modal for Unsubscribe */
             $unsubscriptionButtonTitile = __('Unsubscription','ntpRp');
