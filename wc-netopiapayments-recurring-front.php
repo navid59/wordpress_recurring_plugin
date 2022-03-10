@@ -25,6 +25,24 @@ add_action('wp_enqueue_scripts', 'frontResource');
 function recurring_addSubscription() {
     global $wpdb;
 
+    $Member = array (
+        "Name" => $_POST['Name'],
+        "LastName" => $_POST['LastName'],
+        "UserID" => $_POST['UserID'],
+        "Pass" => $_POST['Pass'],
+        "Email" => $_POST['Email'],
+        "Address" => $_POST['Address'],
+        "City" => $_POST['City'],
+        "Tel" => strval($_POST['Tel'])
+    );
+
+    /**
+     *  Authenticate User
+     *  If not exist will be create
+     *  */
+    authenticateUser($Member); 
+
+
     $obj3DS = json_decode(stripslashes($_POST['ThreeDS']));
     $arr3DS = (array)$obj3DS;
     
@@ -32,13 +50,13 @@ function recurring_addSubscription() {
     $a = new recurringFront();
     $subscriptionData = array(
         "Member" => array (
-            "UserID" => $_POST['UserID'],
-            "Name" => $_POST['Name'],
-            "LastName" => $_POST['LastName'],
-            "Email" => $_POST['Email'],
-            "Address" => $_POST['Address'],
-            "City" => $_POST['City'],
-            "Tel" => strval($_POST['Tel'])
+            "UserID" => $Member['UserID'],
+            "Name" => $Member['Name'],
+            "LastName" => $Member['LastName'],
+            "Email" => $Member['Email'],
+            "Address" => $Member['Address'],
+            "City" => $Member['City'],
+            "Tel" => strval($Member['Tel'])
         ),
         "Merchant" => array(
             "Signature" => $a->getSignature(),
@@ -91,6 +109,7 @@ function recurring_addSubscription() {
             )
         );
     }
+
 
     $mySimulatedResult = array(
         'status'=> $jsonResultData['code'] === "00" ? true : false,
@@ -155,6 +174,8 @@ function recurringModal($planId , $button, $title) {
     /** Get Plan Info */
     $planData = planInfo($planId);
     $isEnable = count($planData) && $planData['Status'] === 1 ? '' : 'disabled';
+    $showUserPassEmail = $current_user->ID != 0 ? 'readonly disabled' : '';
+    $showUserPassEmailDiv = $current_user->ID != 0 ? 'd-none' : '';
 
     /** Check if user already exist */
     $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.'ntp_subscriptions'."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
@@ -281,22 +302,29 @@ function recurringModal($planId , $button, $title) {
                                             </div>
                                         </div>
                                         
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
+                                        <div class="row '.$showUserPassEmailDiv.'" >
+                                            <div class="col-md-4 mb-3">
                                                 <label for="username">'.__('Username','ntpRp').'</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                    <span class="input-group-text">@</span>
+                                                        <span class="input-group-text">@</span>
                                                     </div>
-                                                    <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required>
-                                                <div class="invalid-feedback" style="width: 100%;">
-                                                Your username is required.
+                                                    <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required '.$showUserPassEmail.'>
+                                                    <div class="invalid-feedback" style="width: 100%;">
+                                                    Your username is required.
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="password">'.__('Password','ntpRp').'</label>
+                                                <input type="password" class="form-control" id="password" required '.$showUserPassEmail.'>
+                                                <div class="invalid-feedback">
+                                                    Please enter a valid password.
+                                                </div>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-4 mb-3">
                                                 <label for="email">'.__('Email','ntpRp').'</label>
-                                                <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'">
+                                                <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required '.$showUserPassEmail.'>
                                                 <div class="invalid-feedback">
                                                     Please enter a valid email address for shipping updates.
                                                 </div>
@@ -340,27 +368,6 @@ function recurringModal($planId , $button, $title) {
                                                 </div>
                                             </div>                        
                                         </div>
-
-                                        <!--
-                                        <hr class="mb-4">
-                                        <h4 class="mb-3">'.__('Duration').'</h4>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label for="firstName">'.__('Subscription start date','ntpRp').'</label>
-                                                <input type="date" class="form-control" id="StartDate" placeholder="" value="" required>
-                                                <div class="invalid-feedback">
-                                                    Valid start date is required.
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label for="firstName">'.__('Subscription end date','ntpRp').'</label>
-                                                <input type="date" class="form-control" id="EndDate" placeholder="" value="" disabled>
-                                                <div class="invalid-feedback">
-                                                    Valid end date is required.
-                                                </div>
-                                            </div>
-                                        </div>
-                                        -->
 
                                         <hr class="mb-4">
                                         <h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
@@ -515,4 +522,54 @@ function planInfo($planId) {
     } 
     return $planData;
 }
+
+function authenticateUser($userInfo) {
+    $current_user = wp_get_current_user();
+    if($current_user->ID == 0) {
+        // Create User
+        createUser($userInfo);
+    } else {
+        if($userInfo['UserID'] != $current_user->user_login || $userInfo['Email'] != $current_user->user_email ) {
+            $authenticateResult = array(
+                'status'=> false,
+                'msg'=> __('Username or Email is not correct!', 'ntpRp'),
+                );
+            echo json_encode($authenticateResult);
+            wp_die();
+        }
+    }
+}
+
+
+function createUser($userInfo) {
+    // $userInfo['UserID'], $userInfo['Email'], $userInfo['Pass']
+    if(email_exists($userInfo['Email']) || username_exists($userInfo['UserID'])) {
+        $userExist = array(
+            'status'=> false,
+            'msg'=> email_exists($userInfo['Email']) && username_exists($userInfo['UserID']) ? __('This user is already exist! Please Signin first.', 'ntpRp') : __('The user or email are already exist!.', 'ntpRp'),
+            );
+        echo json_encode($userExist);
+        wp_die();
+    } else {
+        $createdUserID = wp_create_user( $userInfo['UserID'], $userInfo['Pass'], $userInfo['Email'] );
+        if($createdUserID) {
+            update_user_meta( $createdUserID, "first_name",  $userInfo['Name'] ) ;
+            update_user_meta( $createdUserID, "last_name",  $userInfo['LastName'] ) ;
+            update_user_meta( $createdUserID, "billing_country",  'RO' ) ;
+            update_user_meta( $createdUserID, "billing_state",  $userInfo['City'] ) ;
+            update_user_meta( $createdUserID, "billing_address_1",  $userInfo['Address'] ) ;
+            update_user_meta( $createdUserID, "billing_phone",  $userInfo['Tel'] ) ;
+
+            // Login auto the new user to wordpress
+            clean_user_cache($createdUserID);
+            wp_clear_auth_cookie();
+            wp_set_current_user($createdUserID);
+            wp_set_auth_cookie($createdUserID, true, false);
+
+            $user = get_user_by('id', $createdUserID);
+            update_user_caches($user);
+        }
+    }
+}
+
 ?>

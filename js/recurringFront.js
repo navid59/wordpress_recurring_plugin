@@ -55,6 +55,7 @@ function addSubscription() {
 
     var PlanID = jQuery("#planID").val();
     var UserID = jQuery("#username").val();
+    var Pass = jQuery("#password").val();
     var Name = jQuery("#firstName").val();
     var LastName = jQuery("#lastName").val();
     var Email = jQuery("#email").val();
@@ -77,6 +78,7 @@ function addSubscription() {
         action : 'addNewSubscription',
         PlanID : PlanID,
         UserID : UserID,
+        Pass : Pass,
         Name : Name,
         LastName : LastName,
         Email : Email,
