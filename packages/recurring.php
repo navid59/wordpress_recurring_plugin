@@ -14,6 +14,13 @@
             return get_site_url()."/".get_option($this->slug.'_notify_url', array());
         }
 
+        function getLoginUrl() {
+            global $wpdb;
+            $loginUrl =  get_option($this->slug.'_login_url', array());
+            $baseURL = get_site_url();
+            return $loginUrl !== "" ? $baseURL.'/'.$loginUrl : $baseURL.'/login';
+        }
+
         function getData($url, $requestData) {
             $authenticationToken = $this->getApiKey();
 

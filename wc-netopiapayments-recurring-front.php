@@ -544,9 +544,11 @@ function authenticateUser($userInfo) {
 function createUser($userInfo) {
     // $userInfo['UserID'], $userInfo['Email'], $userInfo['Pass']
     if(email_exists($userInfo['Email']) || username_exists($userInfo['UserID'])) {
+        $obj = new recurringFront();
+        $loginUrlLink = $obj->getLoginUrl();
         $userExist = array(
             'status'=> false,
-            'msg'=> email_exists($userInfo['Email']) && username_exists($userInfo['UserID']) ? __('This user is already exist! Please Signin first.', 'ntpRp') : __('The user or email are already exist!.', 'ntpRp'),
+            'msg'=> email_exists($userInfo['Email']) && username_exists($userInfo['UserID']) ? __('This user is already exist! Please Signin first.','ntpRp').'<a href="'.$loginUrlLink.'">'.__('Sign In here', 'ntpRp').'</a>' : __('The user or email are already exist!.', 'ntpRp'),
             );
         echo json_encode($userExist);
         wp_die();

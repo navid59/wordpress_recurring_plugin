@@ -124,8 +124,8 @@ class NetopiapaymentsRecurringPayment extends recurring
 
 
     public function recurring_notify_section() {
-        add_settings_section( 'urls', 'Merchant Notify', array( $this, 'section_callback' ), 'notify_management' );
-        add_settings_section( 'template', 'Subscriber Notify', array( $this, 'section_callback' ), 'notify_management' );
+        add_settings_section( 'urls', 'URLs & Links', array( $this, 'section_callback' ), 'notify_management' );
+        add_settings_section( 'template', 'Templates', array( $this, 'section_callback' ), 'notify_management' );
     }
 
     public function recurring_notify_fields() {
@@ -153,6 +153,17 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'helper' => '',
                 'supplemental' => '',
                 'default' => 'maybe'
+            ),
+            array(
+                'uid' => $this->slug.'_login_url',
+                'label' => 'Subscription login url',
+                'section' => 'urls',
+                'type' => 'link',
+                'options' => false,
+                'placeholder' => 'The login URL for subscribers',
+                'helper' => '',
+                'supplemental' => 'ex. /my-account',
+                'default' => ''
             )
         );
 
@@ -223,8 +234,8 @@ class NetopiapaymentsRecurringPayment extends recurring
 
     public function recurring_setup_section() {
         add_settings_section( 'general', 'General section ', array( $this, 'section_callback' ), 'netopia_recurring' );
-        add_settings_section( 'conditions', 'Subscription conditions', array( $this, 'section_callback' ), 'netopia_recurring' );
-        add_settings_section( 'declaration', 'Subscription declaration', array( $this, 'section_callback' ), 'netopia_recurring' );
+        add_settings_section( 'mood', 'Plugin work mood', array( $this, 'section_callback' ), 'netopia_recurring' );
+        add_settings_section( 'declaration', 'Term & Condition Declaration', array( $this, 'section_callback' ), 'netopia_recurring' );
     }
 
     public function recurring_setup_fields() {
@@ -252,18 +263,17 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => ''
             ),
             array(
-                'uid' => $this->slug.'_conditions',
-                'label' => '',
-                'section' => 'conditions',
-                'type' => 'checkbox',
+                'uid' => $this->slug.'_mood',
+                'label' => 'MOOD Not implimented yet!!!',
+                'section' => 'mood',
+                'type' => 'radio',
                 'options' => array(
-                    'conditions_description' => __('Declare that there is a clear and complete description of any kind of subscription plan displayed in website/application'),
-                    'conditions_price_currency' => __('Declare that the prices and currency are clear displayed for any subscription'),
-                    'conditions_modify_info' => __('Declare that, the any kind of modification on the subscription plans will inform to subscribers as well'),
+                    'live' => __('Live Mood. By set as Live you define the plugin to work in production environment.'),
+                    'sandbox' => __('Sandbox Mood. By set as sandbox give you opurtunety to test the plugin in TEST MOOD, without actual payment.'),
                 ),
                 'helper' => '',
                 'supplemental' => '',
-                'default' => array()
+                'default' => array('sandbox')
             ),
             array(
                 'uid' => $this->slug.'_declaration',
