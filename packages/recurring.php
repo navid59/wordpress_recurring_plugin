@@ -14,6 +14,17 @@
             return get_site_url()."/".get_option($this->slug.'_notify_url', array());
         }
 
+        function getAccountPageSetting() {
+            $accountPageSubtitle = get_option($this->slug.'_account_subtitle', array());
+            $accountPageFirstParagraph = get_option($this->slug.'_account_paragraph_first', array());
+            $accountPageSecoundParagraph = get_option($this->slug.'_account_paragraph_secound', array());
+            return array(
+                "subtitle" => $accountPageSubtitle,
+                "firstParagraph" => $accountPageFirstParagraph,
+                "secoundParagraph" => $accountPageSecoundParagraph
+            );
+        }
+
         function getLoginUrl() {
             global $wpdb;
             $loginUrl =  get_option($this->slug.'_login_url', array());

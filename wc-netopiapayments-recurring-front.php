@@ -3,6 +3,9 @@
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
+ add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
+ add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
+ add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
 
  function enqueue_and_register_ntp_recurring_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
@@ -16,7 +19,7 @@
 
  function frontResource() {
     wp_enqueue_script('my-jquery',plugin_dir_url( __FILE__ ).'js/recurringFront.js', array('jquery'));
-    wp_localize_script( 'my-jquery', 'myback', array('ajax_url' => admin_url( 'admin-ajax.php' )));
+    wp_localize_script( 'my-jquery', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
     }
 
 add_action('wp_enqueue_scripts', 'frontResource');
@@ -119,6 +122,24 @@ function recurring_addSubscription() {
     wp_die();
 }
 
+function recurring_getMyNextPayment() {
+    
+    $a = new recurringAdmin();
+    $nextPaymentData = array(
+            "SubscriptionId" => $_POST['subscriptionId']+0
+    );
+
+    $jsonResultData = $a->getNextPayment($nextPaymentData);
+    
+    $mySimulatedResult = array(
+            'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
+            'msg'=> $jsonResultData['message'],
+            'data' =>  $jsonResultData
+            );
+    echo json_encode($mySimulatedResult);
+    die();
+}
+
 function recurring_unsubscription() {
     global $wpdb;
   
@@ -153,6 +174,265 @@ function recurring_unsubscription() {
     wp_die();
 }
 
+function recurring_getMyAccountDetails() {
+    global $wpdb;
+
+    /** Get Current user Info */
+    $current_user = wp_get_current_user();
+
+    $mySimulatedResult = array(
+        'status' => true,
+        'msg'    => 'This is test Message',
+        'data'   => '<div class="row">
+                        <form class="needs-validation" novalidate>
+                        <h4 class="mb-3">'.__('Personal information').'</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName">'.__('First name','ntpRp').'</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="" value="'.$current_user->first_name.'" required>
+                                <div class="invalid-feedback">
+                                Valid first name is required.
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName">'.__('Last name','ntpRp').'</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="" value="'.$current_user->last_name.'" required>
+                                <div class="invalid-feedback">
+                                Valid last name is required.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row" >
+                            <div class="col-md-4 mb-3">
+                                <label for="username">'.__('Username','ntpRp').'</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required '.$showUserPassEmail.'>
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                    Your username is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="password">'.__('Password','ntpRp').'</label>
+                                <input type="password" class="form-control" id="password" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid password.
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email">'.__('Email','ntpRp').'</label>
+                                <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required '.$showUserPassEmail.'>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address for shipping updates.
+                                </div>
+                            </div>
+                        </div>
+                    
+                        
+                        <div class="mb-3">
+                            <label for="address">'.__('Address','ntpRp').'</label>
+                            <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
+                            <div class="invalid-feedback">
+                                Please enter your shipping address.
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label for="tel">'.__('Tel','ntpRp').'</label>
+                                <input type="text" class="form-control" id="tel" placeholder="" required>
+                                <div class="invalid-feedback">
+                                Phone required.
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="country">'.__('Country','ntpRp').'</label>
+                                <select class="custom-select d-block w-100" id="country" required>
+                                <option value="">Choose...</option>
+                                <option value="642">Romania</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                Please select a valid country.
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="state">'.__('State','ntpRp').'</label>
+                                <select class="custom-select d-block w-100" id="state" required>'
+                                .getJudete().
+                                '</select>
+                                <div class="invalid-feedback">
+                                Please provide a valid state.
+                                </div>
+                            </div>                        
+                        </div>
+                    
+                        </div>
+                        <hr class="mb-4">
+                        <button id="updateSubscriptionButton" class="btn btn-primary btn-lg btn-block" type="button" onclick="XXXXXXXXXXX(); return false;">Update</button>
+                    </form>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                            <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                        </div>
+                    </div>',
+        );
+
+
+    echo json_encode($mySimulatedResult);
+    wp_die();
+}
+
+function recurring_account_getMySubscriptions() {
+    global $wpdb;
+
+    /** Get Current user Info */
+    $current_user = wp_get_current_user();
+
+    $myPlans = $wpdb->get_results("SELECT p.id,
+                                          p.Plan_Id,
+                                          p.Title,
+                                          p.Amount,
+                                          p.Currency,
+                                          p.Description,
+                                          p.Recurrence_Type,
+                                          p.Frequency_Type,
+                                          p.Frequency_Value,
+                                          p.Grace_Period,
+                                          p.Initial_Paymen,
+                                          p.Status,
+                                          s.Subscription_Id,
+                                          s.First_Name,
+                                          s.Last_Name,
+                                          s.Status,
+                                          s.Subscription_Id
+                                    FROM  ".$wpdb->prefix . "ntp_plans as p 
+                                    LEFT JOIN ".$wpdb->prefix . "ntp_subscriptions as s 
+                                    ON p.Plan_Id = s.PlanId 
+                                    WHERE s.UserID = '".$current_user->user_login."' AND s.Status <> 2", "ARRAY_A");
+
+    $htmlThem = '';
+    if(count($myPlans)) {
+        foreach($myPlans as $plan) {
+            $htmlThem.= '<div class="col-sm-6 pb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                <h2 class="card-title">'.$plan['Title'].'</h2>
+                                <h3 class="card-title">'.$plan['Amount'].' '.$plan['Currency'].'</h3>
+                                <h4 class="card-title">'.$plan['Frequency_Type'].' / '.$plan['Frequency_Value'].'</h4>
+                                <p class="card-text">'.$plan['Description'].'</p>
+                                <button type="button" class="btn btn-primary" onclick="unsubscriptionMyAccount('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')" >
+                                    '.__('Unsubscription','ntpRp').'
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
+                                </div>
+                            </div>
+                        </div>';
+        }
+    } else {
+        $htmlThem = '<h4>'.__('You are not subscribe in any of our plans, yet!','ntpRp').'</h4>';
+        $htmlThem .= '<h5>'.__('Please, see the plan list!','ntpRp').'</h5>';
+    }
+    
+    $frontNextPayment = '<!-- Modal -->
+                        <div id="nextPaymentModal" class="modal fade" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h2 class="modal-title" id="nextPaymentModalLabel">'. __('Payment Schedule','ntpRp') .'</h2>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <div id="">
+                                        '. __('Next payment schedule for ', 'ntpRp').'
+                                        <strong>
+                                            <span id="subscriberName"></span>
+                                        </strong>
+                                    </div>        
+                                    <div>
+                                        <h5>'. __('Date', 'ntpRp') .' : <span id="nextPaymentDate"> - </span></h5>
+                                        <h5>'. __('Status', 'ntpRp').' : <span id="nextPaymentStatus"> - </span></h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                    </div>
+                                    <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                                        <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>';
+
+    $frontModalUnsubscriptionHtml ='<!-- Modal -->
+                                    <div class="modal fade" id="unsubscriptionMyAccountModal" tabindex="-1" aria-labelledby="unsubscriptionRecurringModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                                                    <h2 class="modal-title" id="unsubscriptionRecurringModalLabel">'.__('Unsubscription', 'ntpRp').'</h2>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">            
+                                                    <div class="row">
+                                                        <div class="col-md-12 order-md-1">
+                                                            <form id="unsubscription-form" class="needs-validation" novalidate>
+                                                                '.__('Are you sure to unsubscribe from ','ntpRp').'
+                                                                <span id="unsubscriptionMyAccountModalPlanTitle" > - </span> !?
+                                                                <br>
+                                                                '.__('To unsubscribe click on unsubscribe button.','ntpRp').' '.__('Otherwise close the window','ntpRp').'
+                                                                <hr>
+                                                                <input type="hidden" class="form-control" id="unsubscriptionMyAccountModalPlanId" value="" readonly>
+                                                                <input type="hidden" class="form-control" id="unsubscriptionMyAccountModalSubscriptionId" value="" readonly>
+                                                                <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscriptionMyAccount(); return false;">Unsubscribe</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <div id="loading" class="d-flex align-items-center fade">
+                                                        <strong>'.__('Loading...','ntpRp').'</strong>
+                                                        <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                                    </div>
+                                                    <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                                                        <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                                                    </div>                                
+                                                </div>
+                                                <div class="modal-footer">
+                                                    '.__('Supported by NETOPIA Payments').'
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ';
+
+    $frontModalAddSubscriptionHtml = '';
+                                        
+    $mySimulatedResult = array(
+        'status' => true,
+        'msg'    => '',
+        'data'   => '<div class="row">
+                        '.$htmlThem.'
+                    </div>
+                    <div class="row">
+                    '.$frontNextPayment.'
+                    '.$frontModalUnsubscriptionHtml.'
+                    '.$frontModalAddSubscriptionHtml.'
+                    </div>',
+        );
+
+
+    echo json_encode($mySimulatedResult);
+    wp_die();
+}
+
+
 function assignToRecurring ($data) {
         $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
         $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
@@ -163,6 +443,39 @@ function assignToRecurring ($data) {
             $str = ''; 
         } 
     return $str;
+}
+
+
+function ntpMyAccount() {
+    $obj = new recurringFront();
+    $accountPageContent = $obj->getAccountPageSetting();
+
+    $strHTML = '
+    <div class="">
+        <div class="row">
+            <div class="" id="">
+                <ul class="nav nav-pills nav-flush flex-column bg-light">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col" id="ntpAccount">
+                <h2 id="ntpAccountSubtitle">'.$accountPageContent['subtitle'].'</h2>
+                <div class="col" id="ntpAccountBody">
+                    <p id="ntpAccountP1">'.$accountPageContent['firstParagraph'].'</p>
+                    <p id="ntpAccountP2">'.$accountPageContent['secoundParagraph'].'</p>
+                </div>
+            </div>
+        </div>
+    </div>';
+echo $strHTML;
 }
 
 function recurringModal($planId , $button, $title) {
@@ -176,6 +489,7 @@ function recurringModal($planId , $button, $title) {
     $isEnable = count($planData) && $planData['Status'] === 1 ? '' : 'disabled';
     $showUserPassEmail = $current_user->ID != 0 ? 'readonly disabled' : '';
     $showUserPassEmailDiv = $current_user->ID != 0 ? 'd-none' : '';
+
 
     /** Check if user already exist */
     $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.'ntp_subscriptions'."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
@@ -426,8 +740,7 @@ function recurringModal($planId , $button, $title) {
                                     <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
                                         <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
                                     </div>
-                                
-                            </div>
+                                </div>
                             <div class="modal-footer">
                                 '.__('Supported by NETOPIA Payments').'
                             </div>
@@ -500,7 +813,7 @@ function getJudete() {
 function planInfo($planId) {
     $a = new recurringFront();
     $arrayData = $a->getPlan($planId);
-
+    
     if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
         $planData = array();
     } else {

@@ -1,3 +1,64 @@
+jQuery(document).ready(function () {
+    jQuery('#frontAccountMysubscription').click(function() {
+        jQuery('#frontAccountMysubscription').addClass('active');
+        jQuery('#frontAccountDetails').removeClass('active');
+
+        data = {
+            action : 'getMySubscriptions'
+        }
+    
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {                    
+                    jQuery('#ntpAccountBody').html(response.data);
+                    
+                } else {
+                    jQuery('#ntpAccountBody').html(response.msg);
+                }
+            },
+            error: function( error ){
+                jQuery('#ntpAccountBody').html(response.msg);
+            }
+        });
+    });
+
+
+    jQuery('#frontAccountDetails').click(function() {
+        alert('Detailies is clicked!!');
+        jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountDetails').addClass('active');
+
+
+        data = {
+            action : 'getMyAccountDetails'
+        }
+    
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {                    
+                    jQuery('#ntpAccountBody').html(response.data);
+                    
+                } else {
+                    jQuery('#ntpAccountBody').html(response.msg);
+                }
+            },
+            error: function( error ){
+                jQuery('#ntpAccountBody').html(response.msg);
+            }
+        });
+    });
+});
+
+
+
 function unsubscription() {
     jQuery('#loading').addClass('show');
     jQuery('#unsubscriptionButton').hide();
@@ -12,7 +73,7 @@ function unsubscription() {
     }
 
     jQuery.ajax({
-        url: myback.ajax_url,
+        url: frontAjax.ajax_url,
         type: 'POST',
         dataType: 'json',
         data: data,
@@ -96,7 +157,7 @@ function addSubscription() {
     };
 
     jQuery.ajax({
-        url: myback.ajax_url,
+        url: frontAjax.ajax_url,
         type: 'POST',
         dataType: 'json',
         data: data,
@@ -149,4 +210,106 @@ function addSubscription() {
             jQuery('#loading').removeClass('show');
         }
     });    
+}
+
+function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
+    jQuery('#subscriberName').html(subscriberName);
+
+    getNextPaymentData = {
+        action : 'getMyNextPayment',
+        subscriptionId: subscriptionId,
+    }
+
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: getNextPaymentData,
+        success: function( response ){
+            if(response.status) {
+                if(response.data.isValid) {
+                    jQuery("#nextPaymentStatus").html('Active');
+                } else {
+                    jQuery("#nextPaymentStatus").html('Inactive');
+                }
+                
+                jQuery("#nextPaymentDate").html(response.data.nextPayment);
+                
+            } else {
+                jQuery('#msgBlock').addClass('alert-warning');
+                jQuery('#alertTitle').html('Error!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+            }
+        },
+        error: function( error ){
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(response.msg);
+            jQuery('#msgBlock').addClass('show');
+        }
+    });
+
+    jQuery('#nextPaymentModal').modal('toggle');
+    jQuery('#nextPaymentModal').modal('show');
+}
+
+function unsubscriptionMyAccount(subscriptionId, planID, planTitle) {
+
+    jQuery('#unsubscriptionMyAccountModalPlanTitle').html(planTitle);
+    jQuery('#unsubscriptionMyAccountModalPlanTitle').val(planID);
+    jQuery('#unsubscriptionMyAccountModalPlanId').val(planID);
+    jQuery('#unsubscriptionMyAccountModalSubscriptionId').val(subscriptionId);
+
+/////////////////////////
+var SubscriptionId = jQuery("#unsubscriptionMyAccountModalSubscriptionId").val();
+var Id = jQuery("#unsubscriptionMyAccountModalPlanId").val();
+
+data = {
+    action : 'unsubscription',
+    Id : Id,
+    SubscriptionId : SubscriptionId,
+}
+
+jQuery.ajax({
+    url: frontAjax.ajax_url,
+    type: 'POST',
+    dataType: 'json',
+    data: data,
+    success: function( response ){
+        if(response.status) {
+            jQuery('#msgBlock').addClass('alert-success');
+            jQuery('#alertTitle').html('Congratulation!');
+            jQuery('#msgContent').html(response.msg);
+            jQuery('#msgBlock').addClass('show');
+            jQuery('#loading').removeClass('show');
+            jQuery('#unsubscription-form').hide();               
+            
+            // Refresh page after close Modal
+            jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
+                window.location.reload();
+            });                
+        } else {
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(response.msg);
+            jQuery('#msgBlock').addClass('show');
+            jQuery('#unsubscriptionButton').show();
+            jQuery('#loading').removeClass('show');
+        }
+    },
+    error: function( error ){
+        jQuery('#msgBlock').addClass('alert-warning');
+        jQuery('#alertTitle').html('Error!');
+        jQuery('#msgContent').html(response.msg);
+        jQuery('#msgBlock').addClass('show');
+        jQuery('#unsubscriptionButton').show();
+        jQuery('#loading').removeClass('show');
+    }
+});
+/////////////////////////
+
+    jQuery('#unsubscriptionMyAccountModal').modal('toggle');
+    jQuery('#unsubscriptionMyAccountModal').modal('show');
+
 }

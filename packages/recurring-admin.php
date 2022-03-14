@@ -14,10 +14,6 @@ class recurringAdmin extends recurring {
 
     function getSubscriptionList(){
         global $wpdb;
-        /**
-         * Just Template 
-         * SELECT s.id, s.Subscription_Id, s.First_Name, s.Last_Name, s.Email, s.Tel, s.UserID, p.Title, p.Amount, s.StartDate, s.status FROM wp_ntp_subscriptions as s   INNER JOIN wp_ntp_plans as p WHERE s.PlanId = p.Plan_Id
-         */
         // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
         $subscriptions = $wpdb->get_results("SELECT s.id,
                                                     s.Subscription_Id,

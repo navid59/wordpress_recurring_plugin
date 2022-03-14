@@ -68,4 +68,31 @@ dbDelta( $sql_history );
 
 add_option( 'recurring_db_version', "1.0" );
 }
+
+function recurring_account_page() {
+    $strPageTitle = wp_strip_all_tags(__('Subscription Account', 'ntpRp'));
+    $slugPage = sanitize_title($strPageTitle);
+
+    /** Check if page already exist */
+    $page = get_page_by_path( $slugPage , OBJECT );
+
+    if (isset($page)) {
+        /**
+         * The Subscription Account page is already exist
+         * So, Not change the page content
+         */
+    } else {
+        // Create post object
+        $ntpAccountPage = array(
+            'post_title'    => $strPageTitle,
+            'post_content'  => '<!-- wp:shortcode -->[NTP-Recurring-My-Account]<!-- /wp:shortcode -->',
+            'post_status'   => 'publish',
+            'post_author'   => 1,
+            'post_type'     => 'page',
+        );
+    
+        // Generate Recurring Account Page
+        wp_insert_post( $ntpAccountPage );
+    }    
+}
 ?>

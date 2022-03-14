@@ -43,11 +43,14 @@ class NetopiapaymentsRecurringPayment extends recurring
     add_action( 'admin_init', array( $this, 'recurring_setup_section' ));
     add_action( 'admin_init', array( $this, 'recurring_setup_fields' ));
 
-    add_action( 'admin_init', array( $this, 'recurring_message_section' ));
-    add_action( 'admin_init', array( $this, 'recurring_message_fields' ));
-
     add_action( 'admin_init', array( $this, 'recurring_notify_section' ));
     add_action( 'admin_init', array( $this, 'recurring_notify_fields' ));
+    
+    add_action( 'admin_init', array( $this, 'recurring_account_section' ));
+    add_action( 'admin_init', array( $this, 'recurring_account_fields' ));
+    
+    add_action( 'admin_init', array( $this, 'recurring_message_section' ));
+    add_action( 'admin_init', array( $this, 'recurring_message_fields' ));
     }
 
 
@@ -172,6 +175,53 @@ class NetopiapaymentsRecurringPayment extends recurring
             register_setting( 'notify_management', $field['uid'] );
         }
 
+    }
+
+    public function recurring_account_section() {
+        add_settings_section( 'account', 'Account page setting ', array( $this, 'section_callback' ), 'account_management' );
+    }
+
+    public function recurring_account_fields() {
+        $fields = array(
+            array(
+                'uid' => $this->slug.'_account_subtitle',
+                'label' => __('Subtitle for Recurring account page'),
+                'section' => 'account',
+                'type' => 'text',
+                'options' => false,
+                'placeholder' => __('A title to display at top of the page'),
+                'helper' => __(''),
+                'supplemental' => __('Subtitle to display at top of recurring account page'),
+                'default' => 'My subscription account'
+            ),
+            array(
+                'uid' => $this->slug.'_account_paragraph_first',
+                'label' => __('First paragraph to display at recurring account page body'),
+                'section' => 'account',
+                'type' => 'textarea',
+                'options' => false,
+                'placeholder' => __('A custom explaination for account page.'),
+                'helper' => __(''),
+                'supplemental' => __('A paragraph to explain account page to display in body of account page.'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_account_paragraph_secound',
+                'label' => __('Secound paragraph to display at recurring account page body'),
+                'section' => 'account',
+                'type' => 'textarea',
+                'options' => false,
+                'placeholder' => __('Another custom explaination for account page'),
+                'helper' => __(''),
+                'supplemental' => __('Another paragraph to explain account page to display in body of account page.'),
+                'default' => ''
+            )
+        );
+
+        foreach( $fields as $field ){
+            add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'account_management', $field['section'], $field );
+            register_setting( 'account_management', $field['uid'] );
+        }
     }
 
     public function recurring_message_section() {
@@ -418,6 +468,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="?page=netopia_recurring&tab=display_about_plugin" class="nav-tab <?php echo $active_tab == 'display_about_plugin' ? 'nav-tab-active' : ''; ?>"><?php echo __('About plugin','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_setting" class="nav-tab <?php echo $active_tab == 'display_setting' ? 'nav-tab-active' : ''; ?>"><?php echo __('Setting','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_notify_management" class="nav-tab <?php echo $active_tab == 'display_notify_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Notify management','ntpRp')?></a>
+                <a href="?page=netopia_recurring&tab=display_account_management" class="nav-tab <?php echo $active_tab == 'display_account_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Account page management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
             </h2>
             <form method="post" action="options.php">
@@ -431,6 +482,10 @@ class NetopiapaymentsRecurringPayment extends recurring
                 }elseif($active_tab == 'display_send_all') {
                     settings_fields( 'netopia_recurring_sned2all' );
                     do_settings_sections( 'netopia_recurring_sned2all' );
+                } elseif($active_tab == 'display_account_management') {
+                    settings_fields( 'account_management' );
+                    do_settings_sections( 'account_management' );
+                    submit_button();
                 } elseif($active_tab == 'display_message_management') {
                     settings_fields( 'message_management' );
                     do_settings_sections( 'message_management' );
