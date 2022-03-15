@@ -47,6 +47,7 @@
             return($arrayData);
         }
 
+
         function getStatusStr($section, $statusCode) {
             switch ($section) {
                 case 'subscription':

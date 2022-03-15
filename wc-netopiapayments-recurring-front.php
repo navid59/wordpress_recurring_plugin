@@ -2,6 +2,7 @@
  add_action( 'wp_enqueue_scripts', 'enqueue_and_register_ntp_recurring_js_scripts' );
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
+ add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
  add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
  add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
@@ -179,113 +180,259 @@ function recurring_getMyAccountDetails() {
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
+    // 1- get current user 
+    // 2- know ID & User name
+    $userName = $current_user->user_login;
+    
+    $MyDetails = $wpdb->get_results("SELECT *
+                                    FROM  ".$wpdb->prefix . "ntp_subscriptions as s 
+                                    WHERE s.UserID = '".$current_user->user_login."'", "ARRAY_A");
 
     $mySimulatedResult = array(
-        'status' => true,
-        'msg'    => 'This is test Message',
-        'data'   => '<div class="row">
-                        <form class="needs-validation" novalidate>
-                        <h4 class="mb-3">'.__('Personal information').'</h4>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="firstName">'.__('First name','ntpRp').'</label>
-                                <input type="text" class="form-control" id="firstName" placeholder="" value="'.$current_user->first_name.'" required>
-                                <div class="invalid-feedback">
-                                Valid first name is required.
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="lastName">'.__('Last name','ntpRp').'</label>
-                                <input type="text" class="form-control" id="lastName" placeholder="" value="'.$current_user->last_name.'" required>
-                                <div class="invalid-feedback">
-                                Valid last name is required.
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row" >
-                            <div class="col-md-4 mb-3">
-                                <label for="username">'.__('Username','ntpRp').'</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">@</span>
-                                    </div>
-                                    <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required '.$showUserPassEmail.'>
-                                    <div class="invalid-feedback" style="width: 100%;">
-                                    Your username is required.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="password">'.__('Password','ntpRp').'</label>
-                                <input type="password" class="form-control" id="password" required>
-                                <div class="invalid-feedback">
-                                    Please enter a valid password.
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="email">'.__('Email','ntpRp').'</label>
-                                <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required '.$showUserPassEmail.'>
-                                <div class="invalid-feedback">
-                                    Please enter a valid email address for shipping updates.
-                                </div>
-                            </div>
-                        </div>
-                    
-                        
-                        <div class="mb-3">
-                            <label for="address">'.__('Address','ntpRp').'</label>
-                            <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
-                            <div class="invalid-feedback">
-                                Please enter your shipping address.
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-5 mb-3">
-                                <label for="tel">'.__('Tel','ntpRp').'</label>
-                                <input type="text" class="form-control" id="tel" placeholder="" required>
-                                <div class="invalid-feedback">
-                                Phone required.
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="country">'.__('Country','ntpRp').'</label>
-                                <select class="custom-select d-block w-100" id="country" required>
-                                <option value="">Choose...</option>
-                                <option value="642">Romania</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                Please select a valid country.
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="state">'.__('State','ntpRp').'</label>
-                                <select class="custom-select d-block w-100" id="state" required>'
-                                .getJudete().
-                                '</select>
-                                <div class="invalid-feedback">
-                                Please provide a valid state.
-                                </div>
-                            </div>                        
-                        </div>
-                    
-                        </div>
-                        <hr class="mb-4">
-                        <button id="updateSubscriptionButton" class="btn btn-primary btn-lg btn-block" type="button" onclick="XXXXXXXXXXX(); return false;">Update</button>
-                    </form>
-                    </div>
-                    <div class="row">
-                        <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
-                            <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
-                        </div>
-                    </div>',
-        );
-
+                                'status' => true,
+                                'msg'    => '',
+                                'data'   => '<div class="row" id="myAccountForm">
+                                                <form class="needs-validation" novalidate>
+                                                    <h4 class="mb-3">'.__('Personal information').'</h4>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <input type="hidden" class="form-control" id="SubscriptionId" placeholder="" value="'.$MyDetails[0]['Subscription_Id'].'" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="firstName">'.__('First name','ntpRp').'</label>
+                                                            <input type="text" class="form-control" id="firstName" placeholder="" value="'.$current_user->first_name.'" required>
+                                                            <div class="invalid-feedback">
+                                                            Valid first name is required.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="lastName">'.__('Last name','ntpRp').'</label>
+                                                            <input type="text" class="form-control" id="lastName" placeholder="" value="'.$current_user->last_name.'" required>
+                                                            <div class="invalid-feedback">
+                                                            Valid last name is required.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="row" >
+                                                        <div class="col-md-4 mb-3">
+                                                            <label for="username">'.__('Username','ntpRp').'</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text">@</span>
+                                                                </div>
+                                                                <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required>
+                                                                <div class="invalid-feedback" style="width: 100%;">
+                                                                Your username is required.
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label for="password">'.__('Password','ntpRp').'</label>
+                                                            <input type="password" class="form-control" id="password" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter a valid password.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label for="email">'.__('Email','ntpRp').'</label>
+                                                            <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required>
+                                                            <div class="invalid-feedback">
+                                                                Please enter a valid email address for shipping updates.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="address">'.__('Address','ntpRp').'</label>
+                                                        <input type="text" class="form-control" id="address" placeholder="1234 Main St" value="'.$MyDetails[0]['Address'].'" required>
+                                                        <div class="invalid-feedback">
+                                                            Please enter your shipping address.
+                                                        </div>
+                                                    </div>
+                                                
+                                                    <div class="row">
+                                                        <div class="col-md-5 mb-3">
+                                                            <label for="tel">'.__('Tel','ntpRp').'</label>
+                                                            <input type="text" class="form-control" id="tel" placeholder="" value="'.$MyDetails[0]['Tel'].'" required>
+                                                            <div class="invalid-feedback">
+                                                            Phone required.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 mb-3">
+                                                            <label for="country">'.__('Country','ntpRp').'</label>
+                                                            <select class="custom-select d-block w-100" id="country" required>
+                                                            <option value="">Choose...</option>
+                                                            <option value="642" selected>Romania</option>
+                                                            </select>
+                                                            <div class="invalid-feedback">
+                                                            Please select a valid country.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label for="state">'.__('State','ntpRp').'</label>
+                                                            <select class="custom-select d-block w-100" id="state" required>'
+                                                            .getJudete($MyDetails[0]['City']).
+                                                            '</select>
+                                                            <div class="invalid-feedback">
+                                                            Please provide a valid state.
+                                                            </div>
+                                                        </div>                        
+                                                    </div>
+                                                    <hr class="mb-4">
+                                                    <button class="btn btn-primary btn-lg btn-block" type="button" id="" onclick="updateMyAccountDetails(); return false;" >'.__('Update', 'ntpRp').'</button>
+                                                </form>
+                                            </div>    
+                                            <div class="jumbotron text-center alert alert-dismissible fade" id="msgBlock" role="alert">
+                                                <h1 id="alertTitle" class="display-5"></h1>
+                                                <p class="lead">
+                                                    <strong>
+                                                        <span id="msgContent"></span>
+                                                    </strong>
+                                                </p>
+                                                <hr>
+                                                <p class="lead">
+                                                    <a class="btn btn-primary btn-sm" href="'.get_home_url().'" role="button">'.__('Continue to homepage','ntpRp').'</a>
+                                                </p>
+                                            </div>',
+                                );
 
     echo json_encode($mySimulatedResult);
     wp_die();
 }
+
+
+function recurring_updateSubscriberAccountDetails() {
+    global $wpdb;
+    // $obj = new recurringFront();
+
+    $subscriptionAccountDetails = array (
+        "SubscriptionId" => $_POST['SubscriptionId'],
+        "Name" => $_POST['Name'],
+        "LastName" => $_POST['LastName'],
+        "UserID" => $_POST['UserID'],
+        "Pass" => $_POST['Pass'],
+        "Email" => $_POST['Email'],
+        "Address" => $_POST['Address'],
+        "City" => $_POST['City'],
+        "Tel" => strval($_POST['Tel'])
+    );
+
+
+    /**
+     *  Authenticate User
+     *  If user is that one who is already logined.
+     *  if choeasen email is exist 
+     *  */
+    
+    $current_user = wp_get_current_user();
+    
+    if($current_user->user_login != $subscriptionAccountDetails['UserID']) {
+        $validateAuthResult = array(
+            'status'=> false,
+            'msg'=> __('You are not allowded to change Username','ntpRp'),
+        );
+        echo json_encode($validateAuthResult);
+        wp_die();
+    }
+
+    if(!is_email($subscriptionAccountDetails['Email'])) {
+        $validateEmailFormat = array(
+            'status'=> false,
+            'msg'=> __('The email address is not correct!', 'ntpRp'),
+        );
+        echo json_encode($validateEmailFormat);
+        wp_die();
+    }
+
+    $validateChosenEmail = email_exists( $subscriptionAccountDetails['Email']);
+    if($validateChosenEmail != false && $validateChosenEmail != $current_user->id) {
+        $validateEmailResult = array(
+            'status'=> false,
+            'msg'=> __('The email is already exist', 'ntpRp'),
+        );
+        echo json_encode($validateEmailResult);
+        wp_die();
+    }
+
+    if($subscriptionAccountDetails['Pass'] !== "") {
+        if(!isStrongPass($subscriptionAccountDetails['Pass'])) {
+            $validatePassLenght = array(
+                'status'=> false,
+                'msg'=> __('The password is not enghot strong!','ntpRp'),
+            );
+            echo json_encode($validatePassLenght);
+            wp_die();
+        }
+    }
+    
+   
+    /*
+    * First Update the subscriber info on Server by API
+    * Then update the local data
+    * Temporary, just update local data
+    */
+    
+    $updateResult = $wpdb->update( 
+                        $wpdb->prefix . "ntp_subscriptions", 
+                        array( 
+                            'First_Name'      => $subscriptionAccountDetails['Name'],
+                            'Last_Name'       => $subscriptionAccountDetails['LastName'],
+                            'Email'           => $subscriptionAccountDetails['Email'],
+                            'Address'         => $subscriptionAccountDetails['Address'],
+                            'City'            => $subscriptionAccountDetails['City'],
+                            'Tel'             => $subscriptionAccountDetails['Tel'],
+                            'UpdatedAt'       => date("Y-m-d")
+                        ),
+                        array(
+                            'Subscription_Id' => $subscriptionAccountDetails['SubscriptionId'] 
+                        )
+                    );
+    
+    if($updateResult != false) {
+        update_user_meta( $current_user->id, "first_name",  $subscriptionAccountDetails['Name'] ) ;
+        update_user_meta( $current_user->id, "last_name",  $subscriptionAccountDetails['LastName'] ) ;
+
+        $args = array(
+            'ID'         => $current_user->id,
+            'user_email' => esc_attr( $subscriptionAccountDetails['Email'] )
+        );
+        wp_update_user( $args );
+
+        if($subscriptionAccountDetails['Pass'] !== "") {
+            wp_set_password( $subscriptionAccountDetails['Pass'], $current_user->id );
+
+            /* 
+            * Clear cache of current user
+            * Logout & Then Login 
+            */ 
+            clean_user_cache($current_user->id);
+            wp_clear_auth_cookie();
+            wp_set_current_user($current_user->id);
+            wp_set_auth_cookie($current_user->id, true, false);
+
+            $user = get_user_by('id', $current_user->id);
+            update_user_caches($user);
+        }
+
+        $mySimulatedResult = array(
+            'status'=> true,
+            'msg'=> __( 'Data is updated successfully!','ntpRp')
+        );
+    } else {
+        $mySimulatedResult = array(
+            'status'=> true,
+            'msg'=> __('Data is NOT updated!','ntpRp'),
+        );
+    }
+    
+    echo json_encode($mySimulatedResult);
+    wp_die();
+}
+
 
 function recurring_account_getMySubscriptions() {
     global $wpdb;
@@ -758,7 +905,7 @@ function recurringModal($planId , $button, $title) {
     return $buttonHtml.$modalHtml;
 }
 
-function getJudete() {
+function getJudete($selectedStr = "") {
     $judete = array(
         'Alba' => 'Alba',
         'Argeș' => 'Argeș',
@@ -805,7 +952,15 @@ function getJudete() {
         );
     $strObtion = '<option value="">Choose...</option>';        
     foreach($judete as $key => $value) {
-        $strObtion .='<option value="'.$key.'">'.$value.'</option>';
+        if($selectedStr == "") {
+            $strObtion .='<option value="'.$key.'">'.$value.'</option>';
+        } else {
+            if($selectedStr == $value ) {
+                $strObtion .='<option value="'.$key.'" selected >'.$value.'</option>';
+            } else {
+                $strObtion .='<option value="'.$key.'" >'.$value.'</option>';
+            }
+        }
     }
     return $strObtion;
 }
@@ -870,10 +1025,7 @@ function createUser($userInfo) {
         if($createdUserID) {
             update_user_meta( $createdUserID, "first_name",  $userInfo['Name'] ) ;
             update_user_meta( $createdUserID, "last_name",  $userInfo['LastName'] ) ;
-            update_user_meta( $createdUserID, "billing_country",  'RO' ) ;
-            update_user_meta( $createdUserID, "billing_state",  $userInfo['City'] ) ;
-            update_user_meta( $createdUserID, "billing_address_1",  $userInfo['Address'] ) ;
-            update_user_meta( $createdUserID, "billing_phone",  $userInfo['Tel'] ) ;
+            
 
             // Login auto the new user to wordpress
             clean_user_cache($createdUserID);
@@ -884,6 +1036,15 @@ function createUser($userInfo) {
             $user = get_user_by('id', $createdUserID);
             update_user_caches($user);
         }
+    }
+}
+
+function isStrongPass($passwordStr) {
+    $pattern = '/^(?=.*[!@#$%^&*-])(?=.*[0-9])(?=.*[A-Z]).{8,20}$/';
+    if(preg_match($pattern, $passwordStr)){
+        return true;
+    } else {
+        return false;
     }
 }
 

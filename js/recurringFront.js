@@ -27,11 +27,13 @@ jQuery(document).ready(function () {
     });
 
 
+    jQuery('#frontAccountLogout').click(function() {
+        alert('LOGOUT is clicked!!');
+    });
+
     jQuery('#frontAccountDetails').click(function() {
-        alert('Detailies is clicked!!');
         jQuery('#frontAccountMysubscription').removeClass('active');
         jQuery('#frontAccountDetails').addClass('active');
-
 
         data = {
             action : 'getMyAccountDetails'
@@ -56,7 +58,6 @@ jQuery(document).ready(function () {
         });
     });
 });
-
 
 
 function unsubscription() {
@@ -255,41 +256,48 @@ function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
 }
 
 function unsubscriptionMyAccount(subscriptionId, planID, planTitle) {
-
     jQuery('#unsubscriptionMyAccountModalPlanTitle').html(planTitle);
     jQuery('#unsubscriptionMyAccountModalPlanTitle').val(planID);
     jQuery('#unsubscriptionMyAccountModalPlanId').val(planID);
     jQuery('#unsubscriptionMyAccountModalSubscriptionId').val(subscriptionId);
 
-/////////////////////////
-var SubscriptionId = jQuery("#unsubscriptionMyAccountModalSubscriptionId").val();
-var Id = jQuery("#unsubscriptionMyAccountModalPlanId").val();
+    var SubscriptionId = jQuery("#unsubscriptionMyAccountModalSubscriptionId").val();
+    var Id = jQuery("#unsubscriptionMyAccountModalPlanId").val();
 
-data = {
-    action : 'unsubscription',
-    Id : Id,
-    SubscriptionId : SubscriptionId,
-}
+    data = {
+        action : 'unsubscription',
+        Id : Id,
+        SubscriptionId : SubscriptionId,
+    }
 
-jQuery.ajax({
-    url: frontAjax.ajax_url,
-    type: 'POST',
-    dataType: 'json',
-    data: data,
-    success: function( response ){
-        if(response.status) {
-            jQuery('#msgBlock').addClass('alert-success');
-            jQuery('#alertTitle').html('Congratulation!');
-            jQuery('#msgContent').html(response.msg);
-            jQuery('#msgBlock').addClass('show');
-            jQuery('#loading').removeClass('show');
-            jQuery('#unsubscription-form').hide();               
-            
-            // Refresh page after close Modal
-            jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
-                window.location.reload();
-            });                
-        } else {
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            if(response.status) {
+                jQuery('#msgBlock').addClass('alert-success');
+                jQuery('#alertTitle').html('Congratulation!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#loading').removeClass('show');
+                jQuery('#unsubscription-form').hide();               
+                
+                // Refresh page after close Modal
+                jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });                
+            } else {
+                jQuery('#msgBlock').addClass('alert-warning');
+                jQuery('#alertTitle').html('Error!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#unsubscriptionButton').show();
+                jQuery('#loading').removeClass('show');
+            }
+        },
+        error: function( error ){
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
             jQuery('#msgContent').html(response.msg);
@@ -297,19 +305,65 @@ jQuery.ajax({
             jQuery('#unsubscriptionButton').show();
             jQuery('#loading').removeClass('show');
         }
-    },
-    error: function( error ){
-        jQuery('#msgBlock').addClass('alert-warning');
-        jQuery('#alertTitle').html('Error!');
-        jQuery('#msgContent').html(response.msg);
-        jQuery('#msgBlock').addClass('show');
-        jQuery('#unsubscriptionButton').show();
-        jQuery('#loading').removeClass('show');
-    }
-});
-/////////////////////////
+    });
 
     jQuery('#unsubscriptionMyAccountModal').modal('toggle');
     jQuery('#unsubscriptionMyAccountModal').modal('show');
+}
 
+function updateMyAccountDetails() {
+    var SubscriptionId = jQuery("#SubscriptionId").val();
+    var UserID = jQuery("#username").val();
+    var Pass = jQuery("#password").val();
+    var Name = jQuery("#firstName").val();
+    var LastName = jQuery("#lastName").val();
+    var Email = jQuery("#email").val();
+    var Address  = jQuery("#address").val();
+    var City = jQuery("#state").val();
+    var Tel = jQuery("#tel").val();
+   
+    data = {
+        action : 'updateSubscriberAccountDetails',
+        SubscriptionId : SubscriptionId,
+        UserID : UserID,
+        Pass : Pass,
+        Name : Name,
+        LastName : LastName,
+        Email : Email,
+        Address : Address,
+        City : City,
+        Tel : Tel,
+    };
+
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            if(response.status) {
+                jQuery('#myAccountForm').hide();
+                jQuery('#msgBlock').addClass('alert-success');
+                jQuery('#alertTitle').html('Congratulation!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#loading').removeClass('show');
+            } else {
+                jQuery('#msgBlock').addClass('alert-warning');
+                jQuery('#alertTitle').html('Error!');
+                jQuery('#msgContent').html(response.msg);
+                jQuery('#msgBlock').addClass('show');
+                jQuery('#addSubscriptionButton').show();
+                jQuery('#loading').removeClass('show');
+            }
+        },
+        error: function( error ){
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(response.msg);
+            jQuery('#msgBlock').addClass('show');
+            jQuery('#addSubscriptionButton').show();
+            jQuery('#loading').removeClass('show');
+        }
+    });
 }
