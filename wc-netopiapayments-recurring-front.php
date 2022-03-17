@@ -690,17 +690,8 @@ function ntpMyAccount() {
         $strHTML = '
                     <div class="">
                         <div class="row">
-                            <form>
-                                <div class="form-group">
-                                    <label for="username">'.__('User name','ntpRp').'</label>
-                                    <input type="email" class="form-control" id="username" aria-describedby="emailHelp" placeholder="Enter email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">'.__('Password','ntpRp').'</label>
-                                    <input type="password" class="form-control" id="password" placeholder="Password">
-                                </div>
-                                <button id="loginButton" class="btn btn-primary" type="button" onclick="loginMyAccount(); return false;">Login</button>
-                            </form>
+                            '.wp_login_form().'
+                            <p class="">'.__('Forgot password? Click','ntpRp').' <a href="'.wp_lostpassword_url().'.">'.__('here', 'ntpRp').'</a> '.__('to reset it', 'ntpRp').'.</p>
                         </div>
                         <div class="row" >
                             <div class="col jumbotron text-center alert alert-dismissible fade" id="msgBlock" role="alert">
