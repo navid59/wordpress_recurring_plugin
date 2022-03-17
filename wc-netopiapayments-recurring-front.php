@@ -7,6 +7,7 @@
  add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
  add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
  add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
+ add_action('wp_ajax_logoutAccount', 'recurring_logoutAccount');
 
  function enqueue_and_register_ntp_recurring_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
@@ -175,6 +176,19 @@ function recurring_unsubscription() {
     wp_die();
 }
 
+function recurring_logoutAccount() {
+    wp_logout();
+    
+    $mySimulatedResult = array(
+        'status'=> true,
+        'msg'=> __('Logout with success','ntpRp'),
+        'redirectUrl'=> get_home_url().'/subscription-account',
+    );
+    
+    echo json_encode($mySimulatedResult);
+    wp_die();
+}
+
 function recurring_getMyAccountDetails() {
     global $wpdb;
 
@@ -196,7 +210,7 @@ function recurring_getMyAccountDetails() {
                                                     <h4 class="mb-3">'.__('Personal information').'</h4>
                                                     <div class="row">
                                                         <div class="col-md-6 mb-3">
-                                                            <input type="hidden" class="form-control" id="SubscriptionId" placeholder="" value="'.$MyDetails[0]['Subscription_Id'].'" readonly>
+                                                            <input type="text" class="form-control" id="SubscriptionId" placeholder="" value="'.$MyDetails[0]['Subscription_Id'].'" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -293,10 +307,12 @@ function recurring_getMyAccountDetails() {
                                                         <span id="msgContent"></span>
                                                     </strong>
                                                 </p>
-                                                <hr>
-                                                <p class="lead">
-                                                    <a class="btn btn-primary btn-sm" href="'.get_home_url().'" role="button">'.__('Continue to homepage','ntpRp').'</a>
-                                                </p>
+                                                <div id="myAccountGoToHome">
+                                                    <hr>
+                                                    <p class="lead">
+                                                        <a class="btn btn-primary btn-sm" href="'.get_home_url().'" role="button">'.__('Continue to homepage','ntpRp').'</a>
+                                                    </p>
+                                                </div>
                                             </div>',
                                 );
 
@@ -307,7 +323,7 @@ function recurring_getMyAccountDetails() {
 
 function recurring_updateSubscriberAccountDetails() {
     global $wpdb;
-    // $obj = new recurringFront();
+    $msg = '';
 
     $subscriptionAccountDetails = array (
         "SubscriptionId" => $_POST['SubscriptionId'],
@@ -358,22 +374,53 @@ function recurring_updateSubscriberAccountDetails() {
         wp_die();
     }
 
-    if($subscriptionAccountDetails['Pass'] !== "") {
+    if($subscriptionAccountDetails['Pass'] != "") {
         if(!isStrongPass($subscriptionAccountDetails['Pass'])) {
             $validatePassLenght = array(
                 'status'=> false,
-                'msg'=> __('The password is not enghot strong!','ntpRp'),
+                'msg'=> __('The password is a suitable password!','ntpRp'),
             );
             echo json_encode($validatePassLenght);
             wp_die();
+        } else {
+            /*
+            * ChangePassword
+            */
+            $hash = wp_hash_password($subscriptionAccountDetails['Pass']);
+            $passChangeStatus = $wpdb->update(
+                $wpdb->prefix . "users",
+                array(
+                    'user_pass'           => $hash,
+                    'user_activation_key' => '',
+                ),
+                array( 'ID' => $current_user->ID )
+            );
+
+            /* 
+            * Clear cache of current user
+            * Logout & Then Login 
+            */ 
+            if($passChangeStatus != false ) {
+                clean_user_cache($current_user->ID);
+                wp_clear_auth_cookie();
+                wp_set_current_user($current_user->ID);
+                wp_set_auth_cookie($current_user->ID, true, false);
+
+                $user = get_user_by('id', $current_user->ID);
+                update_user_caches($user);
+
+                $msg = __('Password is changed & ','ntpRp');
+            } else {
+                $msg = __('Password is not changed & ','ntpRp');
+            }
         }
     }
     
    
     /*
-    * First Update the subscriber info on Server by API
+    * First SHOULD Update the subscriber info on Server by API
     * Then update the local data
-    * Temporary, just update local data
+    * BUT Temporary, just update local data
     */
     
     $updateResult = $wpdb->update( 
@@ -402,30 +449,46 @@ function recurring_updateSubscriberAccountDetails() {
         );
         wp_update_user( $args );
 
-        if($subscriptionAccountDetails['Pass'] !== "") {
-            wp_set_password( $subscriptionAccountDetails['Pass'], $current_user->id );
+        // if($subscriptionAccountDetails['Pass'] != "") {
+        //     /** 
+        //      * Change password
+        //      */
+        //     // wp_set_password( $subscriptionAccountDetails['Pass'], $current_user->ID );
+        //     $hash = wp_hash_password($subscriptionAccountDetails['Pass']);
+        //     $passChangeStatus = $wpdb->update(
+        //         $wpdb->prefix . "users",
+        //         array(
+        //             'user_pass'           => $hash,
+        //             'user_activation_key' => '',
+        //         ),
+        //         array( 'ID' => $current_user->ID )
+        //     );
 
-            /* 
-            * Clear cache of current user
-            * Logout & Then Login 
-            */ 
-            clean_user_cache($current_user->id);
-            wp_clear_auth_cookie();
-            wp_set_current_user($current_user->id);
-            wp_set_auth_cookie($current_user->id, true, false);
+        //     /* 
+        //     * Clear cache of current user
+        //     * Logout & Then Login 
+        //     */ 
+        //     if($passChangeStatus != false ) {
+        //         clean_user_cache($current_user->ID);
+        //         wp_clear_auth_cookie();
+        //         wp_set_current_user($current_user->ID);
+        //         wp_set_auth_cookie($current_user->ID, true, false);
 
-            $user = get_user_by('id', $current_user->id);
-            update_user_caches($user);
-        }
+        //         $user = get_user_by('id', $current_user->ID);
+        //         update_user_caches($user);
+
+        //         $msg = __('Password is changed & ','ntpRp');
+        //     }
+        // } 
 
         $mySimulatedResult = array(
             'status'=> true,
-            'msg'=> __( 'Data is updated successfully!','ntpRp')
+            'msg'=> $msg.__( 'Data is updated successfully!','ntpRp')
         );
     } else {
         $mySimulatedResult = array(
-            'status'=> true,
-            'msg'=> __('Data is NOT updated!','ntpRp'),
+            'status'=> false,
+            'msg'=> $msg.__('Data is NOT updated!. Please, try again.','ntpRp'),
         );
     }
     
@@ -597,31 +660,61 @@ function ntpMyAccount() {
     $obj = new recurringFront();
     $accountPageContent = $obj->getAccountPageSetting();
 
-    $strHTML = '
-    <div class="">
-        <div class="row">
-            <div class="" id="">
-                <ul class="nav nav-pills nav-flush flex-column bg-light">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col" id="ntpAccount">
-                <h2 id="ntpAccountSubtitle">'.$accountPageContent['subtitle'].'</h2>
-                <div class="col" id="ntpAccountBody">
-                    <p id="ntpAccountP1">'.$accountPageContent['firstParagraph'].'</p>
-                    <p id="ntpAccountP2">'.$accountPageContent['secoundParagraph'].'</p>
-                </div>
-            </div>
-        </div>
-    </div>';
+    if(is_user_logged_in()) {
+        $strHTML = '
+                    <div class="">
+                        <div class="row">
+                            <div class="" id="">
+                                <ul class="nav nav-pills nav-flush flex-column bg-light">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col" id="ntpAccount">
+                                <h2 id="ntpAccountSubtitle">'.$accountPageContent['subtitle'].'</h2>
+                                <div class="col" id="ntpAccountBody">
+                                    <p id="ntpAccountP1">'.$accountPageContent['firstParagraph'].'</p>
+                                    <p id="ntpAccountP2">'.$accountPageContent['secoundParagraph'].'</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>';
+    } else {
+        $strHTML = '
+                    <div class="">
+                        <div class="row">
+                            <form>
+                                <div class="form-group">
+                                    <label for="username">'.__('User name','ntpRp').'</label>
+                                    <input type="email" class="form-control" id="username" aria-describedby="emailHelp" placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">'.__('Password','ntpRp').'</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Password">
+                                </div>
+                                <button id="loginButton" class="btn btn-primary" type="button" onclick="loginMyAccount(); return false;">Login</button>
+                            </form>
+                        </div>
+                        <div class="row" >
+                            <div class="col jumbotron text-center alert alert-dismissible fade" id="msgBlock" role="alert">
+                                <h1 id="alertTitle" class="display-5"></h1>
+                                <p class="lead">
+                                    <strong>
+                                        <span id="msgContent"></span>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>';
+    }
+    
 echo $strHTML;
 }
 

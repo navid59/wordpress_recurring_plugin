@@ -2,6 +2,8 @@ jQuery(document).ready(function () {
     jQuery('#frontAccountMysubscription').click(function() {
         jQuery('#frontAccountMysubscription').addClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
+        jQuery('#frontAccountChangePass').removeClass('active');
+        jQuery('#frontAccountLogout').removeClass('active');
 
         data = {
             action : 'getMySubscriptions'
@@ -28,13 +30,69 @@ jQuery(document).ready(function () {
 
 
     jQuery('#frontAccountLogout').click(function() {
-        alert('LOGOUT is clicked!!');
+        jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountDetails').removeClass('active');
+        jQuery('#frontAccountChangePass').removeClass('active');
+        jQuery('#frontAccountLogout').addClass('active');
+
+        data = {
+            action : 'logoutAccount'
+        };
+    
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {
+                    location.replace(response.redirectUrl);
+                } else {
+                    //
+                }
+            },
+            error: function( error ){
+                //
+            }
+        });
+    });
+
+    jQuery('#frontAccountChangePass').click(function() {
+        alert('Change Pass is clicked!!');
+        jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountDetails').removeClass('active');
+        jQuery('#frontAccountChangePass').addClass('active');
+        jQuery('#frontAccountLogout').removeClass('active');
+
+        data = {
+            action : 'myAccountPassword'
+        }
+    
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {                    
+                    jQuery('#ntpAccountBody').html(response.data);
+                    
+                } else {
+                    jQuery('#ntpAccountBody').html(response.msg);
+                }
+            },
+            error: function( error ){
+                jQuery('#ntpAccountBody').html(response.msg);
+            }
+        });
     });
 
     jQuery('#frontAccountDetails').click(function() {
         jQuery('#frontAccountMysubscription').removeClass('active');
         jQuery('#frontAccountDetails').addClass('active');
-
+        jQuery('#frontAccountChangePass').removeClass('active');
+        jQuery('#frontAccountLogout').removeClass('active');
+        
         data = {
             action : 'getMyAccountDetails'
         }
@@ -352,6 +410,7 @@ function updateMyAccountDetails() {
                 jQuery('#msgBlock').addClass('alert-warning');
                 jQuery('#alertTitle').html('Error!');
                 jQuery('#msgContent').html(response.msg);
+                jQuery('#myAccountGoToHome').hide();
                 jQuery('#msgBlock').addClass('show');
                 jQuery('#addSubscriptionButton').show();
                 jQuery('#loading').removeClass('show');
@@ -361,9 +420,14 @@ function updateMyAccountDetails() {
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
             jQuery('#msgContent').html(response.msg);
+            jQuery('#myAccountGoToHome').hide();
             jQuery('#msgBlock').addClass('show');
             jQuery('#addSubscriptionButton').show();
             jQuery('#loading').removeClass('show');
         }
     });
+}
+
+function loginMyAccount() {
+    alert('Clicked on Login Button!!!');
 }
