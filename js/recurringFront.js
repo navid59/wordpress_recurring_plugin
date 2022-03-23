@@ -169,6 +169,57 @@ function unsubscription() {
     });
 }
 
+function unsubscriptionMyAccount() {
+    jQuery('#loading').addClass('show');
+    jQuery('#unsubscriptionButton').hide();
+
+    var SubscriptionId = jQuery("#Subscription_Id").val();
+    var Id = jQuery("#Id").val();
+
+    data = {
+        action : 'unsubscription',
+        Id : Id,
+        SubscriptionId : SubscriptionId,
+    }
+
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            if(response.status) {
+                jQuery('#myAccountMsgBlock').addClass('alert-success');
+                jQuery('#myAccountAlertTitle').html('Congratulation!');
+                jQuery('#myAccountMsgContent').html(response.msg);
+                jQuery('#myAccountMsgBlock').addClass('show');
+                jQuery('#loading').removeClass('show');
+                jQuery('#unsubscription-form').hide();               
+                
+                // Refresh page after close Modal
+                jQuery('#unsubscriptionMyAccountModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });                
+            } else {
+                jQuery('#myAccountMsgBlock').addClass('alert-warning');
+                jQuery('#myAccountAlertTitle').html('Error!');
+                jQuery('#myAccountMsgContent').html(response.msg);
+                jQuery('#myAccountMsgBlock').addClass('show');
+                jQuery('#unsubscriptionButton').show();
+                jQuery('#loading').removeClass('show');
+            }
+        },
+        error: function( error ){
+            jQuery('#myAccountMsgBlock').addClass('alert-warning');
+            jQuery('#myAccountAlertTitle').html('Error!');
+            jQuery('#myAccountMsgContent').html(response.msg);
+            jQuery('#myAccountMsgBlock').addClass('show');
+            jQuery('#unsubscriptionButton').show();
+            jQuery('#loading').removeClass('show');
+        }
+    });
+}
+
 function addSubscription() {
     jQuery('#loading').addClass('show');
     jQuery('#addSubscriptionButton').hide();
@@ -316,76 +367,22 @@ function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
 
 
 jQuery(document).on("click", ".unsubscriptionMyAccounButton", function () {
-    alert('WOWOWOWOWOWOWOWOWOWOW');
+    alert('Unsubscription from my account');
     
     var planTitle = jQuery(this).data('plantitle');
-    var planID = jQuery(this).data('planid'); 
+    var userId = jQuery(this).data('userid'); 
     var subscriptionId = jQuery(this).data('subscriptionid');
 
+    console.log('planTitle : ' + planTitle);
+    console.log('userId : ' + userId);
+    console.log('subscriptionId : ' + subscriptionId);
+
     jQuery('#PlanTitle').html(planTitle);
-    // jQuery('#unsubscriptionMyAccountModalPlanTitle').val(planID);
-    jQuery('#Id').val(planID);
+    jQuery('#Id').val(userId);
     jQuery('#Subscription_Id').val(subscriptionId);
 
 });
 
-function unsubscriptionMyAccount() {
-    // subscriptionId, planID, planTitle
-
-    alert('CHOOOOS');
-    
-
-    
-
-    // var SubscriptionId = jQuery("#unsubscriptionMyAccountModalSubscriptionId").val();
-    // var Id = jQuery("#unsubscriptionMyAccountModalPlanId").val();
-
-    // data = {
-    //     action : 'unsubscription',
-    //     Id : Id,
-    //     SubscriptionId : SubscriptionId,
-    // }
-
-    // jQuery.ajax({
-    //     url: frontAjax.ajax_url,
-    //     type: 'POST',
-    //     dataType: 'json',
-    //     data: data,
-    //     success: function( response ){
-    //         if(response.status) {
-    //             jQuery('#msgBlock').addClass('alert-success');
-    //             jQuery('#alertTitle').html('Congratulation!');
-    //             jQuery('#msgContent').html(response.msg);
-    //             jQuery('#msgBlock').addClass('show');
-    //             jQuery('#loading').removeClass('show');
-    //             jQuery('#unsubscription-form').hide();               
-                
-    //             // Refresh page after close Modal
-    //             jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
-    //                 window.location.reload();
-    //             });                
-    //         } else {
-    //             jQuery('#msgBlock').addClass('alert-warning');
-    //             jQuery('#alertTitle').html('Error!');
-    //             jQuery('#msgContent').html(response.msg);
-    //             jQuery('#msgBlock').addClass('show');
-    //             jQuery('#unsubscriptionButton').show();
-    //             jQuery('#loading').removeClass('show');
-    //         }
-    //     },
-    //     error: function( error ){
-    //         jQuery('#msgBlock').addClass('alert-warning');
-    //         jQuery('#alertTitle').html('Error!');
-    //         jQuery('#msgContent').html(response.msg);
-    //         jQuery('#msgBlock').addClass('show');
-    //         jQuery('#unsubscriptionButton').show();
-    //         jQuery('#loading').removeClass('show');
-    //     }
-    // });
-
-    jQuery('#unsubscriptionMyAccountModal').modal('toggle');
-    jQuery('#unsubscriptionMyAccountModal').modal('show');
-}
 
 function updateMyAccountDetails() {
     var SubscriptionId = jQuery("#SubscriptionId").val();

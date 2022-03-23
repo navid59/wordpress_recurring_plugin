@@ -153,6 +153,15 @@ function recurring_unsubscription() {
      
     $jsonResultData = $a->setUnsubscription($subscriptionData);
     
+    // echo "<pre>";
+    // var_dump($_REQUEST);
+    // echo "-----------------------------<br>";
+    // var_dump($subscriptionData);
+    // echo "-----------------------------<br>";
+    // var_dump($jsonResultData);
+    // echo "</pre>";
+    // die();
+
     // Update subscription to DB 
     if($jsonResultData['code'] === "00") {
         $wpdb->update( 
@@ -210,7 +219,7 @@ function recurring_getMyAccountDetails() {
                                                     <h4 class="mb-3">'.__('Personal information').'</h4>
                                                     <div class="row">
                                                         <div class="col-md-6 mb-3">
-                                                            <input type="text" class="form-control" id="SubscriptionId" placeholder="" value="'.$MyDetails[0]['Subscription_Id'].'" readonly>
+                                                            <input type="hidden" class="form-control" id="SubscriptionId" placeholder="" value="'.$MyDetails[0]['Subscription_Id'].'" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -409,9 +418,9 @@ function recurring_updateSubscriberAccountDetails() {
                 $user = get_user_by('id', $current_user->ID);
                 update_user_caches($user);
 
-                $msg = __('Password is changed & ','ntpRp');
+                $msg = __('Password is changed . ','ntpRp');
             } else {
-                $msg = __('Password is not changed & ','ntpRp');
+                $msg = __('Password is not changed . ','ntpRp');
             }
         }
     }
@@ -482,7 +491,7 @@ function recurring_account_getMySubscriptions() {
                                           p.Grace_Period,
                                           p.Initial_Paymen,
                                           p.Status,
-                                          s.Subscription_Id,
+                                          s.id as userId,
                                           s.First_Name,
                                           s.Last_Name,
                                           s.Status,
@@ -502,7 +511,7 @@ function recurring_account_getMySubscriptions() {
                                 <h3 class="card-title">'.$plan['Amount'].' '.$plan['Currency'].'</h3>
                                 <h4 class="card-title">'.$plan['Frequency_Type'].' / '.$plan['Frequency_Value'].'</h4>
                                 <p class="card-text">'.$plan['Description'].'</p>
-                                <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" data-subscriptionId="'.$plan['Subscription_Id'].'" data-planId="'.$plan['id'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
+                                <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" data-subscriptionId="'.$plan['Subscription_Id'].'" data-userId="'.$plan['userId'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
                                     '.__('Unsubscription','ntpRp').'
                                 </button>
                                 <button type="button" class="btn btn-info" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
@@ -569,7 +578,7 @@ function recurring_account_getMySubscriptions() {
                                                                 <hr>
                                                                 <input type="hidden" class="form-control" id="Id" value="" readonly>
                                                                 <input type="hidden" class="form-control" id="Subscription_Id" value="" readonly>
-                                                                <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscription(); return false;">Unsubscribe</button>
+                                                                <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscriptionMyAccount(); return false;">Unsubscribe</button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -577,8 +586,8 @@ function recurring_account_getMySubscriptions() {
                                                         <strong>'.__('Loading...','ntpRp').'</strong>
                                                         <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
                                                     </div>
-                                                    <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
-                                                        <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                                                    <div class="alert alert-dismissible fade" id="myAccountMsgBlock" role="alert">
+                                                        <strong id="myAccountAlertTitle">!</strong> <span id="myAccountMsgContent"></span>.
                                                     </div>                                
                                                 </div>
                                                 <div class="modal-footer">
