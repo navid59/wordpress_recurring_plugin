@@ -107,7 +107,7 @@ function recurring_addSubscription() {
                 'PlanId'          => $_POST['PlanID'],
                 'StartDate'       => date("Y-m-d"),
                 'EndDate'         => "",
-                'Status'          => "ZZZZ",
+                'Status'          => 100,
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
 
@@ -378,7 +378,7 @@ function recurring_updateSubscriberAccountDetails() {
         if(!isStrongPass($subscriptionAccountDetails['Pass'])) {
             $validatePassLenght = array(
                 'status'=> false,
-                'msg'=> __('The password is a suitable password!','ntpRp'),
+                'msg'=> __('The password is not a suitable password!','ntpRp'),
             );
             echo json_encode($validatePassLenght);
             wp_die();
@@ -449,48 +449,15 @@ function recurring_updateSubscriberAccountDetails() {
         );
         wp_update_user( $args );
 
-        // if($subscriptionAccountDetails['Pass'] != "") {
-        //     /** 
-        //      * Change password
-        //      */
-        //     // wp_set_password( $subscriptionAccountDetails['Pass'], $current_user->ID );
-        //     $hash = wp_hash_password($subscriptionAccountDetails['Pass']);
-        //     $passChangeStatus = $wpdb->update(
-        //         $wpdb->prefix . "users",
-        //         array(
-        //             'user_pass'           => $hash,
-        //             'user_activation_key' => '',
-        //         ),
-        //         array( 'ID' => $current_user->ID )
-        //     );
-
-        //     /* 
-        //     * Clear cache of current user
-        //     * Logout & Then Login 
-        //     */ 
-        //     if($passChangeStatus != false ) {
-        //         clean_user_cache($current_user->ID);
-        //         wp_clear_auth_cookie();
-        //         wp_set_current_user($current_user->ID);
-        //         wp_set_auth_cookie($current_user->ID, true, false);
-
-        //         $user = get_user_by('id', $current_user->ID);
-        //         update_user_caches($user);
-
-        //         $msg = __('Password is changed & ','ntpRp');
-        //     }
-        // } 
-
-        $mySimulatedResult = array(
-            'status'=> true,
-            'msg'=> $msg.__( 'Data is updated successfully!','ntpRp')
-        );
-    } else {
-        $mySimulatedResult = array(
-            'status'=> false,
-            'msg'=> $msg.__('Data is NOT updated!. Please, try again.','ntpRp'),
-        );
+        
+        $msg.=__( 'Data is updated successfully!','ntpRp');
+        
     }
+
+    $mySimulatedResult = array(
+        'status'=> true,
+        'msg'=> $msg
+    );
     
     echo json_encode($mySimulatedResult);
     wp_die();
@@ -535,7 +502,7 @@ function recurring_account_getMySubscriptions() {
                                 <h3 class="card-title">'.$plan['Amount'].' '.$plan['Currency'].'</h3>
                                 <h4 class="card-title">'.$plan['Frequency_Type'].' / '.$plan['Frequency_Value'].'</h4>
                                 <p class="card-text">'.$plan['Description'].'</p>
-                                <button type="button" class="btn btn-primary" onclick="unsubscriptionMyAccount('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')" >
+                                <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" data-subscriptionId="'.$plan['Subscription_Id'].'" data-planId="'.$plan['id'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
                                     '.__('Unsubscription','ntpRp').'
                                 </button>
                                 <button type="button" class="btn btn-info" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
@@ -545,7 +512,7 @@ function recurring_account_getMySubscriptions() {
         }
     } else {
         $htmlThem = '<h4>'.__('You are not subscribe in any of our plans, yet!','ntpRp').'</h4>';
-        $htmlThem .= '<h5>'.__('Please, see the plan list!','ntpRp').'</h5>';
+        $htmlThem .= '<h5>'.__('Please, check them out!','ntpRp').'</h5>';
     }
     
     $frontNextPayment = '<!-- Modal -->
@@ -596,13 +563,13 @@ function recurring_account_getMySubscriptions() {
                                                         <div class="col-md-12 order-md-1">
                                                             <form id="unsubscription-form" class="needs-validation" novalidate>
                                                                 '.__('Are you sure to unsubscribe from ','ntpRp').'
-                                                                <span id="unsubscriptionMyAccountModalPlanTitle" > - </span> !?
+                                                                <span id="PlanTitle" > - </span> !?
                                                                 <br>
                                                                 '.__('To unsubscribe click on unsubscribe button.','ntpRp').' '.__('Otherwise close the window','ntpRp').'
                                                                 <hr>
-                                                                <input type="hidden" class="form-control" id="unsubscriptionMyAccountModalPlanId" value="" readonly>
-                                                                <input type="hidden" class="form-control" id="unsubscriptionMyAccountModalSubscriptionId" value="" readonly>
-                                                                <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscriptionMyAccount(); return false;">Unsubscribe</button>
+                                                                <input type="hidden" class="form-control" id="Id" value="" readonly>
+                                                                <input type="hidden" class="form-control" id="Subscription_Id" value="" readonly>
+                                                                <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscription(); return false;">Unsubscribe</button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -1078,8 +1045,17 @@ function planInfo($planId) {
 function authenticateUser($userInfo) {
     $current_user = wp_get_current_user();
     if($current_user->ID == 0) {
-        // Create User
-        createUser($userInfo);
+        if(is_email($userInfo['Email']) != false ) {
+            // Create User
+            createUser($userInfo);
+        } else {
+            $authenticateResult = array(
+                'status'=> false,
+                'msg'=> __('Email is not correct!', 'ntpRp'),
+                );
+            echo json_encode($authenticateResult);
+            wp_die();
+        }        
     } else {
         if($userInfo['UserID'] != $current_user->user_login || $userInfo['Email'] != $current_user->user_email ) {
             $authenticateResult = array(
