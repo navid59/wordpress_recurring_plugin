@@ -54,18 +54,17 @@ jQuery(document).ready(function () {
 
 
 function subscriptionHistory(subscriptionId) {
-    alert('History of subscription with ID :' + subscriptionId);
+    alert('History of subscription with ID :' + subscriptionId + ' The history will be base on UserID');
     jQuery('#subscriberHistorytModal').modal('toggle');
     jQuery('#subscriberHistorytModal').modal('show');
 }
 
-function subscriptionDetails(subscriptionId) {
+function subscriptionDetails(userId) {
     subscriptionDetailData = {
         action : 'getSubscriptionDetail',
-        subscriptionId: subscriptionId
+        userId : userId
     }
     jQuery.post(ajaxurl, subscriptionDetailData, function(response){
-        // console.log(response);
         jsonResponse = JSON.parse(response);
         console.log(jsonResponse);
         if(jsonResponse.code == "00") {
@@ -80,6 +79,18 @@ function subscriptionDetails(subscriptionId) {
             jQuery("#SubscriberInfo_PlanAmount").html(jsonResponse.data[0]['Amount']);
             jQuery("#SubscriberInfo_StartDate").html(jsonResponse.data[0]['StartDate']);
             jQuery("#SubscriberInfo_Status").html(jsonResponse.data[0]['status']);
+            const rows = jsonResponse.plans.map(plan => {
+                const tr = jQuery('<tr></tr>');
+                tr.append(jQuery('<td></td>').text(plan.Title));
+                tr.append(jQuery('<td></td>').text(plan.Amount));
+                tr.append(jQuery('<td></td>').text(plan.StartDate));
+                tr.append(jQuery('<td></td>').text(plan.Status));
+                tr.append(jQuery('<td></td>').text(plan.StartDate));
+                // tr.append(jQuery('<td></td>').text(plan.Subscription_Id));                
+                tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-info" onclick="subscriptionNextPayment('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-credit-card"></i></button>'));                
+                return tr;
+            });
+            jQuery("#subscriberPlanList").html(rows);
         } else {
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
@@ -92,8 +103,10 @@ function subscriptionDetails(subscriptionId) {
     jQuery('#subscriberInfotModal').modal('show');
 }
 
-function subscriptionNextPayment(subscriptionId, subscriberName) {
+
+function subscriptionNextPayment(subscriptionId, subscriberName, planTitle) {
     jQuery('#subscriberName').html(subscriberName);
+    jQuery('#thePlanTitle').html(planTitle);
 
 
     getNextPaymentData = {

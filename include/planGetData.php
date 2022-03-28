@@ -25,9 +25,9 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$plan['Initial_Paymen'] === 'true' ? "Yes" : "No");
             $date = new DateTime($plan['CreatedAt']);
             printf("<td>%1s</td>",$date->format('Y-m-d'));
-            printf('<td><button type="button" class="btn btn-success" onclick="copyPlan('.$plan['Plan_Id'].',\''.$plan['Title'].'\')" style="margin-right:5px;"><i class="fa fa-code"></i></button>');
-            printf('<button type="button" class="btn btn-secondary" onclick="editPlan('.$plan['Plan_Id'].')" style="margin-right:5px;"><i class="fa fa-pencil"></i></button>');
-            printf('<button type="button" class="btn btn-danger" onclick="delPlan('.$plan['Plan_Id'].');"><i class="fa fa-trash"></i></button></td>');
+            printf('<td><button type="button" class="btn btn-success" onclick="copyPlan('.$plan['Plan_Id'].',\''.$plan['Title'].'\')" style="margin-right:5px;" title="'.__('copy Short code','ntpRp').'"><i class="fa fa-code"></i></button>');
+            printf('<button type="button" class="btn btn-secondary" onclick="editPlan('.$plan['Plan_Id'].')" style="margin-right:5px;" title="'.__('Edit plan','ntpRp').'"><i class="fa fa-pencil"></i></button>');
+            printf('<button type="button" class="btn btn-danger" onclick="delPlan('.$plan['Plan_Id'].');"  title="'.__('Delete plan','ntpRp').'"><i class="fa fa-trash"></i></button></td>');
         echo "</tr>";
     }
 }

@@ -516,8 +516,8 @@ class NetopiapaymentsRecurringPayment extends recurring
             
             <?php 
             include_once('include/subscriptions.php');
-            include_once('include/partial/modalNextPayment.php');
             include_once('include/partial/modalSubscriberInfo.php');
+            include_once('include/partial/modalNextPayment.php');
             include_once('include/partial/modalSubscriberHistory.php');
             ?>
         <div>    
@@ -537,8 +537,8 @@ class NetopiapaymentsRecurringPayment extends recurring
             
             <?php 
             include_once('include/subscriptionsInfinite.php');
-            include_once('include/partial/modalNextPayment.php');
             include_once('include/partial/modalSubscriberInfo.php');
+            include_once('include/partial/modalNextPayment.php');
             include_once('include/partial/modalSubscriberHistory.php');
             ?>
         <div>    

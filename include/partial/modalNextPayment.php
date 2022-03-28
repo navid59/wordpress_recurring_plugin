@@ -1,4 +1,4 @@
-<div id="nextPaymentModal" class="modal fade" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
+<div id="nextPaymentModal" class="modal fade" data-backdrop-limit="1" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,10 +10,16 @@
             <div class="modal-body">
               <div id="">
                 <?php
-                echo __('Next payment schedule for ', 'ntpRp');
+                echo __('Next payment schedule of ', 'ntpRp');
                 ?>
                 <strong>
                     <span id="subscriberName"></span>
+                </strong>
+                <?php
+                echo __(' for ', 'ntpRp');
+                ?>
+                <strong>
+                    <span id="thePlanTitle"></span>
                 </strong>
               </div>        
               <div>

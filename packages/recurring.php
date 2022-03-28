@@ -19,9 +19,9 @@
             $accountPageFirstParagraph = get_option($this->slug.'_account_paragraph_first', array());
             $accountPageSecoundParagraph = get_option($this->slug.'_account_paragraph_secound', array());
             return array(
-                "subtitle" => $accountPageSubtitle,
-                "firstParagraph" => $accountPageFirstParagraph,
-                "secoundParagraph" => $accountPageSecoundParagraph
+                "subtitle" => !empty($accountPageSubtitle) ? $accountPageSubtitle : __('My subscription account','ntpRp') ,
+                "firstParagraph" => !empty($accountPageFirstParagraph) ? $accountPageFirstParagraph : __('Welcome to recurring account page','ntpRp'),
+                "secoundParagraph" => !empty($accountPageSecoundParagraph) ? $accountPageSecoundParagraph : __('To get more information about your recurring situation, use the menu','ntpRp')
             );
         }
 

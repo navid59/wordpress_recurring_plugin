@@ -12,6 +12,10 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
+    /**
+     * Get subscription list
+     * Use it at Datatable in admin
+     */
     function getSubscriptionList(){
         global $wpdb;
         // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
@@ -29,6 +33,7 @@ class recurringAdmin extends recurring {
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN wp_ntp_plans as p 
                                                 WHERE s.PlanId = p.Plan_Id 
+                                                GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
         if(count($subscriptions)) {
             $errorCode = "00";
@@ -47,6 +52,7 @@ class recurringAdmin extends recurring {
     }
 
     function getSubscriptionInfinite(){
+        die('Important Not Need Will Delete');
         global $wpdb;
         /**
          * Just Template 
@@ -67,6 +73,7 @@ class recurringAdmin extends recurring {
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN wp_ntp_plans as p 
                                                 WHERE s.PlanId = p.Plan_Id 
+                                                GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
         if(count($subscriptions)) {
             $errorCode = "00";
@@ -459,9 +466,13 @@ function recurring_getNextPayment() {
 }
 add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
 
+/** 
+ * Get sunscriber info
+ */
 function recurring_getSubscriptionDetail(){
     global $wpdb;
-    $subscriptionId = $_POST['subscriptionId'];
+    $subscriptionInternUserId = $_POST['userId'];
+    $planList = array();
     $subscription = $wpdb->get_results("SELECT s.id,
                                                 s.Subscription_Id,
                                                 s.First_Name,
@@ -478,9 +489,25 @@ function recurring_getSubscriptionDetail(){
                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                             INNER JOIN wp_ntp_plans as p 
                                             ON s.PlanId = p.Plan_Id 
-                                            WHERE s.Subscription_Id = $subscriptionId
+                                            WHERE s.userId = '$subscriptionInternUserId'
                                             LIMIT 1", "ARRAY_A");
     if(count($subscription)) {
+        /**Get list of user's plans */
+        $planList = $wpdb->get_results("SELECT 
+                                            p.id,
+                                            p.Plan_Id,
+                                            p.Title,
+                                            p.Amount,
+                                            s.First_Name,
+                                            s.Last_Name,
+                                            s.Subscription_Id,
+                                            s.StartDate,
+                                            s.Status
+                                        FROM `wp_ntp_plans` as p
+                                        INNER JOIN wp_ntp_subscriptions as s
+                                        ON s.PlanId = p.Plan_Id
+                                        WHERE s.UserID = '$subscriptionInternUserId'", "ARRAY_A");
+
         $a = new recurringAdmin();
         $subscription[0]['status'] = $a->getStatusStr('subscription', $subscription[0]['status']);
         $errorCode = "00";
@@ -493,7 +520,8 @@ function recurring_getSubscriptionDetail(){
     $resultData = array(
         "code" => $errorCode,
         "message" => $errorMsg,
-        "data" => $subscription
+        "data" => $subscription,
+        "plans" => $planList
         );
     echo json_encode($resultData);
     die();
