@@ -62,7 +62,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             'capability' => 'manage_options',
             'callback' => array( $this, 'dashbord' ),
             'icon' => 'dashicons-format-status',
-            'position' => 100,
+            'position' => 99,
             'menuTitle' => 'Dashbord',
             'menuSlug' => 'recurring_dashbord'
             ),            
@@ -70,18 +70,27 @@ class NetopiapaymentsRecurringPayment extends recurring
             'capability' => 'manage_options',
             'callback' => array( $this, 'subscription_UI' ),
             'icon' => 'dashicons-format-status',
-            'position' => 101,
+            'position' => 100,
             'pageTitle' => "Subscription management",
-            'menuTitle' => 'Subscription',
+            'menuTitle' => 'Subscription - DELETE',
             'menuSlug' => 'recurring_subscription'
-        ),            
+        ),
+        'subscriptionAjax'=> array(
+            'capability' => 'manage_options',
+            'callback' => array( $this, 'subscription_UI_Ajax' ),
+            'icon' => 'dashicons-format-status',
+            'position' => 101,
+            'pageTitle' => __('Subscription Management','ntpRp'),
+            'menuTitle' => __('Subscriptions','ntpRp'),
+            'menuSlug' => 'recurring_subscription_ajax'
+        ),         
         'plan'=> array(
             'capability' => 'manage_options',
             'callback' => array( $this, 'plan_UI' ),
             'icon' => 'dashicons-format-status',
             'position' => 102,
-            'pageTitle' => "Plan management",
-            'menuTitle' => 'Plans',
+            'pageTitle' => __('Plan Management','ntpRp'),
+            'menuTitle' => __('Plans','ntpRp'),
             'menuSlug' => 'recurring_plan'
         ),        
         'report'=> array(
@@ -89,27 +98,18 @@ class NetopiapaymentsRecurringPayment extends recurring
             'callback' => array( $this, 'report_UI' ),
             'icon' => 'dashicons-format-status',
             'position' => 103,
-            'pageTitle' => "Report management",
-            'menuTitle' => 'Reports',
+            'pageTitle' => __('Report Management','ntpRp'),
+            'menuTitle' => __('Reports','ntpRp'),
             'menuSlug' => 'recurring_repport'
-        ),
-        'subscriptionAjax'=> array(
-            'capability' => 'manage_options',
-            'callback' => array( $this, 'subscription_UI_Ajax' ),
-            'icon' => 'dashicons-format-status',
-            'position' => 104,
-            'pageTitle' => "Subscription management with scrolling infinite",
-            'menuTitle' => 'Subscription Infinite',
-            'menuSlug' => 'recurring_subscription_ajax'
         )           
     );
 
 
         add_menu_page( $this->page_title, $this->menu_title, $this->menuItems['main']['capability'], $this->slug, $this->menuItems['main']['callback'], $this->menuItems['main']['icon'], $this->menuItems['main']['position'] );
         add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
+        add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['plan']['pageTitle'], $this->menuItems['plan']['menuTitle'], $this->menuItems['plan']['capability'], $this->menuItems['plan']['menuSlug'], $this->menuItems['plan']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
-        add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
     }
 
     public function recurring_notify_section() {
