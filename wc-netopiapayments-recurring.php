@@ -1,13 +1,16 @@
 <?php
+/**
+ * NETOPIA Payments - Recurring payment
+ * Admin section
+ */
+
 add_action( 'admin_enqueue_scripts', 'enqueue_and_register_ntp_recurring_admin_js_scripts' );
 function enqueue_and_register_ntp_recurring_admin_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'2.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_fontawesome', plugin_dir_url( __FILE__ ) . 'css/fontawesome/css/all.css',array(),'2.0' ,false);
-    // wp_enqueue_style( 'ntp_recurring_admin_css_mdb', plugin_dir_url( __FILE__ ) . 'css/mdb.css',array(),'2.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_custom', plugin_dir_url( __FILE__ ) . 'css/style.css',array(),'3.0.0' ,false);
 
-    
     wp_register_script( 'ntp_recurring_admin_script-popper', plugin_dir_url( __FILE__ ) . 'js/popper.js', array('jquery'), '1.0.0', true );
     wp_enqueue_script( 'ntp_recurring_admin_script-popper' );
 
@@ -30,7 +33,6 @@ function enqueue_and_register_ntp_recurring_admin_js_scripts(){
     wp_enqueue_script( 'ntp_recurring_admin_script' );
  }
  
-
 class NetopiapaymentsRecurringPayment extends recurring
 {
     protected $page_title = 'NETOPIA Payments Recurring Plugin';
@@ -51,19 +53,6 @@ class NetopiapaymentsRecurringPayment extends recurring
     
     add_action( 'admin_init', array( $this, 'recurring_message_section' ));
     add_action( 'admin_init', array( $this, 'recurring_message_fields' ));
-    }
-
-
-    public function getSlug(){
-        return $this->slug;
-    }
-
-    public function getPluginPath() {
-        return plugin_dir_path( __FILE__ );
-    }
-
-    public function getVersion() {
-        return get_bloginfo( 'version' );
     }
 
     public function create_plugin_settings() {
@@ -122,9 +111,6 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
     }
-
-
-
 
     public function recurring_notify_section() {
         add_settings_section( 'urls', 'URLs & Links', array( $this, 'section_callback' ), 'notify_management' );
@@ -347,35 +333,6 @@ class NetopiapaymentsRecurringPayment extends recurring
         }
     }
 
-    // public function section_callback( $arguments )
-    // {
-    //     switch( $arguments['id'] ){
-    //         case 'general':
-    //             echo '';
-    //             break;
-    //         case 'conditions':
-    //             echo '';
-    //             break;
-    //         case 'declaration':
-    //             echo '';
-    //             break;
-    //         case 'ssl':
-    //             echo '';
-    //             break;
-    //         case 'img':
-    //             echo '';
-    //             break;
-    //         case 'cerere':
-    //             echo '<spam style="padding-right: 20px;" >Currenty you have <strong>'.rand(0,100).' creadit</strong> 
-    //                     <br> witch meanse you have possibility to send <strong>'.rand(0,1000).' SMS </strong> total&nbsp;&nbsp;&nbsp;';
-    //             echo '<br>So you can simply ask for charge by clicking at <a href="https://www.web2sms.ro/balance/feed/products" target="_blank">here</a></spam>';
-    //             break;
-    //         case 'msg2sms':
-    //             echo '';
-    //             break;
-    //     }
-    // }
-
     public function field_callback( $arguments ) {
         $value = get_option( $arguments['uid'] ); // Get the current value, if there is one
         if( ! $value ) { // If no value exists
@@ -436,12 +393,6 @@ class NetopiapaymentsRecurringPayment extends recurring
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], 'text', $arguments['placeholder'], $value );
                 // printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
             break;
-            // case 'send_request': // Ask NETOPIA Payments
-            //     //
-            //     break;
-            //     case 'send_button': // Send SMS to All
-            //         printf('<button type="button" id="%2$s_send" class="button button-primary">%1$s</button>', 'send to all ;-)', $arguments['uid']);
-            //         break;
         }
 
         // If there is help text
