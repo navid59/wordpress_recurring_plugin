@@ -33,7 +33,7 @@ jQuery(document).ready(function () {
         },
         // paging : true,
 		columns: [
-			{ "data": "id" },
+			{ "data": "Nr" },
 			{ "data": "First_Name" },
 			{ "data": "Last_Name" },
 			{ "data": "Email" },

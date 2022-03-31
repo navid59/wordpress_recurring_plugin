@@ -394,7 +394,8 @@ add_action('wp_ajax_getPlanInfo', 'getPlanInfo');
 function getInfinitSubscribtion() {
     $obj = new recurringAdmin();
     $start = $_POST['start']; 
-    $limit = $_POST['limit']; 
+    $limit = $_POST['limit'];
+    $maxInDT = 2;
     global $wpdb;
         /**
          * Query by pagination 
@@ -420,40 +421,52 @@ function getInfinitSubscribtion() {
                                                     p.Title,
                                                     s.Status,
                                                     s.StartDate,
-                                                    s.Subscription_Id
+                                                    s.Subscription_Id,
+                                                    COUNT(*) as planCounter,
+                                                    JSON_ARRAYAGG(
+                                                        json_object(
+                                                            'name', p.Title,
+                                                            'amount', p.Amount,
+                                                            'currency', p.Currency
+                                                        )
+                                                    ) as PlanList
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
                                                 WHERE s.PlanId = p.Plan_Id 
-                                                GROUP BY s.UserID
+                                                GROUP BY UserID
                                                 ORDER BY s.id DESC 
                                                 LIMIT ".$start.",".$limit, "ARRAY_A");
 
         $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix."ntp_subscriptions"." GROUP BY UserID ) as ntp_s", "ARRAY_A");
 
 
-    for ($i = 0 ; $i < count($subscriptions) ; $i++) {
-
-////
-$userPlans = $wpdb->get_results("SELECT * 
-                                 FROM wp_ntp_subscriptions 
-                                --  WHERE UserID =  '.$subscriptions[$i]['UserID'].'
-                                 ", "ARRAY_A");
-                                 var_dump($userPlans);
-                                 die();
-////
-
-        $subscriptions[$i]['Status'] = $obj->getStatusStr('subscription',$subscriptions[$i]['Status']);
-        // $subscriptions[$i]['PlanTitle'] = $subscriptions[$i]['Title'] . $planCounter = $subscriptions[$i]['pcount'] > 1 ? '<b>'.__(' & More','ntpRp').'</b>' : '';
-        $subscriptions[$i]['PlanTitle'] = $subscriptions[$i]['Title'] .' --> '.$userPlans[0]['Amount'];
-        $subscriptions[$i]['Action'] = '
-        <button type="button" class="btn btn-secondary" onclick="subscriptionHistory('.$subscriptions[$i]['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
-        <button type="button" class="btn btn-success" onclick="subscriptionDetails('.$subscriptions[$i]['Subscription_Id'].')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
-        <button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscriptions[$i]['Subscription_Id'].',\''.$subscriptions[$i]['First_Name'].' '.$subscriptions[$i]['Last_Name'].'\')"><i class="fa fa-credit-card"></i></button>
-        <span class="fa-stack fa-1x" data-count="'.$userPlans[0].'">
-            <i class="fa fa-circle fa-stack-2x"></i>
-            <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
-        </span>';
-    }
+        for ($i = 0 ; $i < count($subscriptions) ; $i++) {
+            $subscriptions[$i]['Nr'] = $i+1;
+            $subscriptions[$i]['Status'] = $obj->getStatusStr('subscription',$subscriptions[$i]['Status']);
+            
+            $PlanList = json_decode($subscriptions[$i]['PlanList'], true);
+            $planInfoStr = '';
+            for($j=0; $j < $maxInDT ; $j++) {
+                $planInfoStr .= $PlanList[$j]['name'].' , '.$PlanList[$j]['amount'].' '.$PlanList[$j]['currency'];
+                if(count($PlanList) >= $maxInDT ) {
+                    $planInfoStr .= '<br>';
+                } else {
+                    break;
+                }
+            }
+            if(count($PlanList) > $maxInDT) {
+                $planInfoStr.= __(' & more','ntpRp');
+            }
+            $subscriptions[$i]['PlanTitle'] = $planInfoStr;
+            $subscriptions[$i]['Action'] = '
+            <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
+            <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
+            <!-- <button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscriptions[$i]['Subscription_Id'].',\''.$subscriptions[$i]['First_Name'].' '.$subscriptions[$i]['Last_Name'].'\')"><i class="fa fa-credit-card"></i></button> -->
+            <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
+            </span>';
+        }
     
     $resultData = array (
         'recordsTotal' => $subscriptionsTotalCount[0]['count'],
