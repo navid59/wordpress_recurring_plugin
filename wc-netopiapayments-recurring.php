@@ -203,7 +203,6 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => ''
             )
         );
-
         foreach( $fields as $field ){
             add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'account_management', $field['section'], $field );
             register_setting( 'account_management', $field['uid'] );

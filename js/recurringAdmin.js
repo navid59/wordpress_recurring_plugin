@@ -5,7 +5,6 @@ jQuery(document).ready(function () {
 
     // Infinit scrolling for Subscriptions 
 	jQuery('#dtInfiniteScrollingExample').dataTable( {
-		// processing: true,
 		serverSide: true,
         ordering : false,
         searching : false,
@@ -40,8 +39,7 @@ jQuery(document).ready(function () {
 			{ "data": "Email" },
 			{ "data": "Tel" },
 			{ "data": "UserID" },
-			{ "data": "Title" },
-			{ "data": "Amount" },
+			{ "data": "PlanTitle" },
 			{ "data": "Status" },
 			{ "data": "StartDate" },
 			{ "data": "Action" },
