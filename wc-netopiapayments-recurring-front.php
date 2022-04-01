@@ -542,7 +542,7 @@ function recurring_account_getMySubscriptions() {
                         </div>';
         }
     } else {
-        $htmlThem = '<h4>'.__('You are not subscribe in any of our plans, yet!','ntpRp').'</h4>';
+        $htmlThem = '<h4>'.__('You are not subscribe in any of our plans!','ntpRp').'</h4>';
         $htmlThem .= '<h5>'.__('Please, check them out!','ntpRp').'</h5>';
     }
     
@@ -666,6 +666,9 @@ function ntpMyAccount() {
                                 <ul class="nav nav-pills nav-flush flex-column bg-light">
                                     <li class="nav-item">
                                         <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link border-bottom" id="frontAccountMyPaymentHistory" ><i class="fas fa-file-invoice-dollar" style="padding-right:15px;"></i> '.__('My History', 'ntpRp').'</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>

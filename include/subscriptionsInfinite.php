@@ -3,7 +3,6 @@
       <table id="dtInfiniteScrollingExample" class="table display nowrap" width="100%">
         <thead>
           <tr>
-            <th><?php echo __('Nr','ntpRp');?></th>
             <th><?php echo __('First Name','ntpRp');?></th>
             <th><?php echo __('Last Name','ntpRp');?></th>
             <th><?php echo __('Email','ntpRp');?></th>
@@ -18,7 +17,6 @@
         
         <tfoot>
           <tr>
-            <th><?php echo __('Nr','ntpRp');?></th>
             <th><?php echo __('First Name','ntpRp');?></th>
             <th><?php echo __('Last Name','ntpRp');?></th>
             <th><?php echo __('Email','ntpRp');?></th>

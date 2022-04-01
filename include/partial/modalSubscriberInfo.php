@@ -17,11 +17,6 @@
               <h6><?php echo __('City', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_City"> - </span></h6>
               <br>
               <h4 class="modal-title" ><?php echo __('Subscription List','ntpRp');?></h4>
-              <!-- <h6><?php echo __('Plan Title', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_PlanTitle"> - </span></h6>
-              <h6><?php echo __('Amount', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_PlanAmount"> - </span></h6>
-              <h6><?php echo __('Start date', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_StartDate"> - </span></h6>
-              <h6><?php echo __('Status', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_Status"> - </span></h6>
-              <hr> -->
               <div class="">
                 <div>
                 <table id="dtBasicExample" class="table" width="100%">

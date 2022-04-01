@@ -66,7 +66,16 @@
                     }
                 break;
                 case 'plan':
-                    $statusStr = $statusCode;
+                    switch ($statusCode) {
+                        case '1':
+                            $statusStr = __('Subscribed','ntpRp');
+                            break;
+                        case '2':
+                            $statusStr = __('Unsubscribed','ntpRp');
+                            break;
+                        default:
+                            $statusStr = $statusCode;
+                    }
                 break;
                 case 'report':
                     switch ($statusCode) {

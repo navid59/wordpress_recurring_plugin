@@ -33,7 +33,6 @@ jQuery(document).ready(function () {
         },
         // paging : true,
 		columns: [
-			{ "data": "Nr" },
 			{ "data": "First_Name" },
 			{ "data": "Last_Name" },
 			{ "data": "Email" },
@@ -73,17 +72,14 @@ function subscriptionDetails(userId) {
             jQuery("#SubscriberInfo_Email").html(jsonResponse.data[0]['Email']);
             jQuery("#SubscriberInfo_Address").html(jsonResponse.data[0]['Address']);
             jQuery("#SubscriberInfo_City").html(jsonResponse.data[0]['City']);
-            jQuery("#SubscriberInfo_PlanTitle").html(jsonResponse.data[0]['Title']);
-            jQuery("#SubscriberInfo_PlanAmount").html(jsonResponse.data[0]['Amount']);
-            jQuery("#SubscriberInfo_StartDate").html(jsonResponse.data[0]['StartDate']);
-            jQuery("#SubscriberInfo_Status").html(jsonResponse.data[0]['status']);
+            // jQuery("#SubscriberInfo_Status").html(jsonResponse.data[0]['Status']);
             const rows = jsonResponse.plans.map(plan => {
                 const tr = jQuery('<tr></tr>');
                 tr.append(jQuery('<td></td>').text(plan.Title));
                 tr.append(jQuery('<td></td>').text(plan.Amount));
-                tr.append(jQuery('<td></td>').text(plan.StartDate));
+                tr.append(jQuery('<td></td>').text(plan.StartDate.split(' ')[0]));
                 tr.append(jQuery('<td></td>').text(plan.Status));
-                tr.append(jQuery('<td></td>').text(plan.StartDate));
+                tr.append(jQuery('<td></td>').text('Last Payment Date'));
                 // tr.append(jQuery('<td></td>').text(plan.Subscription_Id));                
                 tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-info" onclick="subscriptionNextPayment('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-credit-card"></i></button>'));                
                 return tr;

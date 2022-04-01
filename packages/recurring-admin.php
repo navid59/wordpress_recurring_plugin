@@ -441,9 +441,9 @@ function getInfinitSubscribtion() {
 
 
         for ($i = 0 ; $i < count($subscriptions) ; $i++) {
-            $subscriptions[$i]['Nr'] = $i+1;
             $subscriptions[$i]['Status'] = $obj->getStatusStr('subscription',$subscriptions[$i]['Status']);
             
+            // Customize Plan info for Datatable
             $PlanList = json_decode($subscriptions[$i]['PlanList'], true);
             $planInfoStr = '';
             for($j=0; $j < $maxInDT ; $j++) {
@@ -457,7 +457,9 @@ function getInfinitSubscribtion() {
             if(count($PlanList) > $maxInDT) {
                 $planInfoStr.= __(' & more','ntpRp');
             }
+            
             $subscriptions[$i]['PlanTitle'] = $planInfoStr;
+            $subscriptions[$i]['StartDate'] = date('Y-m-d', strtotime($subscriptions[$i]['StartDate']));
             $subscriptions[$i]['Action'] = '
             <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
             <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
@@ -539,8 +541,10 @@ function recurring_getSubscriptionDetail(){
                                         ON s.PlanId = p.Plan_Id
                                         WHERE s.UserID = '$subscriptionInternUserId'", "ARRAY_A");
 
-        $a = new recurringAdmin();
-        $subscription[0]['status'] = $a->getStatusStr('subscription', $subscription[0]['status']);
+        $obj = new recurringAdmin();
+        for($i = 0; $i < count($planList); $i++) {
+            $planList[$i]['Status'] = $obj->getStatusStr('plan', $planList[$i]['Status']);
+        }
         $errorCode = "00";
         $errorMsg = "";
     } else {

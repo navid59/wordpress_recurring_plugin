@@ -1,8 +1,17 @@
 jQuery(document).ready(function () {
+    jQuery('#frontAccountMyPaymentHistory').click(function() {
+        jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountMyPaymentHistory').addClass('active');
+        jQuery('#frontAccountDetails').removeClass('active');
+        jQuery('#frontAccountLogout').removeClass('active');
+        //
+        alert('History is not implimented pageYOffset, first do IPN-UL');
+    });
+
     jQuery('#frontAccountMysubscription').click(function() {
         jQuery('#frontAccountMysubscription').addClass('active');
+        jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
-        jQuery('#frontAccountChangePass').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
 
         data = {
@@ -31,8 +40,8 @@ jQuery(document).ready(function () {
 
     jQuery('#frontAccountLogout').click(function() {
         jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
-        jQuery('#frontAccountChangePass').removeClass('active');
         jQuery('#frontAccountLogout').addClass('active');
 
         data = {
@@ -57,40 +66,11 @@ jQuery(document).ready(function () {
         });
     });
 
-    jQuery('#frontAccountChangePass').click(function() {
-        alert('Change Pass is clicked!!');
-        jQuery('#frontAccountMysubscription').removeClass('active');
-        jQuery('#frontAccountDetails').removeClass('active');
-        jQuery('#frontAccountChangePass').addClass('active');
-        jQuery('#frontAccountLogout').removeClass('active');
-
-        data = {
-            action : 'myAccountPassword'
-        }
-    
-        jQuery.ajax({
-            url: frontAjax.ajax_url,
-            type: 'POST',
-            dataType: 'json',
-            data: data,
-            success: function( response ){
-                if(response.status) {                    
-                    jQuery('#ntpAccountBody').html(response.data);
-                    
-                } else {
-                    jQuery('#ntpAccountBody').html(response.msg);
-                }
-            },
-            error: function( error ){
-                jQuery('#ntpAccountBody').html(response.msg);
-            }
-        });
-    });
 
     jQuery('#frontAccountDetails').click(function() {
         jQuery('#frontAccountMysubscription').removeClass('active');
+        jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').addClass('active');
-        jQuery('#frontAccountChangePass').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
         
         data = {
