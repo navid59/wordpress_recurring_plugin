@@ -419,7 +419,7 @@ function getInfinitSubscribtion() {
                                                     s.Tel,
                                                     s.UserID,
                                                     p.Title,
-                                                    s.Status,
+                                                    min(s.Status) as Status,
                                                     s.StartDate,
                                                     s.Subscription_Id,
                                                     COUNT(*) as planCounter,
@@ -463,7 +463,6 @@ function getInfinitSubscribtion() {
             $subscriptions[$i]['Action'] = '
             <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
             <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
-            <!-- <button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscriptions[$i]['Subscription_Id'].',\''.$subscriptions[$i]['First_Name'].' '.$subscriptions[$i]['Last_Name'].'\')"><i class="fa fa-credit-card"></i></button> -->
             <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'">
                 <i class="fa fa-circle fa-stack-2x"></i>
                 <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
@@ -539,7 +538,8 @@ function recurring_getSubscriptionDetail(){
                                         FROM `wp_ntp_plans` as p
                                         INNER JOIN wp_ntp_subscriptions as s
                                         ON s.PlanId = p.Plan_Id
-                                        WHERE s.UserID = '$subscriptionInternUserId'", "ARRAY_A");
+                                        WHERE s.UserID = '$subscriptionInternUserId'
+                                        ORDER BY s.StartDate DESC", "ARRAY_A");
 
         $obj = new recurringAdmin();
         for($i = 0; $i < count($planList); $i++) {
