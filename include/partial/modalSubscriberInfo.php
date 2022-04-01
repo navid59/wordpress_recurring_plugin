@@ -7,45 +7,49 @@
                   <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">            
-              <h6><?php echo __('First Name', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_FirstaName"> - </span></h6>
-              <h6><?php echo __('Last Name', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_LastName"> - </span></h6>
-              <h6><?php echo __('User ID', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_UserId"> - </span></h6>
-              <h6><?php echo __('Tel', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_Tel"> - </span></h6>
-              <h6><?php echo __('Email', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_Email"> - </span></h6>
-              <h6><?php echo __('Address', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_Address"> - </span></h6>
-              <h6><?php echo __('City', 'ntpRp');?> : <span class="font-weight-bold" id="SubscriberInfo_City"> - </span></h6>
-              <br>
-              <h4 class="modal-title" ><?php echo __('Subscription List','ntpRp');?></h4>
-              <div class="">
-                <div>
-                <table id="dtBasicExample" class="table" width="100%">
-                    <thead>
-                    <tr>
-                        <th><?php echo __('Title','ntpRp');?></th>
-                        <th><?php echo __('Amount','ntpRp');?></th>
-                        <th><?php echo __('Start date','ntpRp');?></th>
-                        <th><?php echo __('Status','ntpRp');?></th>
-                        <th><?php echo __('Last payment','ntpRp');?></th>
-                        <th><?php echo __('Next payment','ntpRp');?></th>
-                    </tr>
-                    </thead>
-                    <tbody id="subscriberPlanList">
-                        <!-- Plan List -->
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <th><?php echo __('Title','ntpRp');?></th>
-                        <th><?php echo __('Amount','ntpRp');?></th>
-                        <th><?php echo __('Start date','ntpRp');?></th>
-                        <th><?php echo __('Status','ntpRp');?></th>
-                        <th><?php echo __('Last payment','ntpRp');?></th>
-                        <th><?php echo __('Next payment','ntpRp');?></th>
-                    </tr>
-                    </tfoot>
-                </table>
+            <div class="modal-body">
+                <div class="card col" style="">
+                    <div class="card-body">
+                        <h3 class="card-title"><?php echo __('Personal information', 'ntpRp');?></h3>
+                        <h6><span class="font-weight-bold"><?php echo __('First Name', 'ntpRp');?> :</span><span id="SubscriberInfo_FirstaName"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('Last Name', 'ntpRp');?> :</span><span id="SubscriberInfo_LastName"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('User ID', 'ntpRp');?> :</span><span id="SubscriberInfo_UserId"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('Tel', 'ntpRp');?> :</span><span id="SubscriberInfo_Tel"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('Email', 'ntpRp');?> :</span><span id="SubscriberInfo_Email"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('Address', 'ntpRp');?> :</span><span id="SubscriberInfo_Address"> - </span></h6>
+                        <h6><span class="font-weight-bold"><?php echo __('City', 'ntpRp');?> :</span><span id="SubscriberInfo_City"> - </span></h6>
+                    </div>
                 </div>
-            </div>
+                <div class="card col" style="">
+                    <div class="card-body">
+                        <h3 class="card-title"><?php echo __('Subscription List','ntpRp');?></h3>
+                        <table id="dtBasicExample" class="table" width="100%">
+                            <thead>
+                            <tr>
+                                <th><?php echo __('Title','ntpRp');?></th>
+                                <th><?php echo __('Amount','ntpRp');?></th>
+                                <th><?php echo __('Start date','ntpRp');?></th>
+                                <th><?php echo __('Status','ntpRp');?></th>
+                                <th><?php echo __('Last payment','ntpRp');?></th>
+                                <th><?php echo __('Next payment','ntpRp');?></th>
+                            </tr>
+                            </thead>
+                            <tbody id="subscriberPlanList">
+                                <!-- Plan List -->
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th><?php echo __('Title','ntpRp');?></th>
+                                <th><?php echo __('Amount','ntpRp');?></th>
+                                <th><?php echo __('Start date','ntpRp');?></th>
+                                <th><?php echo __('Status','ntpRp');?></th>
+                                <th><?php echo __('Last payment','ntpRp');?></th>
+                                <th><?php echo __('Next payment','ntpRp');?></th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>

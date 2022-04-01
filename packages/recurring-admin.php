@@ -461,9 +461,9 @@ function getInfinitSubscribtion() {
             $subscriptions[$i]['PlanTitle'] = $planInfoStr;
             $subscriptions[$i]['StartDate'] = date('Y-m-d', strtotime($subscriptions[$i]['StartDate']));
             $subscriptions[$i]['Action'] = '
-            <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-history"></i></button>
-            <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;"><i class="fa fa-info"></i></button>
-            <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'">
+            <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>
+            <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>
+            <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'" title="'.__('Total Nr of subscription','ntpRp').'">
                 <i class="fa fa-circle fa-stack-2x"></i>
                 <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
             </span>';
