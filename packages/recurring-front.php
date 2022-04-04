@@ -1,7 +1,7 @@
 <?php
     class recurringFront extends recurring {
         function getPlan($planId){
-            $url = BASE_URL_RECURRING_API.'plan/status';
+            $url = self::getApiUrl('plan/status');
             $data = array(
                 'Signature' => self::getSignature(),
                 "PlanId" => $planId+0
@@ -14,7 +14,7 @@
         }
 
         function setSubscription($formData){
-            $url = BASE_URL_RECURRING_API.'subscription'; 
+            $url = self::getApiUrl('subscription'); 
             $postData = json_encode($formData);
         
             $resultData = self::getData($url, $postData);
@@ -22,7 +22,7 @@
         }
 
         function setUnsubscription($formData){
-            $url = BASE_URL_RECURRING_API.'subscription/cancel'; 
+            $url = self::getApiUrl('subscription/cancel'); 
             $postData = json_encode($formData);
         
             $resultData = self::getData($url, $postData);

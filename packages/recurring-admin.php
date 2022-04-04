@@ -1,7 +1,7 @@
 <?php
 class recurringAdmin extends recurring {
     function getSubscriptionListLive(){
-        $url = BASE_URL_RECURRING_API.'subscription/list';
+        $url = self::getApiUrl('subscription/list');
         $data = array(
             'Signature' => self::getSignature()
         );
@@ -92,7 +92,7 @@ class recurringAdmin extends recurring {
     }
 
     function getPlanListLive(){
-        $url = BASE_URL_RECURRING_API.'plan/list';
+        $url = self::getApiUrl('plan/list');
         $data = array(
             'Signature' => self::getSignature(),
             "PlanStatus" => "Active"
@@ -124,7 +124,7 @@ class recurringAdmin extends recurring {
     }
 
     function setPlan($formData){
-        $url = BASE_URL_RECURRING_API.'plan'; 
+        $url = self::getApiUrl('plan'); 
         $planData = array(
             "MerchantSignature" => self::getSignature(),
             "Title" => $formData['Title'],
@@ -148,7 +148,7 @@ class recurringAdmin extends recurring {
     }
 
     function getReportList(){
-        $url = BASE_URL_RECURRING_API.'payment/list';
+        $url = self::getApiUrl('payment/list');
         $data = array(
             'Signature' => self::getSignature(),
             "PaymentStatus" => "All"
@@ -161,7 +161,7 @@ class recurringAdmin extends recurring {
     }
 
     function delPlan($formData){
-        $url = BASE_URL_RECURRING_API.'plan/delete'; 
+        $url = self::getApiUrl('plan/delete'); 
         $planData = array(
             "PlanId" => $formData['PlanId']+0,
             "Signature" => self::getSignature(),
@@ -175,7 +175,7 @@ class recurringAdmin extends recurring {
     }
 
     function editPlan($formData){
-        $url = BASE_URL_RECURRING_API.'plan/update'; 
+        $url = self::getApiUrl('plan/update'); 
         $planData = array(
             "PlanId" => $formData['PlanId'], 
             "Signature" => self::getSignature(),
@@ -201,7 +201,7 @@ class recurringAdmin extends recurring {
     }
 
     function getNextPayment($formData){
-        $url = BASE_URL_RECURRING_API.'schedule/payment';
+        $url = self::getApiUrl('schedule/payment');
         $data = array(
             'Signature' => self::getSignature(),
             "SubscriptionId" => $formData['SubscriptionId']

@@ -10,6 +10,20 @@
             return get_option($this->slug.'_api_key', array());
         }
 
+        function isLive() {
+            $mood = get_option($this->slug.'_mood', array());
+            return $mood[0] == 'live' ? true : false; 
+        }
+
+        function getApiUrl($action){
+            if($this->isLive()) {
+                $Url = BASE_URL_RECURRING_API_LIVE.$action;
+            } else {
+                $Url = BASE_URL_RECURRING_API_SANDBOX.$action;
+            }
+            return $Url;
+        }
+
         function getNotifyUrl() {
             return get_site_url()."/".get_option($this->slug.'_notify_url', array());
         }
