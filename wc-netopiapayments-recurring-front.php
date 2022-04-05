@@ -477,7 +477,7 @@ function recurring_updateSubscriberAccountDetails() {
                             'UpdatedAt'       => date("Y-m-d")
                         ),
                         array(
-                            'Subscription_Id' => $subscriptionAccountDetails['SubscriptionId'] 
+                            'UserID' => $subscriptionAccountDetails['UserID'] 
                         )
                     );
     

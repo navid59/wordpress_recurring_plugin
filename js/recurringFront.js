@@ -347,8 +347,6 @@ function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
 
 
 jQuery(document).on("click", ".unsubscriptionMyAccounButton", function () {
-    alert('Unsubscription from my account');
-    
     var planTitle = jQuery(this).data('plantitle');
     var userId = jQuery(this).data('userid'); 
     var subscriptionId = jQuery(this).data('subscriptionid');
