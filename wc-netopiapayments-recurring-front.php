@@ -547,7 +547,7 @@ function recurring_account_getMySubscriptions() {
                                 <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" data-subscriptionId="'.$plan['Subscription_Id'].'" data-userId="'.$plan['userId'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
                                     '.__('Unsubscription','ntpRp').'
                                 </button>
-                                <button type="button" class="btn btn-info" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
+                                <button type="button" class="btn btn-info" title="'.__('Check next payment','ntpRp').'" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
                                 </div>
                             </div>
                         </div>';

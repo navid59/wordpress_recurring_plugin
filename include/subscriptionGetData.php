@@ -25,7 +25,6 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$a->getStatusStr('subscription',$subscription['status']));
             printf('<td><button type="button" class="btn btn-secondary" onclick="subscriptionHistory('.$subscription['Subscription_Id'].')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>');
             printf('<button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscription['UserID'].'\')" style="margin-right:5px;"  title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>');
-           // printf('<button type="button" class="btn btn-info" onclick="subscriptionNextPayment('.$subscription['Subscription_Id'].',\''.$subscription['First_Name'].' '.$subscription['Last_Name'].'\')" title="'.__('Subscriber next payment','ntpRp').'"><i class="fa fa-credit-card"></i></button></td>');
         echo "</tr>";
     }
 }

@@ -16,7 +16,7 @@ function recurring_install () {
     Last_Name varchar(50) NOT NULL,
     Email varchar(50) NOT NULL,
     Tel varchar(15) NOT NULL,
-    Address varchar(50) NOT NULL,
+    Address varchar(255) NOT NULL,
     City varchar(50) NOT NULL,
     UserID varchar(50) NOT NULL,
     NextPaymentDate datetime NULL,
