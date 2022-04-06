@@ -1,5 +1,5 @@
 <?php
- add_action( 'wp_enqueue_scripts', 'enqueue_and_register_ntp_recurring_js_scripts' );
+ add_action('wp_enqueue_scripts', 'enqueue_and_register_ntp_recurring_js_scripts');
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
@@ -8,6 +8,8 @@
  add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
  add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
  add_action('wp_ajax_logoutAccount', 'recurring_logoutAccount');
+
+
 
  function enqueue_and_register_ntp_recurring_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
