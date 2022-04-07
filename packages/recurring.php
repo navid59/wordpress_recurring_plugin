@@ -25,7 +25,8 @@
         }
 
         function getNotifyUrl() {
-            return get_site_url()."/".get_option($this->slug.'_notify_url', array());
+            return get_site_url()."/".get_option($this->slug.'_notify_url', array()); 
+            // return get_option($this->slug.'_notify_url', array());// Test 
         }
 
         function getAccountPageSetting() {

@@ -39,8 +39,8 @@ function getHeaderRequest() {
     echo "<pre>";
     var_dump($arrayDate);
     echo "</pre>";
-    file_put_contents('log_navid_'.date("j.n.Y").'.log', $data, FILE_APPEND);
-    file_put_contents('log_navid_'.date("j.n.Y").'.log', '--------------------\n', FILE_APPEND);
+    echo dirname(__FILE__);
+    echo file_put_contents('/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log', $data, FILE_APPEND);
 }
 
 function getBodyRequest() {
