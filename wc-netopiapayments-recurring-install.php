@@ -8,7 +8,11 @@ function recurring_install () {
     $history_table_name = $wpdb->prefix . "ntp_history"; 
     $activity_table_name = $wpdb->prefix . "ntp_activity"; 
 
-    
+    /**
+     * Tel, Address, City is define NULL,..
+     * Because, may who used the Plugin, already have user(s)
+     *  - who doesn't have Address, City, Address 
+     */
 
     $sql_subscription = "CREATE TABLE $subscription_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -16,9 +20,9 @@ function recurring_install () {
     First_Name varchar(50) NOT NULL,
     Last_Name varchar(50) NOT NULL,
     Email varchar(50) NOT NULL,
-    Tel varchar(15) NOT NULL,
-    Address varchar(255) NOT NULL,
-    City varchar(50) NOT NULL,
+    Tel varchar(15) NULL,
+    Address varchar(255) NULL,
+    City varchar(50) NULL,
     UserID varchar(50) NOT NULL,
     NextPaymentDate datetime NULL,
     PlanId varchar(50) NOT NULL,
@@ -29,7 +33,6 @@ function recurring_install () {
     UpdatedAt datetime DEFAULT NULL,
     PRIMARY KEY  (id)
     ) $charset_collate;";
-
 
     $sql_plan = "CREATE TABLE $plan_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -52,6 +55,8 @@ function recurring_install () {
 
     $sql_history = "CREATE TABLE $history_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
+    UserID varchar(50) NOT NULL,
+    Subscription_Id varchar(50) NOT NULL,
     TransactionID varchar(50) NOT NULL,
     PaymentComment varchar(50) NULL,
     Label varchar(15) NOT NULL,

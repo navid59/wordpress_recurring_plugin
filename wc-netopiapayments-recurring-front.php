@@ -50,15 +50,15 @@ function recurring_addSubscription() {
                                     WHERE s.UserID = '".$current_user->user_login."' 
                                     ORDER BY s.id DESC 
                                     LIMIT 1", "ARRAY_A");
-        
+
         $Member = array (
             "Name" => $current_user->first_name,
             "LastName" => $current_user->last_name,
             "UserID" => $current_user->user_login,
             "Email" => $current_user->user_email,
-            "Address" => $MemberDetails[0]['Address'],
-            "City" => $MemberDetails[0]['City'],
-            "Tel" => $MemberDetails[0]['Tel']
+            "Address" => !isset($MemberDetails[0]['Address']) ? NULL : $MemberDetails[0]['Address'],
+            "City" => !isset($MemberDetails[0]['City']) ? NULL : $MemberDetails[0]['City'],
+            "Tel" => !isset($MemberDetails[0]['Tel']) ? NULL : $MemberDetails[0]['Tel']
         );
     }
     
@@ -775,9 +775,10 @@ function recurringModal($planId , $button, $title) {
         }
     } else {
         // Plan is not active / not exist / The licence is expired,... so don't display subscribe / Unsubscribe Botton
+        $buttonHtml = '';
     }
     
-    return $buttonHtml.$modalHtml;
+    return $buttonHtml;
 }
 
 function getJudete($selectedStr = "") {
@@ -844,7 +845,11 @@ function planInfo($planId) {
     $a = new recurringFront();
     $arrayData = $a->getPlan($planId);
     
-    if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
+    echo "<pre>";
+    var_dump($arrayData);
+    echo "</pre>";
+
+    if(isset($arrayData['code']) && in_array($arrayData['code'], array(11, 12, 404))) {
         $planData = array();
     } else {
         $plan = $arrayData['plan'];

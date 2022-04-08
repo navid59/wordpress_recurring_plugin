@@ -16,7 +16,7 @@ function ntpRecurringNotifyValidation($template) {
 
     // If the 'recurring_notify' query var isn't appended to the URL,
     // don't do anything and return default
-    if($wp_query->query['pagename'] !== 'recurring_notify') {
+    if(!isset($wp_query->query['pagename']) || $wp_query->query['pagename'] !== 'recurring_notify') {
         return $template;
     } else {
         // Step #1 - Make sure request is come from NETOPIA Recurring API
