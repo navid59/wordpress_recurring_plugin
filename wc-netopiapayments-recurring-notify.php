@@ -27,20 +27,50 @@ function ntpRecurringNotifyValidation($template) {
 }
 
 function getHeaderRequest() {
+    // get Header
+    // Get data
+    // Add Payment History for subscription
+    // Add Log 
+    // Update Subscription Data
+    // Add Log
+    //
+    global $wpdb;
+    $logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
+
     $headers = apache_request_headers();
     foreach ($headers as $header => $value) {
-        echo "$header: $value <br />\n";
+        /** Log Temporar */
+        file_put_contents($logFile, $header.' : '.$value."\n", FILE_APPEND);
     }
-    echo "<hr>";
+    
     $data = file_get_contents('php://input');
-    echo $data;
-    echo "<hr>";
-    $arrayDate = json_decode($data);
-    echo "<pre>";
-    var_dump($arrayDate);
-    echo "</pre>";
-    echo dirname(__FILE__);
-    echo file_put_contents('/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log', $data, FILE_APPEND);
+
+    /** Log Temporar */
+    file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
+    file_put_contents($logFile, $data."\n", FILE_APPEND);
+
+    ////////////////
+    // $wpdb->insert( 
+    //     $wpdb->prefix . "ntp_history", 
+    //     array( 
+    //         'Subscription_Id' => $XX['Subscription_Id'],
+    //         'TransactionID'   => $XX['TransactionID'],
+    //         'PaymentComment'  => $XX['PaymentComment'],
+    //         'Label'           => $XX['Label'],
+    //         'Status'          => $XX['Status'],
+    //         'CreatedAt'       => date("Y-m-d")
+    //     )
+    // );
+    ////////////////
+
+    $arrDate = json_decode($data, true);
+    
+    /** Log Temporar */
+    file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
+    file_put_contents($logFile, print_r($arrDate, true)."\n", FILE_APPEND);
+
+
+
 }
 
 function getBodyRequest() {

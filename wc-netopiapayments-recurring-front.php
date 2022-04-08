@@ -844,10 +844,6 @@ function getJudete($selectedStr = "") {
 function planInfo($planId) {
     $a = new recurringFront();
     $arrayData = $a->getPlan($planId);
-    
-    echo "<pre>";
-    var_dump($arrayData);
-    echo "</pre>";
 
     if(isset($arrayData['code']) && in_array($arrayData['code'], array(11, 12, 404))) {
         $planData = array();
