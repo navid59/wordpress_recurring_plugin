@@ -1,20 +1,20 @@
 <?php
-$a = new recurringAdmin();
-$arrayData = $a->getPlanList();
+$obj = new recurringAdmin();
+$plansData = $obj->getPlanList();
 
-if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
+if(isset($plansData['code']) && ($plansData['code'] == 11 || $plansData['code'] == 12)) {
     echo '
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <h2 class="alert-heading">'.__('Error! ','ntpRp').'</h2>
-    <strong>'.__('Something is wrong, please check your configurations','ntpRp').'</strong> '.'
+    <h2 class="alert-heading">'.__('Note! ','ntpRp').'</h2>
+    <strong>'.__('Please, define your plans','ntpRp').'</strong> '.'
     <hr>
-  <p class="mb-0"><strong>'.__('Details: ','ntpRp').'</strong>'.$arrayData['message'].'</p>
+  <p class="mb-0"><strong>'.__('Details: ','ntpRp').'</strong>'.$plansData['message'].'</p>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
     </div>';
 } else {
-    foreach($arrayData['plans']  as $plan) {
+    foreach($plansData['plans']  as $plan) {
         echo "<tr>";
             // printf("<td>%1s</td>",$plan['Id']);
             printf("<td>%1s</td>",$plan['Title']);

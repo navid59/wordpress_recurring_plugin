@@ -6,7 +6,9 @@
             <th>Report ID</th>
             <th>TransactionID</th>
             <th>PaymentComment</th>
-            <th>Label</th>
+            <th>User</th>
+            <th>Plan</th>
+            <th>Amount</th>
             <th>Status</th>
             <th>CreatedAt</th>
           </tr>
@@ -19,7 +21,9 @@
             <th>Report ID</th>
             <th>TransactionID</th>
             <th>PaymentComment</th>
-            <th>Label</th>
+            <th>User</th>
+            <th>Plan</th>
+            <th>Amount</th>
             <th>Status</th>
             <th>CreatedAt</th>
           </tr>

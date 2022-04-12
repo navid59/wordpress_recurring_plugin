@@ -147,7 +147,10 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
-    function getReportList(){
+    /**
+     * Get data Direct From API - Server
+     */
+    function getReportListLive(){
         $url = self::getApiUrl('payment/list');
         $data = array(
             'Signature' => self::getSignature(),
@@ -159,6 +162,43 @@ class recurringAdmin extends recurring {
         $resultData = self::getData($url, $postData);
         return $resultData;
     }
+
+    function getReportList(){
+        global $wpdb;
+        $plans = $wpdb->get_results("SELECT 
+                                    h.id,
+                                    s.UserId,
+                                    h.Subscription_Id,
+                                    h.TransactionID,
+                                    h.Comment,
+                                    h.Status,
+                                    h.CreatedAt,
+                                    p.Title,
+                                    p.Amount
+                                    FROM  ".$wpdb->prefix . "ntp_history as h 
+                                    INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
+                                    ON h.Subscription_Id = s.Subscription_Id 
+                                    INNER JOIN ".$wpdb->prefix . "ntp_plans as p
+                                    ON s.PlanId = p.Plan_Id
+                                    ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        if(count($plans)) {
+            $errorCode = "00";
+            $errorMsg = "";
+        } else {
+            $errorCode = "11";
+            $errorMsg = __('There is no any payment report, yet','ntpRp');
+        }
+    
+        $resultData = array(
+            "code" => $errorCode,
+            "message" => $errorMsg,
+            "report" => $plans
+            );
+        return $resultData;
+    }
+
+
+
 
     function delPlan($formData){
         $url = self::getApiUrl('plan/delete'); 

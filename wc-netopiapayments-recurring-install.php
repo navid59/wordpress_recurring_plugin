@@ -59,7 +59,7 @@ function recurring_install () {
     TransactionID varchar(255) NOT NULL,
     NotifyContent TEXT NOT NULL,
     Comment varchar(255) NOT NULL,
-    status varchar(15) NOT NULL,
+    Status varchar(15) NOT NULL,
     CreatedAt datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
     PRIMARY KEY  (id)
     ) $charset_collate;";
