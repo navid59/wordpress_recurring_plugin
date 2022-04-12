@@ -78,7 +78,7 @@ function subscriptionDetails(userId) {
                 tr.append(jQuery('<td></td>').text(plan.Amount));
                 tr.append(jQuery('<td></td>').text(plan.StartDate.split(' ')[0]));
                 tr.append(jQuery('<td></td>').text(plan.Status));
-                tr.append(jQuery('<td></td>').text('Last Payment Date'));              
+                tr.append(jQuery('<td></td>').text(plan.LastPayment));
                 tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-info" title="Next payment" onclick="subscriptionNextPayment('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-credit-card"></i></button>'));                
                 return tr;
             });

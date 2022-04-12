@@ -110,5 +110,53 @@
             }
             return $statusStr;
          }
+
+        public function encrypt($x509FilePath)
+            {
+             $this->_prepare();
+             
+             $publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
+             if($publicKey === false)
+             {
+                 $this->outEncData	= null;
+                 $this->outEnvKey	= null;
+                 $errorMessage = "Error while loading X509 public key certificate! Reason:";
+                 while(($errorString = openssl_error_string()))
+                 {
+                     $errorMessage .= $errorString . "\n";
+                 }
+                 throw new \Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
+             }
+             $srcData = $this->_xmlDoc->saveXML();
+             $publicKeys	= array($publicKey);
+             $encData 	= null;
+             $envKeys 	= null;
+             $cipher_algo = 'RC4';
+             $result 	= openssl_seal($srcData, $encData, $envKeys, $publicKeys, $cipher_algo);
+             if($result === false)
+             {
+                 $this->outEncData	= null;
+                 $this->outEnvKey	= null;
+                 $errorMessage = "Error while encrypting data! Reason:";
+                 while(($errorString = openssl_error_string()))
+                 {
+                     $errorMessage .= $errorString . "\n";
+                 }
+                 throw new \Exception($errorMessage, self::ERROR_ENCRYPT_DATA);
+             }
+             
+             $this->outEncData 	= base64_encode($encData);
+             $this->outEnvKey 	= base64_encode($envKeys[0]);
+            }
+     
+        public function getEnvKey()
+         {
+             return $this->outEnvKey;
+         }
+     
+        public function getEncData()
+         {
+             return $this->outEncData;
+         }
     }    
 ?>

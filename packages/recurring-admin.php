@@ -213,6 +213,25 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
+    function getLastPayment($subscriptionId) {
+        global $wpdb;
+        /**Get last payment of user for specific plan */
+        $lastPayment = $wpdb->get_results("SELECT 
+                                            * 
+                                        FROM `".$wpdb->prefix."ntp_history` 
+                                        WHERE 
+                                            Subscription_Id = $subscriptionId 
+                                            AND 
+                                            status = '00' 
+                                        ORDER BY CreatedAt DESC 
+                                        LIMIT 1", "ARRAY_A");
+        if(count($lastPayment)) {
+            $date = new DateTime($lastPayment[0]['CreatedAt']);
+            return $date->format('Y-m-d');
+        } else {
+            return '-';
+        }
+    }
 }
 
 function recurring_addPlan() {
@@ -544,7 +563,15 @@ function recurring_getSubscriptionDetail(){
         $obj = new recurringAdmin();
         for($i = 0; $i < count($planList); $i++) {
             $planList[$i]['Status'] = $obj->getStatusStr('plan', $planList[$i]['Status']);
+            $planList[$i]['LastPayment'] = $obj->getLastPayment($planList[$i]['Subscription_Id']);
         }
+
+        // if(count($planList)) {
+        //     for($j = 0 ; $j < count($planList); $j++) {
+        //         $planList[$j]['LastPayment'] = "xxxx";
+        //     }
+        // }
+
         $errorCode = "00";
         $errorMsg = "";
     } else {

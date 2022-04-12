@@ -1,7 +1,9 @@
 <?php
+include_once( 'packages/recurring.php' );
+
 /**
-*   Add the 'recurring_notify' query variable so WordPress
-*   won't remove it.
+* Add the 'recurring_notify' query variable to WP
+* so WordPress won't remove it.
 */
 add_filter( 'query_vars', 'ntp_add_query_vars');
 function ntp_add_query_vars($vars){
@@ -38,39 +40,59 @@ function getHeaderRequest() {
     $logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
 
     $headers = apache_request_headers();
-    foreach ($headers as $header => $value) {
+    if(hasToken($headers)) {
+        // Add Log & Add History
+
+        $data = file_get_contents('php://input');
+         /** Log Temporar */
+        file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
+        file_put_contents($logFile, $data."\n", FILE_APPEND);
+
+        $arrDate = json_decode($data, true);
+
         /** Log Temporar */
-        file_put_contents($logFile, $header.' : '.$value."\n", FILE_APPEND);
+        file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
+        file_put_contents($logFile, print_r($arrDate, true)."\n", FILE_APPEND);
+
+        ////////////////
+        $wpdb->insert( 
+            $wpdb->prefix . "ntp_history", 
+            array( 
+                'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
+                'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
+                'NotifyContent'  => $data,
+                'Comment'        => $arrDate['NotifyPayment']['Message'],
+                'Status'         => $arrDate['NotifyPayment']['PaymetCode'],
+                'CreatedAt'      => date("Y-m-d")
+            )
+        );
+        ////////////////
+
+
+    } else {
+        // Log may by IP Token is not found in Header
     }
-    
-    $data = file_get_contents('php://input');
+}
 
-    /** Log Temporar */
-    file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
-    file_put_contents($logFile, $data."\n", FILE_APPEND);
+function hasToken($header) {
+    if (array_key_exists('Token', $header)) {
+        if(isValidToken($header['Token'])) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
-    ////////////////
-    // $wpdb->insert( 
-    //     $wpdb->prefix . "ntp_history", 
-    //     array( 
-    //         'Subscription_Id' => $XX['Subscription_Id'],
-    //         'TransactionID'   => $XX['TransactionID'],
-    //         'PaymentComment'  => $XX['PaymentComment'],
-    //         'Label'           => $XX['Label'],
-    //         'Status'          => $XX['Status'],
-    //         'CreatedAt'       => date("Y-m-d")
-    //     )
-    // );
-    ////////////////
-
-    $arrDate = json_decode($data, true);
-    
-    /** Log Temporar */
-    file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
-    file_put_contents($logFile, print_r($arrDate, true)."\n", FILE_APPEND);
-
-
-
+function isValidToken($token) {
+    $obj = new recurring();
+    if($obj->getApiKey() === $token) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function getBodyRequest() {

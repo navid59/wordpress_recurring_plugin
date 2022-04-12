@@ -56,9 +56,9 @@ function recurring_install () {
     $sql_history = "CREATE TABLE $history_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     Subscription_Id varchar(50) NOT NULL,
-    TransactionID varchar(50) NOT NULL,
+    TransactionID varchar(255) NOT NULL,
     NotifyContent TEXT NOT NULL,
-    Label varchar(15) NOT NULL,
+    Comment varchar(255) NOT NULL,
     status varchar(15) NOT NULL,
     CreatedAt datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
     PRIMARY KEY  (id)
