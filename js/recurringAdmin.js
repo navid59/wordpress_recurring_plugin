@@ -50,8 +50,27 @@ jQuery(document).ready(function () {
 });
 
 
-function subscriptionHistory(subscriptionId) {
-    alert('History of subscription with ID :' + subscriptionId + ' The history will be base on UserID');
+function subscriptionHistory(userId) {
+    subscriptionHistoryData = {
+        action : 'getSubscriptionHistory',
+        userId : userId
+    }
+    jQuery.post(ajaxurl, subscriptionHistoryData, function(response){
+        jsonResponse = JSON.parse(response);
+        // console.log(jsonResponse);
+        jQuery("#who").html(userId);
+        const rows = jsonResponse.histories.map(history => {
+            const tr = jQuery('<tr></tr>');
+            tr.append(jQuery('<td></td>').text(history.CreatedAt.split(' ')[0]));
+            tr.append(jQuery('<td></td>').text(history.Title + ' - ' + history.Amount));
+            tr.append(jQuery('<td></td>').text(history.TransactionID));
+            tr.append(jQuery('<td></td>').text(history.Comment));
+            tr.append(jQuery('<td></td>').text(history.Status));
+            return tr;
+        });
+        jQuery("#subscriberPaymentHistoryList").html(rows);
+    });
+
     jQuery('#subscriberHistorytModal').modal('toggle');
     jQuery('#subscriberHistorytModal').modal('show');
 }

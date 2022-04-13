@@ -8,7 +8,34 @@
               </button>
             </div>
             <div class="modal-body">            
-              <h5>Subscriber List of last payments................</h5>
+              <div class="card col" style="">
+                    <div class="card-body">
+                        <h3 class="card-title"><?php echo __('User name : ','ntpRp');?><span id="who"></span></h3>
+                        <table id="" class="table" width="100%">
+                            <thead>
+                            <tr>
+                                <th><?php echo __('Date','ntpRp');?></th>
+                                <th><?php echo __('Title & Amount','ntpRp');?></th>
+                                <th><?php echo __('Transaction ID','ntpRp');?></th>
+                                <th><?php echo __('Comment','ntpRp');?></th>
+                                <th><?php echo __('Status','ntpRp');?></th>
+                            </tr>
+                            </thead>
+                            <tbody id="subscriberPaymentHistoryList">
+                                <!-- History List -->
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th><?php echo __('Date','ntpRp');?></th>
+                                <th><?php echo __('Title & Amount','ntpRp');?></th>
+                                <th><?php echo __('Transaction ID','ntpRp');?></th>
+                                <th><?php echo __('Comment','ntpRp');?></th>
+                                <th><?php echo __('Status','ntpRp');?></th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>

@@ -98,8 +98,8 @@ class NetopiapaymentsRecurringPayment extends recurring
             'callback' => array( $this, 'report_UI' ),
             'icon' => 'dashicons-format-status',
             'position' => 103,
-            'pageTitle' => __('Report Management_DELETE_GET_FROM_SERVER','ntpRp'),
-            'menuTitle' => __('Reports_DELETE','ntpRp'),
+            'pageTitle' => __('Report Management','ntpRp'),
+            'menuTitle' => __('Reports','ntpRp'),
             'menuSlug' => 'recurring_repport'
         )           
     );

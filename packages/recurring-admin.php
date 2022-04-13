@@ -606,12 +606,6 @@ function recurring_getSubscriptionDetail(){
             $planList[$i]['LastPayment'] = $obj->getLastPayment($planList[$i]['Subscription_Id']);
         }
 
-        // if(count($planList)) {
-        //     for($j = 0 ; $j < count($planList); $j++) {
-        //         $planList[$j]['LastPayment'] = "xxxx";
-        //     }
-        // }
-
         $errorCode = "00";
         $errorMsg = "";
     } else {
@@ -629,5 +623,41 @@ function recurring_getSubscriptionDetail(){
     die();
 }
 add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
+
+function recurring_getSubscriptionHistory() {
+    global $wpdb;
+    $userId = $_POST['userId'];
+    // die($userId);
+    $userPaymentHistory = $wpdb->get_results("SELECT 
+                                                s.UserId,
+                                                h.Subscription_Id,
+                                                h.TransactionID,
+                                                h.Comment,
+                                                h.Status,
+                                                h.CreatedAt,
+                                                p.Title,
+                                                p.Amount
+                                            FROM wp_ntp_subscriptions as s
+                                            INNER JOIN wp_ntp_history as h
+                                            ON h.Subscription_Id = s.Subscription_Id 
+                                            INNER JOIN wp_ntp_plans as p
+                                            ON s.PlanId = p.Plan_Id
+                                            WHERE s.UserId = '$userId'
+                                            ORDER BY `CreatedAt` DESC", "ARRAY_A");
+
+    $obj = new recurringAdmin();
+    for($i = 0; $i < count($userPaymentHistory); $i++) {
+        $userPaymentHistory[$i]['Status'] = $obj->getStatusStr('report', $userPaymentHistory[$i]['Status']);
+    }
+    $resultData = array(
+        "code" => "00",
+        "message" => "",
+        "histories" => $userPaymentHistory
+        );
+    echo json_encode($resultData);
+    die();
+}
+
+add_action('wp_ajax_getSubscriptionHistory', 'recurring_getSubscriptionHistory');
 
 ?>
