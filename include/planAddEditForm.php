@@ -76,11 +76,12 @@
             <div class="form-group col-md-4">
                 <button type="submit" id="addPlan" class="btn btn-primary"><?php echo __('Submmit', 'ntpRp');?></button>
             </div>
-            <div class="form-group col-md-8">
-                <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
-                    <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
-                </div>
-            </div>
         </div>
     </form>
+
+    <div id="msgBlock" class="alert alert-success fade" role="alert">
+        <h4 class="alert-heading"><strong id="alertTitle">!</strong></h4>
+        <p><span id="msgContent"></span></p>
+        <a href="admin.php?page=recurring_plan&tab=add_plan"  id="addNewPlan" class="btn btn-primary fade" role="button"><?php echo __('Add new plan', 'ntpRp');?></a>
+    </div>
 </div>

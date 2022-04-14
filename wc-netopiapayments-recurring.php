@@ -66,15 +66,15 @@ class NetopiapaymentsRecurringPayment extends recurring
             'menuTitle' => 'Dashbord',
             'menuSlug' => 'recurring_dashbord'
             ),            
-        'subscription'=> array(
-            'capability' => 'manage_options',
-            'callback' => array( $this, 'subscription_UI' ),
-            'icon' => 'dashicons-format-status',
-            'position' => 100,
-            'pageTitle' => "Subscription management",
-            'menuTitle' => 'Subscription - DELETE',
-            'menuSlug' => 'recurring_subscription'
-        ),
+        // 'subscription'=> array(
+        //     'capability' => 'manage_options',
+        //     'callback' => array( $this, 'subscription_UI' ),
+        //     'icon' => 'dashicons-format-status',
+        //     'position' => 100,
+        //     'pageTitle' => "Subscription management",
+        //     'menuTitle' => 'Subscription - DELETE',
+        //     'menuSlug' => 'recurring_subscription'
+        // ),
         'subscriptionAjax'=> array(
             'capability' => 'manage_options',
             'callback' => array( $this, 'subscription_UI_Ajax' ),
@@ -106,7 +106,7 @@ class NetopiapaymentsRecurringPayment extends recurring
 
 
         add_menu_page( $this->page_title, $this->menu_title, $this->menuItems['main']['capability'], $this->slug, $this->menuItems['main']['callback'], $this->menuItems['main']['icon'], $this->menuItems['main']['position'] );
-        add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
+        // add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['plan']['pageTitle'], $this->menuItems['plan']['menuTitle'], $this->menuItems['plan']['capability'], $this->menuItems['plan']['menuSlug'], $this->menuItems['plan']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
@@ -454,6 +454,7 @@ class NetopiapaymentsRecurringPayment extends recurring
     }
 
     public function subscription_UI() {
+        /**
         ?>
         <div class="wrap">
             <div class="row">
@@ -472,6 +473,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             ?>
         <div>    
         <?php
+         */
     }
 
     public function subscription_UI_Ajax() {
@@ -482,7 +484,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <span style="font-size: xx-large"><?=$this->menuItems['subscriptionAjax']['pageTitle'] ?></span>
             </div>
             <h2 class="nav-tab-wrapper">
-                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription infinit list','ntpRp')?></a>
+                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
             </h2>
             
             <?php 

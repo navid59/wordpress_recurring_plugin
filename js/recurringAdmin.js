@@ -365,9 +365,10 @@ jQuery("#recurring-plan-form").submit(function (e) {
             jQuery('#msgContent').html(jsonResponse.msg);
             jQuery('#msgBlock').addClass('show');
 
-            jQuery('#addPlan').html('Add new plan');
+            // Reset form and hide it
             document.getElementById("recurring-plan-form").reset();
-            
+            jQuery('#recurring-plan-form').hide();
+            jQuery('#addNewPlan').addClass('show');
 
         }else {
             jQuery('#msgBlock').addClass('alert-warning');

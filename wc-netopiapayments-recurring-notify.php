@@ -54,7 +54,6 @@ function getHeaderRequest() {
         file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
         file_put_contents($logFile, print_r($arrDate, true)."\n", FILE_APPEND);
 
-        ////////////////
         $wpdb->insert( 
             $wpdb->prefix . "ntp_history", 
             array( 
@@ -66,7 +65,6 @@ function getHeaderRequest() {
                 'CreatedAt'      => date("Y-m-d")
             )
         );
-        ////////////////
 
 
     } else {

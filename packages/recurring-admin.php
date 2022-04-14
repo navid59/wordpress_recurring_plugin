@@ -295,8 +295,12 @@ function recurring_addPlan() {
     $jsonResultData = $a->setPlan($planData);
     
     // Add subscription to DB 
-    if($jsonResultData['code'] === "00") {
-        $wpdb->insert( 
+    if($jsonResultData['code'] === "00") { 
+        // Api response
+        $status = true;
+        $msg = $jsonResultData['message'];
+
+        $dbInsertResult  = $wpdb->insert(
             $wpdb->prefix . "ntp_plans", 
             array( 
                 'Plan_Id'         => $jsonResultData['data']['planId'],
@@ -314,13 +318,28 @@ function recurring_addPlan() {
                 'UpdatedAt'       => date("Y-m-d")
             )
         );
+
+        if($dbInsertResult) {
+            // local response
+            $status = true;
+            $msg = $msg.__(' is ready to use.');
+        } else {
+             // local response
+             $status = false;
+             $msg = __('Plan added in Recurring API Successfully! But is not added in your system successfully');
+        }
+
+    } else {
+        // Api response
+        $status = false;
+        $msg = $jsonResultData['message'];
     }
 
-    $mySimulatedResult = array(
-            'status'=> $jsonResultData['code'] === "00" ? true : false,
-            'msg'=> $jsonResultData['message'],
+    $addPlanResult = array(
+            'status'=> $status,
+            'msg'=> $msg,
             );
-    echo json_encode($mySimulatedResult);
+    echo json_encode($addPlanResult);
     die();
 }
 add_action('wp_ajax_addPlan', 'recurring_addPlan');
