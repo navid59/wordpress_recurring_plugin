@@ -114,9 +114,7 @@ function recurring_addSubscription() {
 
     // Add subscription to DB 
     if($jsonResultData['code'] === "00") {
-        $wpdb->insert( 
-            $wpdb->prefix . "ntp_subscriptions", 
-            array( 
+        $arrSubscriptionData = array( 
                 'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
                 'First_Name'      => $Member['Name'],
                 'Last_Name'       => $Member['LastName'],
@@ -132,13 +130,9 @@ function recurring_addSubscription() {
                 'Status'          => 1, // Payment is success
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
-
-            )
-        );
+            );
     } elseif ($jsonResultData['code'] === "19") {
-        $wpdb->insert( 
-            $wpdb->prefix . "ntp_subscriptions", 
-            array( 
+        $arrSubscriptionData = array(
                 'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
                 'First_Name'      => $_POST['Name'],
                 'Last_Name'       => $_POST['LastName'],
@@ -154,11 +148,11 @@ function recurring_addSubscription() {
                 'Status'          => 0, // Payament is faeiled
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
-
-            )
-        );
+            );
     }
 
+    // Add subscription to DB 
+    $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
 
     $mySimulatedResult = array(
         'status'=> $jsonResultData['code'] === "00" ? true : false,
