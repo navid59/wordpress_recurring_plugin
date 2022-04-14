@@ -312,7 +312,7 @@ function recurring_addPlan() {
                 'Frequency_Type'  => $_POST['FrequencyType'],
                 'Frequency_Value' => $_POST['FrequencyValue'],
                 'Grace_Period'    => $_POST['GracePeriod'],
-                'Initial_Paymen'  => $_POST['InitialPayment'] === 'true' ? true : false,
+                'Initial_Paymen'  => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
                 'Status'          => $jsonResultData['data']['Status'],
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")

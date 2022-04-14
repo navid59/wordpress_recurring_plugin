@@ -40,7 +40,7 @@ function recurring_install () {
     Title varchar(50) NOT NULL,
     Amount DOUBLE(5,2) NOT NULL,
     Currency varchar(5) NULL,
-    Description varchar(50) NOT NULL,
+    Description varchar(255) NOT NULL,
     Recurrence_Type varchar(15) NOT NULL,
     Frequency_Type varchar(15) NOT NULL,
     Frequency_Value int(5) NOT NULL,
