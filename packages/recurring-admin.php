@@ -31,7 +31,7 @@ class recurringAdmin extends recurring {
                                                     s.StartDate,
                                                     s.status
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                                INNER JOIN wp_ntp_plans as p 
+                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
                                                 WHERE s.PlanId = p.Plan_Id 
                                                 GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
@@ -54,11 +54,7 @@ class recurringAdmin extends recurring {
     function getSubscriptionInfinite(){
         die('Important!! Not Need, Will Delete');
         global $wpdb;
-        /**
-         * Just Template 
-         * SELECT s.id, s.Subscription_Id, s.First_Name, s.Last_Name, s.Email, s.Tel, s.UserID, p.Title, p.Amount, s.StartDate, s.status FROM wp_ntp_subscriptions as s   INNER JOIN wp_ntp_plans as p WHERE s.PlanId = p.Plan_Id
-         */
-        // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        
         $subscriptions = $wpdb->get_results("SELECT s.id,
                                                     s.Subscription_Id,
                                                     s.First_Name,
@@ -71,7 +67,7 @@ class recurringAdmin extends recurring {
                                                     s.StartDate,
                                                     s.status
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                                INNER JOIN wp_ntp_plans as p 
+                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
                                                 WHERE s.PlanId = p.Plan_Id 
                                                 GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
@@ -402,29 +398,46 @@ function recurring_editPlan() {
 
     /** To Update the plan locally as well */
     if($jsonResultData['code'] === "00") {
-        $wpdb->update( 
-            $wpdb->prefix . "ntp_plans", 
-            array( 
-                "Title"             => $_POST['planTitile'],
-                "Description"       => $_POST['planDescription'],
-                "Amount"            => $_POST['Amount']+0 ,
-                "Recurrence_Type"   => $_POST['RecurrenceType'],
-                "Frequency_Type"    => $_POST['FrequencyType'],
-                "Frequency_Value"   => $_POST['FrequencyValue']+0,
-                "Grace_Period"      => $_POST['GracePeriod']+0,
-                "Initial_Paymen"    => $_POST['InitialPayment'] === 'true' ? true : false,
-                'UpdatedAt'         => date("Y-m-d")
-            ),
-            array(
-                'Plan_Id' => $_POST['planId']+0
-            )
-        );
+         // Api response
+         $status = true;
+         $msg = $jsonResultData['message'];
+    } else {
+        // Api response
+        $status = false;
+        $msg = $jsonResultData['message'];
     }
+    
 
+    // Update Local 
+    $updatePlan = $wpdb->update( 
+        $wpdb->prefix . "ntp_plans", 
+        array( 
+            "Title"             => $_POST['planTitile'],
+            "Description"       => $_POST['planDescription'],
+            "Amount"            => $_POST['Amount']+0 ,
+            "Recurrence_Type"   => $_POST['RecurrenceType'],
+            "Frequency_Type"    => $_POST['FrequencyType'],
+            "Frequency_Value"   => $_POST['FrequencyValue']+0,
+            "Grace_Period"      => $_POST['GracePeriod']+0,
+            "Initial_Paymen"    => $_POST['InitialPayment'] === 'true' ? true : false,
+            'UpdatedAt'         => date("Y-m-d")
+        ),
+        array(
+            'Plan_Id' => $_POST['planId']+0
+        )
+    );
+
+    if($updatePlan) {
+        $status = true;
+        $msg = $msg.__(' ,ready to use it.','ntpRp');
+    } else {
+        $status = false;
+        $msg = $msg.__(' ,But locally not updated!.','ntpRp');
+    }
     
     $mySimulatedResult = array(
-            'status'=> $jsonResultData['code'] === "00" ? true : false,
-            'msg'=> $jsonResultData['message'],
+            'status'=> $status,
+            'msg'=> $msg,
             'data'=> $planData,
             );
     echo json_encode($mySimulatedResult);
@@ -568,7 +581,7 @@ function recurring_getNextPayment() {
     
     $mySimulatedResult = array(
             'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
-            'msg'=> $jsonResultData['message'],
+            'msg'=> isset($jsonResultData['message']) ? $jsonResultData['message'] : '',
             'data' =>  $jsonResultData
             );
     echo json_encode($mySimulatedResult);
@@ -597,7 +610,7 @@ function recurring_getSubscriptionDetail(){
                                                 s.StartDate,
                                                 s.status
                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                            INNER JOIN wp_ntp_plans as p 
+                                            INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
                                             ON s.PlanId = p.Plan_Id 
                                             WHERE s.userId = '$subscriptionInternUserId'
                                             LIMIT 1", "ARRAY_A");
@@ -613,8 +626,8 @@ function recurring_getSubscriptionDetail(){
                                             s.Subscription_Id,
                                             s.StartDate,
                                             s.Status
-                                        FROM `wp_ntp_plans` as p
-                                        INNER JOIN wp_ntp_subscriptions as s
+                                        FROM `".$wpdb->prefix . "ntp_plans` as p
+                                        INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
                                         ON s.PlanId = p.Plan_Id
                                         WHERE s.UserID = '$subscriptionInternUserId'
                                         ORDER BY s.StartDate DESC", "ARRAY_A");
@@ -656,10 +669,10 @@ function recurring_getSubscriptionHistory() {
                                                 h.CreatedAt,
                                                 p.Title,
                                                 p.Amount
-                                            FROM wp_ntp_subscriptions as s
-                                            INNER JOIN wp_ntp_history as h
+                                            FROM ".$wpdb->prefix . "ntp_subscriptions as s
+                                            INNER JOIN ".$wpdb->prefix . "ntp_history as h
                                             ON h.Subscription_Id = s.Subscription_Id 
-                                            INNER JOIN wp_ntp_plans as p
+                                            INNER JOIN ".$wpdb->prefix . "ntp_plans as p
                                             ON s.PlanId = p.Plan_Id
                                             WHERE s.UserId = '$userId'
                                             ORDER BY `CreatedAt` DESC", "ARRAY_A");
