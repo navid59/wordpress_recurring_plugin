@@ -1,15 +1,23 @@
 <?php
  add_action('wp_enqueue_scripts', 'enqueue_and_register_ntp_recurring_js_scripts');
+ add_action( 'wp_enqueue_scripts', 'ntp_recurring_enqueue_scripts', 10 );
+
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
  add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
+ add_action('wp_ajax_getMyHistory', 'recurring_account_getMyHistory');
  add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
  add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
  add_action('wp_ajax_logoutAccount', 'recurring_logoutAccount');
 
+ function ntp_recurring_enqueue_scripts() {
+    wp_enqueue_style( 'ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
 
+    wp_register_script( 'ntp_recurring_front_script_datatables', plugin_dir_url( __FILE__ ) . 'js/addons/datatables.min.js', array(), '1.0.0', true );
+    wp_enqueue_script( 'ntp_recurring_admin_script_datatables' );
+}
 
  function enqueue_and_register_ntp_recurring_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
@@ -501,6 +509,73 @@ function recurring_updateSubscriberAccountDetails() {
     wp_die();
 }
 
+function recurring_account_getMyHistory() {
+    global $wpdb;
+
+    /** Get Current user Info */
+    $current_user = wp_get_current_user();
+    $htmlThem = 'Payment History';
+
+    ////
+    $userPaymentHistory = $wpdb->get_results("SELECT 
+                                                    s.UserId,
+                                                    h.Subscription_Id,
+                                                    h.TransactionID,
+                                                    h.Comment,
+                                                    h.Status,
+                                                    h.CreatedAt,
+                                                    p.Title,
+                                                    p.Amount
+                                                FROM ".$wpdb->prefix . "ntp_subscriptions as s
+                                                INNER JOIN ".$wpdb->prefix . "ntp_history as h
+                                                ON h.Subscription_Id = s.Subscription_Id 
+                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p
+                                                ON s.PlanId = p.Plan_Id
+                                                WHERE s.UserId = '$current_user->user_login'
+                                                ORDER BY `CreatedAt` DESC", "ARRAY_A");
+
+        $obj = new recurringAdmin();
+        for($i = 0; $i < count($userPaymentHistory); $i++) {
+            $userPaymentHistory[$i]['Status'] = $obj->getStatusStr('report', $userPaymentHistory[$i]['Status']);
+        }
+    ////
+    $myHistoryResult = array(
+        'status' => true,
+        'msg'    => '',
+        'data'   => '<div class="row">
+                        <h3 class="card-title">'. __($htmlThem,'ntpRp').'<span id="who"></span></h3>
+                        </div>
+                        <div class="row">
+                            <table id="myHistoryDataTable" class="table" width="100%">
+                                <thead>
+                                <tr>
+                                    <th>'. __('Date','ntpRp').'</th>
+                                    <th>'. __('Title & Amount','ntpRp').'</th>
+                                    <!-- <th>'. __('Transaction ID','ntpRp').'</th> -->
+                                    <!-- <th>'. __('Comment','ntpRp').'</th> -->
+                                    <th>'. __('Status','ntpRp').'</th>
+                                </tr>
+                                </thead>
+                                <tbody id="mySubscriberPaymentHistoryList">
+                                    <!-- History List -->
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>'. __('Date','ntpRp').'</th>
+                                    <th>'. __('Title & Amount','ntpRp').'</th>
+                                    <!-- <th>'. __('Transaction ID','ntpRp').'</th> -->
+                                    <!-- <th>'. __('Comment','ntpRp').'</th> -->
+                                    <th>'. __('Status','ntpRp').'</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>',
+        'histories'   => $userPaymentHistory,
+        );
+
+    echo json_encode($myHistoryResult);
+    wp_die();
+}
 
 function recurring_account_getMySubscriptions() {
     global $wpdb;

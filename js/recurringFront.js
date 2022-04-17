@@ -4,8 +4,40 @@ jQuery(document).ready(function () {
         jQuery('#frontAccountMyPaymentHistory').addClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
-        //
-        alert('History is not implimented pageYOffset, first do IPN-UL');
+        
+        data = {
+            action : 'getMyHistory'
+        }
+    
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {      
+                    // console.log(response);
+                    jQuery('#ntpAccountBody').html(response.data);
+ 
+                    const rows = response.histories.map(history => {
+                        const tr = jQuery('<tr></tr>');
+                        tr.append(jQuery('<td></td>').text(history.CreatedAt.split(' ')[0]));
+                        tr.append(jQuery('<td></td>').text(history.Title + ' - ' + history.Amount));
+                        // tr.append(jQuery('<td></td>').text(history.TransactionID));
+                        // tr.append(jQuery('<td></td>').text(history.Comment));
+                        tr.append(jQuery('<td></td>').text(history.Status));
+                        return tr;
+                    });
+                    // console.log(rows);
+                    jQuery("#mySubscriberPaymentHistoryList").html(rows);               
+                } else {
+                    jQuery('#ntpAccountBody').html(response.msg);
+                }
+            },
+            error: function( error ){
+                jQuery('#ntpAccountBody').html(response.msg);
+            }
+        });
     });
 
     jQuery('#frontAccountMysubscription').click(function() {
