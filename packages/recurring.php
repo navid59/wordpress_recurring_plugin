@@ -161,5 +161,13 @@
          {
              return $this->outEncData;
          }
+
+        public function informMember($message) {
+            $to = 'n.torabazari@gmail.com';
+            $subject = 'test wp mail';
+            $message = !empty($message) ? $message: 'Hello Navid this is email test';
+
+            wp_mail( $to, $subject, $message );
+        } 
     }    
 ?>

@@ -82,7 +82,7 @@ function recurring_addSubscription() {
     $arr3DS = (array)$obj3DS;
     
 
-    $a = new recurringFront();
+    $obj = new recurringFront();
     $subscriptionData = array(
         "Member" => array (
             "UserID" => $Member['UserID'],
@@ -94,8 +94,8 @@ function recurring_addSubscription() {
             "Tel" => strval($Member['Tel'])
         ),
         "Merchant" => array(
-            "Signature" => $a->getSignature(),
-            "NotifyUrl" => $a->getNotifyUrl(),
+            "Signature" => $obj->getSignature(),
+            "NotifyUrl" => $obj->getNotifyUrl(),
             "Tolerance" =>  true,
             "IntervalRetry" => 3
         ),
@@ -118,7 +118,7 @@ function recurring_addSubscription() {
       );   
      
 
-    $jsonResultData = $a->setSubscription($subscriptionData);
+    $jsonResultData = $obj->setSubscription($subscriptionData);
 
     // Add subscription to DB 
     if($jsonResultData['code'] === "00") {
@@ -161,6 +161,9 @@ function recurring_addSubscription() {
 
     // Add subscription to DB 
     $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
+
+    // Sned mail
+    // $obj->informMember();
 
     $mySimulatedResult = array(
         'status'=> $jsonResultData['code'] === "00" ? true : false,
@@ -516,7 +519,6 @@ function recurring_account_getMyHistory() {
     $current_user = wp_get_current_user();
     $htmlThem = 'Payment History';
 
-    ////
     $userPaymentHistory = $wpdb->get_results("SELECT 
                                                     s.UserId,
                                                     h.Subscription_Id,
@@ -538,7 +540,7 @@ function recurring_account_getMyHistory() {
         for($i = 0; $i < count($userPaymentHistory); $i++) {
             $userPaymentHistory[$i]['Status'] = $obj->getStatusStr('report', $userPaymentHistory[$i]['Status']);
         }
-    ////
+    
     $myHistoryResult = array(
         'status' => true,
         'msg'    => '',

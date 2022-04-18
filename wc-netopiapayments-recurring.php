@@ -66,15 +66,6 @@ class NetopiapaymentsRecurringPayment extends recurring
             'menuTitle' => 'Dashbord',
             'menuSlug' => 'recurring_dashbord'
             ),            
-        // 'subscription'=> array(
-        //     'capability' => 'manage_options',
-        //     'callback' => array( $this, 'subscription_UI' ),
-        //     'icon' => 'dashicons-format-status',
-        //     'position' => 100,
-        //     'pageTitle' => "Subscription management",
-        //     'menuTitle' => 'Subscription - DELETE',
-        //     'menuSlug' => 'recurring_subscription'
-        // ),
         'subscriptionAjax'=> array(
             'capability' => 'manage_options',
             'callback' => array( $this, 'subscription_UI_Ajax' ),
@@ -106,7 +97,6 @@ class NetopiapaymentsRecurringPayment extends recurring
 
 
         add_menu_page( $this->page_title, $this->menu_title, $this->menuItems['main']['capability'], $this->slug, $this->menuItems['main']['callback'], $this->menuItems['main']['icon'], $this->menuItems['main']['position'] );
-        // add_submenu_page($this->slug, $this->menuItems['subscription']['pageTitle'], $this->menuItems['subscription']['menuTitle'], $this->menuItems['subscription']['capability'], $this->menuItems['subscription']['menuSlug'], $this->menuItems['subscription']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['subscriptionAjax']['pageTitle'], $this->menuItems['subscriptionAjax']['menuTitle'], $this->menuItems['subscriptionAjax']['capability'], $this->menuItems['subscriptionAjax']['menuSlug'], $this->menuItems['subscriptionAjax']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['plan']['pageTitle'], $this->menuItems['plan']['menuTitle'], $this->menuItems['plan']['capability'], $this->menuItems['plan']['menuSlug'], $this->menuItems['plan']['callback'] );
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
@@ -420,6 +410,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="?page=netopia_recurring&tab=display_notify_management" class="nav-tab <?php echo $active_tab == 'display_notify_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Notify management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_account_management" class="nav-tab <?php echo $active_tab == 'display_account_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Account page management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
+                <!-- <a href="?page=netopia_recurring&tab=display_sync_management" class="nav-tab <?php echo $active_tab == 'display_sync_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Sync Data','ntpRp')?></a> -->
             </h2>
             <form method="post" action="options.php">
                 <?php
@@ -440,6 +431,8 @@ class NetopiapaymentsRecurringPayment extends recurring
                     settings_fields( 'message_management' );
                     do_settings_sections( 'message_management' );
                     submit_button();
+                } elseif($active_tab == 'display_sync_management') {
+                    // require_once ('include/sync_data.php');
                 } elseif($active_tab == 'display_notify_management') {
                     settings_fields( 'notify_management' );
                     do_settings_sections( 'notify_management' );
@@ -451,29 +444,6 @@ class NetopiapaymentsRecurringPayment extends recurring
             </form>
         </div>
         <?php
-    }
-
-    public function subscription_UI() {
-        /**
-        ?>
-        <div class="wrap">
-            <div class="row">
-                <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
-                <span style="font-size: xx-large"><?=$this->menuItems['subscription']['pageTitle'] ?></span>
-            </div>
-            <h2 class="nav-tab-wrapper">
-                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
-            </h2>
-            
-            <?php 
-            include_once('include/subscriptions.php');
-            include_once('include/partial/modalSubscriberInfo.php');
-            include_once('include/partial/modalNextPayment.php');
-            include_once('include/partial/modalSubscriberHistory.php');
-            ?>
-        <div>    
-        <?php
-         */
     }
 
     public function subscription_UI_Ajax() {
