@@ -162,12 +162,15 @@
              return $this->outEncData;
          }
 
-        public function informMember($message) {
-            $to = 'n.torabazari@gmail.com';
-            $subject = 'test wp mail';
-            $message = !empty($message) ? $message: 'Hello Navid this is email test';
+        public function informMember($subject, $message) {
+            if (empty($subject) || empty($message))
+                return false;
 
-            wp_mail( $to, $subject, $message );
+            $current_user = wp_get_current_user();
+            $to = $current_user->user_email;
+            $mailResult = false;
+            $mailResult = wp_mail( $to, $subject, $message );
+            
         } 
     }    
 ?>

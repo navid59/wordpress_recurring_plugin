@@ -11,21 +11,6 @@ function ntp_add_query_vars($vars){
    return $vars;
 }
 
-// ////////////
-// // Send email via SMTP
-// add_action( 'phpmailer_init', 'my_phpmailer_example' );
-// function my_phpmailer_example( $phpmailer ) {
-//     $phpmailer->isSMTP();     
-//     $phpmailer->Host = SMTP_HOST;
-//     $phpmailer->SMTPAuth = SMTP_AUTH;
-//     $phpmailer->Port = SMTP_PORT;
-//     $phpmailer->Username = SMTP_USER;
-//     $phpmailer->Password = SMTP_PASS;
-//     $phpmailer->SMTPSecure = SMTP_SECURE;
-//     $phpmailer->From = SMTP_FROM;
-//     $phpmailer->FromName = SMTP_NAME;
-// }
-// ////////////
 
 add_action('template_include', 'ntpRecurringNotifyValidation');
 function ntpRecurringNotifyValidation($template) {
@@ -52,8 +37,7 @@ function getHeaderRequest() {
     // Add Log
     //
     global $wpdb;
-    $logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
-    // $logFile = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
+    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
     
     $headers = apache_request_headers();
     if(hasToken($headers)) {
@@ -84,7 +68,7 @@ function getHeaderRequest() {
 
         /** Test Email - Log Temporar */
         $mailResult = false;
-        $mailResult = wp_mail( 'test@navid.ro', 'test if mail works', 'hurray' );
+        $mailResult = wp_mail( 'test@navid.ro', 'Mail works', 'Mail from Notify URL' );
         
         file_put_contents($logFile, "---------- EMAIL ---------------\n", FILE_APPEND);
         file_put_contents($logFile, $mailResult."\n", FILE_APPEND);

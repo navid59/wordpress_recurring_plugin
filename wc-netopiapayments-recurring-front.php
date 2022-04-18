@@ -163,7 +163,7 @@ function recurring_addSubscription() {
     $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
 
     // Sned mail
-    // $obj->informMember();
+    $obj->informMember("New subscription", "Congratulation you successfully subscribed");
 
     $mySimulatedResult = array(
         'status'=> $jsonResultData['code'] === "00" ? true : false,
@@ -194,13 +194,13 @@ function recurring_getMyNextPayment() {
 function recurring_unsubscription() {
     global $wpdb;
   
-    $a = new recurringFront();
+    $obj = new recurringFront();
     $subscriptionData = array(
-            "Signature" => $a->getSignature(),
+            "Signature" => $obj->getSignature(),
             "SubscriptionId" => $_POST['SubscriptionId']+0
       );   
      
-    $jsonResultData = $a->setUnsubscription($subscriptionData);
+    $jsonResultData = $obj->setUnsubscription($subscriptionData);
     
     // Update subscription to DB 
     if($jsonResultData['code'] === "00") {
@@ -215,13 +215,17 @@ function recurring_unsubscription() {
                 'Subscription_Id' => $_POST['SubscriptionId']
             )
         );
+
+        // Sned mail
+        $obj->informMember("Unsubscription", "Hope to see you soon");
+
     }
 
-    $mySimulatedResult = array(
+    $unsubscribeResult = array(
         'status'=> $jsonResultData['code'] === "00" ? true : false,
         'msg'=> $jsonResultData['message'],
         );
-    echo json_encode($mySimulatedResult);
+    echo json_encode($unsubscribeResult);
     wp_die();
 }
 
