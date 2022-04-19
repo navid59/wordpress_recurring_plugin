@@ -182,12 +182,12 @@ function recurring_getMyNextPayment() {
 
     $jsonResultData = $a->getNextPayment($nextPaymentData);
     
-    $mySimulatedResult = array(
+    $myNextPaymentResult = array(
             'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
-            'msg'=> $jsonResultData['message'],
+            'msg'=> !empty($jsonResultData['message']) ? $jsonResultData['message'] : '',
             'data' =>  $jsonResultData
             );
-    echo json_encode($mySimulatedResult);
+    echo json_encode($myNextPaymentResult);
     die();
 }
 
