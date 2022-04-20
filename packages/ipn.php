@@ -1,4 +1,5 @@
 <?php
+include_once('recurring.php');
 include_once('firebase/php-jwt/src/JWT.php');
 include_once('firebase/php-jwt/src/SignatureInvalidException.php');
 include_once('firebase/php-jwt/src/BeforeValidException.php');
@@ -30,6 +31,8 @@ class IPN {
     const ERROR_TYPE_NONE 		= 0x00;
     const ERROR_TYPE_TEMPORARY 	= 0x01;
     const ERROR_TYPE_PERMANENT 	= 0x02;
+
+    const RECURRING_ERROR_CODE_NEED_VERIFY  = 0x200; // Need Verify Recurring API Key
 
     /**
      * available statuses for the purchase class (prcStatus)
@@ -68,6 +71,12 @@ class IPN {
      *  - a Json
      */
     public function verifyIPN() {
+        /** Log Time */
+        $logDate = new DateTime();
+        $logDate = $logDate->format("y:m:d h:i:s");
+                    
+        // $this->logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
+        $this->logFile = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
 
         /**
         * Default IPN response, 
@@ -84,14 +93,22 @@ class IPN {
         */
         $aHeaders = $this->getApacheHeader();
         if(!$this->validHeader($aHeaders)) {
-            echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
-            exit;
+            /**
+             * check if header has Apikey
+             */
+            if(array_key_exists('Apikey', $aHeaders)) {
+               // should be check for add to db
+               $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+               $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
+               $outputData['errorMessage']	= 'Need to Validate API Key';
+               return $outputData;
+            } else {
+                /** Log IPN */
+                file_put_contents($this->logFile, "[".$logDate."] IPN__header is not an valid HTTP HEADER \n", FILE_APPEND);
+                echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
+                exit;
+            }            
         }
-
-        /** Log Temporar */
-        // $this->logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
-        $this->logFile = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
-        file_put_contents($this->logFile, 'IPN LIB - Afeter get Header '."\n", FILE_APPEND);
 
         /**
         *  fetch Verification-token from HTTP header 
@@ -99,16 +116,9 @@ class IPN {
         $verificationToken = $this->getVerificationToken($aHeaders);
         if($verificationToken === null)
             {
-            /** Log Temporar */
-            file_put_contents($this->logFile, 'IPN__Verification-token is missing in HTTP HEADER'."\n", FILE_APPEND);
-            
             echo 'IPN__Verification-token is missing in HTTP HEADER' . PHP_EOL;
             exit;
-            }else {
-                /** Log Temporar */
-                file_put_contents($this->logFile, 'IPN__Verification-token is '.$verificationToken.' in HTTP HEADER'."\n", FILE_APPEND);
             }
-
         
         /**
         * Analising verification token
@@ -131,16 +141,33 @@ class IPN {
             exit; 
         }
 
+        /** Log Temporar */
+        file_put_contents($this->logFile, 'The '.$verificationToken.' is an correct JWT'."\n", FILE_APPEND);
+        file_put_contents($this->logFile, 'This '.$this->publicKeyStr.' is the public key'."\n", FILE_APPEND);
+
         /**
         * check if publicKeyStr is defined
         */
         if(isset($this->publicKeyStr) && !is_null($this->publicKeyStr)){
             $publicKey = openssl_pkey_get_public($this->publicKeyStr);
+            /** Log Temporar */
+            file_put_contents($this->logFile, '-----------OpenSSL -------'."\n", FILE_APPEND);
+            file_put_contents($this->logFile, print_r($publicKey,true)."\n", FILE_APPEND);
+            file_put_contents($this->logFile, '-----------OpenSSL -------'."\n", FILE_APPEND);
             if($publicKey === false) {
+                /** Log Temporar */
+                file_put_contents($this->logFile, 'IPN__public key is not a valid public key'."\n", FILE_APPEND);
+
                 echo 'IPN__public key is not a valid public key' . PHP_EOL; 
                 exit;
+            } else {
+                /** Log Temporar */
+                file_put_contents($this->logFile, 'The Openssl is OK'."\n", FILE_APPEND);
             }
         } else {
+            /** Log Temporar */
+            file_put_contents($this->logFile, 'IPN__Public key missing'."\n", FILE_APPEND);
+
             echo "IPN__Public key missing" . PHP_EOL; 
             exit;
         }
@@ -150,6 +177,11 @@ class IPN {
         * Get raw data
         */
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
+
+        /** Log Temporar */
+        file_put_contents($this->logFile, "------------ROW DATA ------------ \n", FILE_APPEND);
+        file_put_contents($this->logFile, print_r($HTTP_RAW_POST_DATA, true)." \n", FILE_APPEND);
+        file_put_contents($this->logFile, "------------ ROW DATA ------- \n", FILE_APPEND);
 
         /**
         * The name of the alg defined in header of JWT
@@ -319,11 +351,13 @@ class IPN {
         if(!is_array($httpHeader)){
             return false;
         } else {
-            if(!array_key_exists('Verification-token', $httpHeader)){
-                return false;
+            foreach($httpHeader as $key => $val) {
+                if($key == 'Verification-Token') {
+                    return true;
+                }
             }
+            return false;
         }
-        return true;
     }
 
     /**

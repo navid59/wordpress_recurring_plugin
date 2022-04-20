@@ -31,6 +31,9 @@ function ntpRecurringNotifyValidation($template) {
 
 function getHeaderRequest() {
     global $wpdb;
+    /** Log Time & Path*/
+    $logDate = new DateTime();
+    $logDate = $logDate->format("y:m:d h:i:s");
     $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_'.date("j.n.Y").'.log';
 
     $ntpIpn = new IPN();
@@ -59,13 +62,40 @@ function getHeaderRequest() {
     81SmQnaqcQ/DCtxDwV71qRgvojIDR6CIPutdWEk5H5rJTaljT2ZBWd97SsDd0g==
     -----END CERTIFICATE-----';
 
-    /** Log Temporar */
-    file_put_contents($logFile, 'New IPN - Before Verify JWT '."\n", FILE_APPEND);
-    file_put_contents($logFile, $ntpIpn->activeKey."\n", FILE_APPEND);
 
     $ipnResponse = $ntpIpn->verifyIPN();
 
-    /** Log Temporar */
+    file_put_contents($this->logFile, "[".$logDate."] IPN - TEST \n", FILE_APPEND);
+    file_put_contents($this->logFile, print_r($ipnResponse, true)." \n", FILE_APPEND);
+
+    if($ipnResponse['errorType'] == $ntpIpn->ERROR_TYPE_TEMPORARY && $ipnResponse['errorType'] == $ntpIpn->RECURRING_ERROR_CODE_NEED_VERIFY) {
+        // Verify API KEY
+        $headers = apache_request_headers();
+        if(hasToken($headers)) {
+            // Add Log & Add History
+            $data = file_get_contents('php://input');
+            $arrDate = json_decode($data, true);
+            $wpdb->insert( 
+                $wpdb->prefix . "ntp_history", 
+                array( 
+                    'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
+                    'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
+                    'NotifyContent'  => $data,
+                    'Comment'        => $arrDate['NotifyPayment']['Message'],
+                    'Status'         => $arrDate['NotifyPayment']['PaymetCode'],
+                    'CreatedAt'      => date("Y-m-d")
+                )
+            );
+
+            /** Log IPN */
+            file_put_contents($this->logFile, "[".$logDate."] IPN - Subscription added in DB \n", FILE_APPEND);
+        } else {
+            /** Log IPN */
+            file_put_contents($this->logFile, "[".$logDate."] IPN - Request is not a valid request \n", FILE_APPEND);
+        }        
+    } else {
+        //-------------
+        /** Log Temporar */
     file_put_contents($logFile, '-------------- New IPN - AFTER Verify JWT ----------------'."\n", FILE_APPEND);
     file_put_contents($logFile, $ipnResponse."\n", FILE_APPEND);
 
@@ -74,6 +104,8 @@ function getHeaderRequest() {
      * IPN Output
      */
     echo json_encode($ipnResponse);
+        //-------------
+    }
 }
 
 function getHeaderRequest_OK_OLD() {
@@ -127,8 +159,8 @@ function getHeaderRequest_OK_OLD() {
 }
 
 function hasToken($header) {
-    if (array_key_exists('Token', $header)) {
-        if(isValidToken($header['Token'])) {
+    if (array_key_exists('Apikey', $header)) {
+        if(isValidToken($header['Apikey'])) {
             return true;
         } else {
             return false;
@@ -138,9 +170,9 @@ function hasToken($header) {
     }
 }
 
-function isValidToken($token) {
+function isValidToken($apiKey) {
     $obj = new recurring();
-    if($obj->getApiKey() === $token) {
+    if($obj->getApiKey() === $apiKey) {
         return true;
     } else {
         return false;
