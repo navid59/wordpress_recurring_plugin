@@ -62,13 +62,17 @@ function getHeaderRequest() {
     81SmQnaqcQ/DCtxDwV71qRgvojIDR6CIPutdWEk5H5rJTaljT2ZBWd97SsDd0g==
     -----END CERTIFICATE-----';
 
+    // file_put_contents($logFile, "[".$logDate."] - (1) - IPN Called \n", FILE_APPEND);
 
     $ipnResponse = $ntpIpn->verifyIPN();
 
-    file_put_contents($this->logFile, "[".$logDate."] IPN - TEST \n", FILE_APPEND);
-    file_put_contents($this->logFile, print_r($ipnResponse, true)." \n", FILE_APPEND);
+    // file_put_contents($logFile, "[".$logDate."] IPN - TEST \n", FILE_APPEND);
+    // file_put_contents($logFile, print_r($ipnResponse, true)." \n", FILE_APPEND);
+    // file_put_contents($logFile, "ERROR_TYPE_TEMPORARY : ".IPN::ERROR_TYPE_TEMPORARY." \n", FILE_APPEND);
+    // file_put_contents($logFile, "RECURRING_ERROR_CODE_NEED_VERIFY : ".IPN::RECURRING_ERROR_CODE_NEED_VERIFY." \n", FILE_APPEND);
+   
 
-    if($ipnResponse['errorType'] == $ntpIpn->ERROR_TYPE_TEMPORARY && $ipnResponse['errorType'] == $ntpIpn->RECURRING_ERROR_CODE_NEED_VERIFY) {
+    if(($ipnResponse['errorType'] == IPN::ERROR_TYPE_TEMPORARY) && ($ipnResponse['errorCode'] == IPN::RECURRING_ERROR_CODE_NEED_VERIFY)) {
         // Verify API KEY
         $headers = apache_request_headers();
         if(hasToken($headers)) {
@@ -88,75 +92,27 @@ function getHeaderRequest() {
             );
 
             /** Log IPN */
-            file_put_contents($this->logFile, "[".$logDate."] IPN - Subscription added in DB \n", FILE_APPEND);
+            file_put_contents($logFile, "[".$logDate."] IPN - Subscription ".$arrDate['NotifySubscription']['SubscriptionID']." added in DB \n", FILE_APPEND);
+            file_put_contents($logFile, "[".$logDate."] - ---------------- STEP 1 is DONE ---------------- \n", FILE_APPEND);
         } else {
             /** Log IPN */
-            file_put_contents($this->logFile, "[".$logDate."] IPN - Request is not a valid request \n", FILE_APPEND);
+            file_put_contents($logFile, "[".$logDate."] IPN - Request is not a valid request \n", FILE_APPEND);
         }        
     } else {
         //-------------
         /** Log Temporar */
-    file_put_contents($logFile, '-------------- New IPN - AFTER Verify JWT ----------------'."\n", FILE_APPEND);
-    file_put_contents($logFile, $ipnResponse."\n", FILE_APPEND);
+        file_put_contents($logFile, '-------------- STEP 2 is DONE  ----------------'."\n", FILE_APPEND);
+        file_put_contents($logFile, print_r($ipnResponse, true)."\n", FILE_APPEND);
 
 
-    /**
-     * IPN Output
-     */
-    echo json_encode($ipnResponse);
+        /**
+         * IPN Output
+         */
+        echo json_encode($ipnResponse);
         //-------------
     }
 }
 
-function getHeaderRequest_OK_OLD() {
-    // get Header
-    // Get data
-    // Add Payment History for subscription
-    // Add Log 
-    // Update Subscription Data
-    // Add Log
-    //
-    global $wpdb;
-    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_navid_'.date("j.n.Y").'.log';
-    
-    $headers = apache_request_headers();
-    if(hasToken($headers)) {
-        // Add Log & Add History
-
-        $data = file_get_contents('php://input');
-         /** Log Temporar */
-        file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
-        file_put_contents($logFile, $data."\n", FILE_APPEND);
-
-        $arrDate = json_decode($data, true);
-
-        /** Log Temporar */
-        file_put_contents($logFile, "-------------------------\n", FILE_APPEND);
-        file_put_contents($logFile, print_r($arrDate, true)."\n", FILE_APPEND);
-
-        $wpdb->insert( 
-            $wpdb->prefix . "ntp_history", 
-            array( 
-                'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
-                'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
-                'NotifyContent'  => $data,
-                'Comment'        => $arrDate['NotifyPayment']['Message'],
-                'Status'         => $arrDate['NotifyPayment']['PaymetCode'],
-                'CreatedAt'      => date("Y-m-d")
-            )
-        );
-
-        /** Test Email - Log Temporar */
-        $mailResult = false;
-        $mailResult = wp_mail( 'test@navid.ro', 'Mail works', 'Mail from Notify URL' );
-        
-        file_put_contents($logFile, "---------- EMAIL ---------------\n", FILE_APPEND);
-        file_put_contents($logFile, $mailResult."\n", FILE_APPEND);
-
-    } else {
-        // Log may by IP Token is not found in Header
-    }
-}
 
 function hasToken($header) {
     if (array_key_exists('Apikey', $header)) {
@@ -177,16 +133,4 @@ function isValidToken($apiKey) {
     } else {
         return false;
     }
-}
-
-function getBodyRequest() {
-
-}
-
-function sanitizeBody() {
-
-}
-
-function sendResponse() {
-
 }
