@@ -217,17 +217,6 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => 'Congratulation! You subscribed successfully. Thank you for choosing us.'
             ),
             array(
-                'uid' => $this->slug.'_subscription_valid_card_reg_msg',
-                'label' => __('Success message of subscription by only validate card'),
-                'section' => 'message',
-                'type' => 'textarea',
-                'options' => false,
-                'placeholder' => __('A success message for display after subscription by only validate a card, not actual payment.'),
-                'helper' => __(''),
-                'supplemental' => __('Subscription by only validate card message'),
-                'default' => 'Congratulation! You subscribed successfully.Enjoy the free trial time. The payment will manage automatically after free period time.'
-            ),
-            array(
                 'uid' => $this->slug.'_subscription_reg_failed_msg',
                 'label' => __('Failed message of subscription'),
                 'section' => 'message',
@@ -239,15 +228,15 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => 'Your subscription failed. Please try again.'
             ),
             array(
-                'uid' => $this->slug.'_subscription_valid_card_reg_failed_msg',
-                'label' => __('Failed message of subscription by just validate a card'),
+                'uid' => $this->slug.'_unsubscription_msg',
+                'label' => __('Unsubscription message'),
                 'section' => 'message',
                 'type' => 'textarea',
                 'options' => false,
-                'placeholder' => __('A failed message for display after failed subscription by only validate a card'),
+                'placeholder' => __('A message for display after unsubscription.'),
                 'helper' => __(''),
-                'supplemental' => __('Failed subscription message on only validate card'),
-                'default' => 'Your subscription failed. Please verify card data & try again.'
+                'supplemental' => __('Unsubscription message'),
+                'default' => 'You unsubscribed successfully. We hope to have you again soon.'
             )
         );
 
@@ -263,6 +252,7 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_settings_section( 'declaration', 'Term & Condition Declaration', array( $this, 'section_callback' ), 'netopia_recurring' );
     }
 
+    
     public function recurring_setup_fields() {
         $fields = array(
             array(
@@ -289,7 +279,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             ),
             array(
                 'uid' => $this->slug.'_mood',
-                'label' => 'MOOD Not implimented yet!!!',
+                'label' => '',
                 'section' => 'mood',
                 'type' => 'radio',
                 'options' => array(
@@ -319,6 +309,39 @@ class NetopiapaymentsRecurringPayment extends recurring
         foreach( $fields as $field ){
             add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'netopia_recurring', $field['section'], $field );
             register_setting( 'netopia_recurring', $field['uid'] );
+        }
+    }
+
+    public function section_callback( $arguments )
+    {
+        switch( $arguments['id'] ){
+            case 'general':
+                echo __('<b>Api key</b> is an authorization key to sign your request.','ntpRp');
+                echo __('Keys are available in your NETOPIA account under Profile - Security.','ntpRp');
+                echo __('<br><b>Signature ID </b>is the merchant POS identifier, available in your NETOPIA account.','ntpRp');
+                break;
+            case 'mood':
+                echo '';
+                break;
+            case 'declaration':
+                echo '';
+                break;
+            case 'message':
+                echo __('To customize communication message with your client during subscription and subscription , ...', 'ntpRp');
+                break;
+            case 'account':
+                echo '';
+                break;
+            case 'template':
+                echo __('Custom notification emails; will be shared by NETOPIA', 'ntpRp');
+                break;
+            case 'urls':
+                echo __('<b>Subscription notify url</b> is on the merchant side where NETOPIA will send subscription & payment result notifications', 'ntpRp');
+                echo __('<br><b>Subscription login url</b> is page URL which your subscription can inform about their own activities.', 'ntpRp');
+                break;
+            default:
+                echo '';
+                break;
         }
     }
 

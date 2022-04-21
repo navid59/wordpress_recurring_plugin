@@ -32,7 +32,7 @@ echo '
                                         <h4 class="my-0 font-weight-normal">'.__('Amount','ntpRp').'</h4>
                                     </div>
                                     <div class="card-body">
-                                        <h1 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h1>
+                                        <h3 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h3>
                                         <input type="hidden" class="form-control" id="planID" value="'.$planId.'">
                                     </div>
                                 </div>

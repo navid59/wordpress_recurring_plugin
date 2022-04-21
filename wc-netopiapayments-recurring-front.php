@@ -165,11 +165,21 @@ function recurring_addSubscription() {
     // Sned mail
     $obj->informMember("New subscription", "Congratulation you successfully subscribed");
 
-    $mySimulatedResult = array(
-        'status'=> $jsonResultData['code'] === "00" ? true : false,
-        'msg'=> $jsonResultData['message'],
+    if($jsonResultData['code'] === "00") {
+        $customMsg = $obj->getSuccessMessagePayment();
+        $status = true;
+        $msg = !is_null($customMsg) ? $customMsg : $jsonResultData['message'];
+    } else {
+        $customMsg = $obj->getFailedMessagePayment();
+        $status = false;
+        $msg = !is_null($customMsg) ? $customMsg : $jsonResultData['message'];
+    }
+
+    $addSubscriptionResult = array(
+        'status'=> $status,
+        'msg'=> $msg,
         );
-    echo json_encode($mySimulatedResult);
+    echo json_encode($addSubscriptionResult);
     wp_die();
 }
 
@@ -221,9 +231,18 @@ function recurring_unsubscription() {
 
     }
 
+    if($jsonResultData['code'] === "00") {
+        $customMsg = $obj->getUnsuccessMessage();
+        $status = true;
+        $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
+    } else {
+        $status = false;
+        $msg = $jsonResultData['message'];
+    }
+
     $unsubscribeResult = array(
-        'status'=> $jsonResultData['code'] === "00" ? true : false,
-        'msg'=> $jsonResultData['message'],
+        'status'=> $status,
+        'msg'=> $msg,
         );
     echo json_encode($unsubscribeResult);
     wp_die();
@@ -747,31 +766,28 @@ function ntpMyAccount() {
     $accountPageContent = $obj->getAccountPageSetting();
 
     if(is_user_logged_in()) {
-        $strHTML = '
-                    <div class="">
-                        <div class="row">
-                            <div class="" id="">
-                                <ul class="nav nav-pills nav-flush flex-column bg-light">
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link border-bottom" id="frontAccountMyPaymentHistory" ><i class="fas fa-file-invoice-dollar" style="padding-right:15px;"></i> '.__('My History', 'ntpRp').'</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col" id="ntpAccount">
-                                <h2 id="ntpAccountSubtitle">'.$accountPageContent['subtitle'].'</h2>
-                                <div class="col" id="ntpAccountBody">
-                                    <p id="ntpAccountP1">'.$accountPageContent['firstParagraph'].'</p>
-                                    <p id="ntpAccountP2">'.$accountPageContent['secoundParagraph'].'</p>
-                                </div>
+        $strHTML = '<div class="row">
+                        <div class="" id="">
+                            <ul class="nav nav-pills nav-flush flex-column bg-light">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link border-bottom" id="frontAccountMysubscription" ><i class="fa fa-bell" style="padding-right:15px;"></i> '.__('My subscriptions', 'ntpRp').'</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link border-bottom" id="frontAccountMyPaymentHistory" ><i class="fas fa-file-invoice-dollar" style="padding-right:15px;"></i> '.__('My History', 'ntpRp').'</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col" id="ntpAccount">
+                            <h2 id="ntpAccountSubtitle">'.$accountPageContent['subtitle'].'</h2>
+                            <div class="col" id="ntpAccountBody">
+                                <p id="ntpAccountP1">'.$accountPageContent['firstParagraph'].'</p>
+                                <p id="ntpAccountP2">'.$accountPageContent['secoundParagraph'].'</p>
                             </div>
                         </div>
                     </div>';

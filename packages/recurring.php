@@ -29,6 +29,21 @@
             // return get_option($this->slug.'_notify_url', array());// Test 
         }
 
+        function getSuccessMessagePayment() {
+            $msg = get_option($this->slug.'_subscription_reg_msg');
+            return $msg; 
+        }
+
+        function getFailedMessagePayment() {
+            $msg = get_option($this->slug.'_subscription_reg_failed_msg');
+            return $msg; 
+        }
+
+        function getUnsuccessMessage() {
+            $msg = get_option($this->slug.'_unsubscription_msg');
+            return $msg; 
+        }
+
         function getAccountPageSetting() {
             $accountPageSubtitle = get_option($this->slug.'_account_subtitle', array());
             $accountPageFirstParagraph = get_option($this->slug.'_account_paragraph_first', array());
