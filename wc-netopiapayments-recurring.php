@@ -465,7 +465,7 @@ class NetopiapaymentsRecurringPayment extends recurring
 
         // If there is supplemental text
         if( $supplimental = $arguments['supplemental'] ){
-            printf( '<p class="description">%s</p>', $supplimental ); // Show it
+            printf( '<p id="description_%1$s" class="description">%2$s</p>', $arguments['uid'], $supplimental ); // Show it
         }
     }
 
@@ -486,7 +486,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
                 <!-- <a href="?page=netopia_recurring&tab=display_sync_management" class="nav-tab <?php echo $active_tab == 'display_sync_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Sync Data','ntpRp')?></a> -->
             </h2>
-            <form method="post" action="options.php">
+            <form method="post" enctype="multipart/form-data" action="options.php">
                 <?php
                 if( $active_tab == 'display_setting' ) {
                     settings_fields( 'netopia_recurring' );
