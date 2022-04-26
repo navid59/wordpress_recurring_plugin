@@ -415,6 +415,7 @@ jQuery('#netopia_recurring_live_public_key').on('change', function () {
             data: form_data,
             success: function (response) {
                 jQuery(this).val('');
+                jQuery('#netopia_recurring_live_public_key_file_name').val(file_data.name);
                 jQuery('#description_netopia_recurring_live_public_key').html('File uploaded successfully.');
             }
         });
@@ -437,6 +438,7 @@ jQuery('#netopia_recurring_live_private_key').on('change', function(){
             data: form_data,
             success: function (response) {
                 jQuery(this).val('');
+                jQuery('#netopia_recurring_live_private_key_file_name').val(file_data.name);
                 jQuery('#description_netopia_recurring_live_private_key').html('File uploaded successfully.');
             }
         });
@@ -458,6 +460,7 @@ jQuery('#netopia_recurring_sandbox_public_key').on('change', function () {
             data: form_data,
             success: function (response) {
                 jQuery(this).val('');
+                jQuery('#netopia_recurring_sandbox_public_key_file_name').val(file_data.name);
                 jQuery('#description_netopia_recurring_sandbox_public_key').html('File uploaded successfully.');
             }
         });
@@ -480,48 +483,9 @@ jQuery('#netopia_recurring_sandbox_private_key').on('change', function(){
             data: form_data,
             success: function (response) {
                 jQuery(this).val('');
+                jQuery('#netopia_recurring_sandbox_private_key_file_name').val(file_data.name);
                 jQuery('#description_netopia_recurring_sandbox_private_key').html('File uploaded successfully.');
             }
         });
     }
-});
-
-
-jQuery('#submit').closest('form').on('submit', function(e) {
-// console.log(e);
-    // let live_public_key = '';
-    // if(netopia_recurring_live_public_key.files.length) 
-    //     live_public_key = netopia_recurring_live_public_key.files[0];
-
-    // let live_private_key = '';
-    // if(netopia_recurring_live_private_key.files.length) 
-    //     live_private_key = netopia_recurring_live_private_key.files[0];
-
-    // let sandbox_public_key = '';
-    // if(netopia_recurring_sandbox_public_key.files.length)
-    //     sandbox_public_key = netopia_recurring_sandbox_public_key.files[0];
-
-    // let sandbox_private_key = '';
-    // if(netopia_recurring_sandbox_private_key.files.length)
-    //     sandbox_private_key = netopia_recurring_sandbox_private_key.files[0];
-
-    // data = {
-    //         action : 'uploadKey',
-    //         netopia_recurring_live_public_key : live_public_key,
-    //         netopia_recurring_live_private_key : live_private_key,
-    //         netopia_recurring_sandbox_public_key : sandbox_public_key,
-    //         netopia_recurring_sandbox_private_key : sandbox_private_key,
-    //         };
-           
-    // jQuery.post(ajaxurl, data, function(response){
-    //     jsonResponse = JSON.parse(response);
-    //     if(jsonResponse.status) {
-    //         console.log("YES YES YES");
-    //         console.log(jsonResponse.message);
-    //     } else {
-    //         console.log("NO NO NO");
-    //         console.log(jsonResponse.message);
-    //     }
-    // });
-    // return false;
 });

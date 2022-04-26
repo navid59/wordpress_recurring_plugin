@@ -455,6 +455,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             break;
             case 'file': // If it is a File type for uploade files, ...
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
+                printf( '<input name="%1$s_file_name" id="%1$s_file_name" type="text" value="" />', $arguments['uid'], $arguments['type']);
             break;
         }
 

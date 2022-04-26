@@ -704,7 +704,7 @@ function recurring_uploadKey() {
     //     "message" => "The Static Data True for Test"
     //     );
     // echo json_encode($resultData);
-    die();
+    // die();
 }
 add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
 
