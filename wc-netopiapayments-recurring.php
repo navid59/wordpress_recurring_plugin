@@ -9,6 +9,7 @@ function enqueue_and_register_ntp_recurring_admin_js_scripts(){
     wp_enqueue_style( 'ntp_recurring_admin_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'2.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_fontawesome', plugin_dir_url( __FILE__ ) . 'css/fontawesome/css/all.css',array(),'2.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
+    wp_enqueue_style( 'ntp_recurring_admin_css_toastr', plugin_dir_url( __FILE__ ) . 'css/toastr.min.css',array(),'3.0.0' ,false);
     wp_enqueue_style( 'ntp_recurring_admin_css_custom', plugin_dir_url( __FILE__ ) . 'css/style.css',array(),'3.0.0' ,false);
 
     wp_register_script( 'ntp_recurring_admin_script-popper', plugin_dir_url( __FILE__ ) . 'js/popper.js', array('jquery'), '1.0.0', true );
@@ -31,6 +32,9 @@ function enqueue_and_register_ntp_recurring_admin_js_scripts(){
 
     wp_register_script( 'ntp_recurring_admin_script', plugin_dir_url( __FILE__ ) . 'js/recurringAdmin.js', array('jquery'), '1.0.0', true );
     wp_enqueue_script( 'ntp_recurring_admin_script' );
+
+    wp_register_script( 'ntp_recurring_admin_toastr_script', plugin_dir_url( __FILE__ ) . 'js/toastr.min.js', array('jquery'), '1.0.0', true );
+    wp_enqueue_script( 'ntp_recurring_admin_toastr_script' );
  }
  
 class NetopiapaymentsRecurringPayment extends recurring
@@ -211,10 +215,10 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'message',
                 'type' => 'textarea',
                 'options' => false,
-                'placeholder' => __('A success message for display after subscription'),
+                'placeholder' => __('A success message to display after subscription'),
                 'helper' => __(''),
                 'supplemental' => __('Success subscription message'),
-                'default' => 'Congratulation! You subscribed successfully. Thank you for choosing us.'
+                'default' => ''
             ),
             array(
                 'uid' => $this->slug.'_subscription_reg_failed_msg',
@@ -222,10 +226,10 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'message',
                 'type' => 'textarea',
                 'options' => false,
-                'placeholder' => __('A failed message for display after failed subscription'),
+                'placeholder' => __('A failed message to display after failed subscription'),
                 'helper' => __(''),
                 'supplemental' => __('Failed subscription message'),
-                'default' => 'Your subscription failed. Please try again.'
+                'default' => ''
             ),
             array(
                 'uid' => $this->slug.'_unsubscription_msg',
@@ -233,10 +237,10 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'message',
                 'type' => 'textarea',
                 'options' => false,
-                'placeholder' => __('A message for display after unsubscription.'),
+                'placeholder' => __('A message to display after unsubscription.'),
                 'helper' => __(''),
                 'supplemental' => __('Unsubscription message'),
-                'default' => 'You unsubscribed successfully. We hope to have you again soon.'
+                'default' => ''
             )
         );
 
@@ -249,6 +253,7 @@ class NetopiapaymentsRecurringPayment extends recurring
     public function recurring_setup_section() {
         add_settings_section( 'general', 'General section ', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'mood', 'Plugin work mood', array( $this, 'section_callback' ), 'netopia_recurring' );
+        add_settings_section( 'certificate', 'Certificate keys', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'declaration', 'Term & Condition Declaration', array( $this, 'section_callback' ), 'netopia_recurring' );
     }
 
@@ -271,6 +276,50 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'label' => __('Signature ID'),
                 'section' => 'general',
                 'type' => 'text',
+                'options' => false,
+                'placeholder' => __('128 character - without space'),
+                'helper' => __(''),
+                'supplemental' => __('You have it from your admin panel'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_live_public_key',
+                'label' => __('Live public key'),
+                'section' => 'certificate',
+                'type' => 'file',
+                'options' => false,
+                'placeholder' => __('128 character - without space'),
+                'helper' => __(''),
+                'supplemental' => __('You have it from your admin panel'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_live_private_key',
+                'label' => __('Live private key'),
+                'section' => 'certificate',
+                'type' => 'file',
+                'options' => false,
+                'placeholder' => __('128 character - without space'),
+                'helper' => __(''),
+                'supplemental' => __('You have it from your admin panel'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_sandbox_public_key',
+                'label' => __('Sandbox public key'),
+                'section' => 'certificate',
+                'type' => 'file',
+                'options' => false,
+                'placeholder' => __('128 character - without space'),
+                'helper' => __(''),
+                'supplemental' => __('You have it from your admin panel'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_sandbox_private_key',
+                'label' => __('sandbox private key'),
+                'section' => 'certificate',
+                'type' => 'file',
                 'options' => false,
                 'placeholder' => __('128 character - without space'),
                 'helper' => __(''),
@@ -323,6 +372,9 @@ class NetopiapaymentsRecurringPayment extends recurring
             case 'mood':
                 echo '';
                 break;
+            case 'certificate':
+                echo 'Uploade the Certificate files';
+                break;
             case 'declaration':
                 echo '';
                 break;
@@ -360,16 +412,12 @@ class NetopiapaymentsRecurringPayment extends recurring
                 printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $arguments['uid'], $arguments['placeholder'], $value );
                 break;
             case 'select': // If it is a select dropdown
-            case 'select_ssl':
                 if( ! empty ( $arguments['options'] ) && is_array( $arguments['options'] ) ){
                     $options_markup = '';
                     foreach( $arguments['options'] as $key => $label ){
                         $options_markup .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( $value, $key, false ), $label );
                     }
                     printf( '<select name="%1$s" id="%1$s">%2$s</select>', $arguments['uid'], $options_markup );
-                    if( $arguments['type'] == 'select_ssl'){
-                        printf('<button type="button" id="%2$s_verify" class="button button-primary">%s</button>', 'Verify SSL Certificate', $arguments['uid']);
-                    }
                 }
                 break;
             case 'radio':
@@ -404,6 +452,9 @@ class NetopiapaymentsRecurringPayment extends recurring
                 printf( '<span><b>%1$s%2$s%3$s</b></span>', 'https://',$_SERVER['HTTP_HOST'], '/' );
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], 'text', $arguments['placeholder'], $value );
                 // printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
+            break;
+            case 'file': // If it is a File type for uploade files, ...
+                printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
             break;
         }
 

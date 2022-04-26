@@ -692,4 +692,14 @@ function recurring_getSubscriptionHistory() {
 
 add_action('wp_ajax_getSubscriptionHistory', 'recurring_getSubscriptionHistory');
 
+function recurring_uploadKey() {
+    $resultData = array(
+        "status" => false,
+        "message" => "The Static Data True for Test"
+        );
+    echo json_encode($resultData);
+    die();
+}
+add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
+
 ?>

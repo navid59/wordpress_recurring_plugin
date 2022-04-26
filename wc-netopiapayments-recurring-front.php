@@ -168,11 +168,11 @@ function recurring_addSubscription() {
     if($jsonResultData['code'] === "00") {
         $customMsg = $obj->getSuccessMessagePayment();
         $status = true;
-        $msg = !is_null($customMsg) ? $customMsg : $jsonResultData['message'];
+        $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
     } else {
         $customMsg = $obj->getFailedMessagePayment();
         $status = false;
-        $msg = !is_null($customMsg) ? $customMsg : $jsonResultData['message'];
+        $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
     }
 
     $addSubscriptionResult = array(

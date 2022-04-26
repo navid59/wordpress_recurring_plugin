@@ -380,3 +380,55 @@ jQuery("#recurring-plan-form").submit(function (e) {
 
     return false;
 });
+
+function certificateNotifyHandle(chosen_file,type,elm){
+    var fsize = chosen_file.size,
+        fname = chosen_file.name,
+        fextension = fname.substring(fname.lastIndexOf('.')+1);
+    if (fextension != type){
+        toastr.error('This type of files are not allowed! just files with "cer" extensions as PUBLIC KEY and "key" extensions as "PRIVATE KEY" are accepted', 'Error!');
+        elm.value = "";
+        return false;
+    } else if(fsize > 3145728 || fsize <= 0) {
+        toastr.error('Please choose a file with a valid size', 'Error!');
+        elm.value = "";
+        return false;
+    } else {
+        toastr.success('File is verified', 'success!');
+        return true;
+    }
+}
+
+jQuery('#netopia_recurring_live_public_key').on('change', function () {
+    let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'cer',this);
+    if(fileVerified) {
+        // uploade File
+        data = {
+            action : 'uploadKey',
+        };
+
+        jQuery.post(ajaxurl, data, function(response){
+            jsonResponse = JSON.parse(response);
+            if(jsonResponse.status) {
+                console.log("YES YES YES");
+                console.log(jsonResponse.message);
+            } else {
+                console.log("NO NO NO");
+                console.log(jsonResponse.message);
+            }
+        });
+
+        return false;
+    }
+});
+
+jQuery('#netopia_recurring_live_private_key').on('change', function(){
+    let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'key',this);
+});
+jQuery('#netopia_recurring_sandbox_public_key').on('change', function () {
+    let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'cer',this);
+});
+
+jQuery('#netopia_recurring_sandbox_private_key').on('change', function(){
+    let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'key',this);
+})
