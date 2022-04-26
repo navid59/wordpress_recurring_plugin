@@ -698,13 +698,6 @@ function recurring_uploadKey() {
     $uploadeResult = $objCertificate->cerValidation();
 
     echo json_encode($uploadeResult);
-
-    // $resultData = array(
-    //     "status" => false,
-    //     "message" => "The Static Data True for Test"
-    //     );
-    // echo json_encode($resultData);
-    // die();
 }
 add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
 

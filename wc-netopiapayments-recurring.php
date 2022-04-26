@@ -327,6 +327,50 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => ''
             ),
             array(
+                'uid' => $this->slug.'_live_public_key_file_name',
+                'label' => __(''),
+                'section' => 'certificate',
+                'type' => 'hidden',
+                'options' => false,
+                'placeholder' => __(''),
+                'helper' => __(''),
+                'supplemental' => __(''),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_live_private_key_file_name',
+                'label' => __(''),
+                'section' => 'certificate',
+                'type' => 'hidden',
+                'options' => false,
+                'placeholder' => __(''),
+                'helper' => __(''),
+                'supplemental' => __(''),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_sandbox_public_key_file_name',
+                'label' => __(''),
+                'section' => 'certificate',
+                'type' => 'hidden',
+                'options' => false,
+                'placeholder' => __(''),
+                'helper' => __(''),
+                'supplemental' => __(''),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_sandbox_private_key_file_name',
+                'label' => __(''),
+                'section' => 'certificate',
+                'type' => 'hidden',
+                'options' => false,
+                'placeholder' => __(''),
+                'helper' => __(''),
+                'supplemental' => __(''),
+                'default' => ''
+            ),
+            array(
                 'uid' => $this->slug.'_mood',
                 'label' => '',
                 'section' => 'mood',
@@ -405,6 +449,9 @@ class NetopiapaymentsRecurringPayment extends recurring
 
         // Check which type of field we want
         switch( $arguments['type'] ){
+            case 'hidden': // If it is a hidden field
+                printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
+                break;
             case 'text': // If it is a text field
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
                 break;
@@ -455,7 +502,6 @@ class NetopiapaymentsRecurringPayment extends recurring
             break;
             case 'file': // If it is a File type for uploade files, ...
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
-                printf( '<input name="%1$s_file_name" id="%1$s_file_name" type="text" value="" />', $arguments['uid'], $arguments['type']);
             break;
         }
 
