@@ -31,47 +31,22 @@ function ntpRecurringNotifyValidation($template) {
 
 function getHeaderRequest() {
     global $wpdb;
+    $obj = new recurring();
     /** Log Time & Path*/
     $logDate = new DateTime();
     $logDate = $logDate->format("y:m:d h:i:s");
     $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_'.date("j.n.Y").'.log';
 
     $ntpIpn = new IPN();
-    $ntpIpn->activeKey         = '1PD2-FYKC-R27B-55BW-NVGN'; // activeKey or posSignature
-    $ntpIpn->posSignatureSet[] = '1PD2-FYKC-R27B-55BW-NVGN'; // Another posSignature, base on DemoV2. Idea Alex
+    $ntpIpn->logFile           = $logFile;
+    $ntpIpn->activeKey         = $obj->getSignature(); // activeKey or posSignature
+    $ntpIpn->posSignatureSet[] = $ntpIpn->activeKey; // Another posSignature, base on DemoV2. Idea Alex - if exist!!!
     
     $ntpIpn->hashMethod        = 'SHA512';
     $ntpIpn->alg               = 'RS512';
-    $ntpIpn->publicKeyStr      = '-----BEGIN CERTIFICATE-----
-    MIIDKjCCApOgAwIBAgIBADANBgkqhkiG9w0BAQQFADCBsTELMAkGA1UEBhMCUk8x
-    EjAQBgNVBAgMCUJ1Y2hhcmVzdDESMBAGA1UEBwwJQnVjaGFyZXN0MRcwFQYDVQQK
-    DA5OIEUgVCBPIFAgSSBBIDEnMCUGA1UECwweTiBFIFQgTyBQIEkgQSBEZXZlbG9w
-    bWVudCBUZWFtMRQwEgYDVQQDDAttb2JpbHBheS5ybzEiMCAGCSqGSIb3DQEJARYT
-    c3VwcG9ydEBtb2JpbHBheS5ybzAeFw0yMjA0MTIwNzM3NTFaFw0yMzA0MTIwNzM3
-    NTFaMIGxMQswCQYDVQQGEwJSTzESMBAGA1UECAwJQnVjaGFyZXN0MRIwEAYDVQQH
-    DAlCdWNoYXJlc3QxFzAVBgNVBAoMDk4gRSBUIE8gUCBJIEEgMScwJQYDVQQLDB5O
-    IEUgVCBPIFAgSSBBIERldmVsb3BtZW50IFRlYW0xFDASBgNVBAMMC21vYmlscGF5
-    LnJvMSIwIAYJKoZIhvcNAQkBFhNzdXBwb3J0QG1vYmlscGF5LnJvMIGfMA0GCSqG
-    SIb3DQEBAQUAA4GNADCBiQKBgQC8IdPzYRKWRbir4IWfTe+Ql22tOTFjQoeNtpHH
-    xSm6j+WFYglAYNzHOWWHdXtF4vVItUCNmf4773Iaw2RkMI2qwKa90vW6MBxJGR/N
-    WaJTqDxwWW2KQNvASMh2EXGk14y7YgRr46cLs5Y5l3gaFS4pyGhNCFKTHp/TC1ht
-    nxjHXQIDAQABo1AwTjAdBgNVHQ4EFgQUPclwoTBsc1M0H5ZpF09aMiAaHrUwHwYD
-    VR0jBBgwFoAUPclwoTBsc1M0H5ZpF09aMiAaHrUwDAYDVR0TBAUwAwEB/zANBgkq
-    hkiG9w0BAQQFAAOBgQBSuiaKTfSvKpITyynumjGWtibSn4tk735l07TKKhk7ow6Q
-    104673t2Eht3A3tYZarlKe4+OumS0gxjhEYp5gcsEFW8naEz6NO4TXKTzz/Sgakk
-    81SmQnaqcQ/DCtxDwV71qRgvojIDR6CIPutdWEk5H5rJTaljT2ZBWd97SsDd0g==
-    -----END CERTIFICATE-----';
 
-    // file_put_contents($logFile, "[".$logDate."] - (1) - IPN Called \n", FILE_APPEND);
 
     $ipnResponse = $ntpIpn->verifyIPN();
-
-    // file_put_contents($logFile, "[".$logDate."] IPN - TEST \n", FILE_APPEND);
-    // file_put_contents($logFile, print_r($ipnResponse, true)." \n", FILE_APPEND);
-    // file_put_contents($logFile, "ERROR_TYPE_TEMPORARY : ".IPN::ERROR_TYPE_TEMPORARY." \n", FILE_APPEND);
-    // file_put_contents($logFile, "RECURRING_ERROR_CODE_NEED_VERIFY : ".IPN::RECURRING_ERROR_CODE_NEED_VERIFY." \n", FILE_APPEND);
-   
-
     if(($ipnResponse['errorType'] == IPN::ERROR_TYPE_TEMPORARY) && ($ipnResponse['errorCode'] == IPN::RECURRING_ERROR_CODE_NEED_VERIFY)) {
         // Verify API KEY
         $headers = apache_request_headers();

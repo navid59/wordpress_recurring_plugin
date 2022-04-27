@@ -17,7 +17,7 @@ class IPN {
     public $posSignatureSet;
     public $hashMethod;
     public $alg;
-    public $publicKeyStr;
+    // public $publicKeyStr;
 
     // Error code defination
     const E_VERIFICATION_FAILED_GENERAL			= 0x10000101;
@@ -78,9 +78,6 @@ class IPN {
         /** Public Key */
         $publicKeyPath = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/certificates/sandbox.1PD2-FYKC-R27B-55BW-NVGN.public.cer';
                     
-        // $this->logFile = '/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
-        $this->logFile = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/log/log_'.date("j.n.Y").'.log';
-
         /**
         * Default IPN response, 
         * will change if there is any problem
@@ -100,8 +97,6 @@ class IPN {
              * check if header has Apikey
              */
             if(array_key_exists('Apikey', $aHeaders)) {
-            //    file_put_contents($this->logFile, " (4) - getApacheHeader() -> Apikey Found in Header \n", FILE_APPEND);
-
                $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
                $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
                $outputData['errorMessage']	= 'Need to Validate API Key';
@@ -113,26 +108,15 @@ class IPN {
                 echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
                 exit;
             }            
-        } else {
-            // Do nothing
-            /** Log IPN */
-            // file_put_contents($this->logFile, "[".$logDate."] IPN__CHOOS \n", FILE_APPEND);
-            // file_put_contents($this->logFile, print_r($aHeaders, true)." \n", FILE_APPEND);
-            // $data = file_get_contents('php://input');
-            // $jsonDate = json_decode($data, true);
-            // file_put_contents($this->logFile, print_r($jsonDate, true)." \n", FILE_APPEND);
-            // file_put_contents($this->logFile, "------------------------- \n", FILE_APPEND);
         }
 
         /**
         *  fetch Verification-token from HTTP header 
         */
-        // file_put_contents($this->logFile, " (5) - getVerificationToken \n", FILE_APPEND);
         $verificationToken = $this->getVerificationToken($aHeaders);
         if($verificationToken === null)
             {
             /** Log IPN */
-            // file_put_contents($this->logFile, " (5-1) - getVerificationToken DID NOT FOUND - STOP \n", FILE_APPEND);
             file_put_contents($this->logFile, "[".$logDate."] IPN__Verification-token is missing in HTTP HEADER \n", FILE_APPEND);
             echo 'IPN__Verification-token is missing in HTTP HEADER' . PHP_EOL;
             exit;
@@ -159,14 +143,10 @@ class IPN {
             exit; 
         }
 
-        /** Log Temporar */
-        // file_put_contents($this->logFile, " (6) - alrady Verification-Token is checked if has the 3 part \n", FILE_APPEND);
-    
         /**
         * check if publicKeyStr is defined
         */
                 
-        // file_put_contents($this->logFile, " (7) - Encrypt the Public Key \n", FILE_APPEND);
         $publicKey = $this->encrypt($publicKeyPath);
         if($publicKey === false) {
             /** Log Temporar */
@@ -179,11 +159,6 @@ class IPN {
         * Get raw data
         */
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
-
-        /** Log Temporar */
-        // file_put_contents($this->logFile, "------------ (11) IPN BODY  ------------ \n", FILE_APPEND);
-        // file_put_contents($this->logFile, print_r($HTTP_RAW_POST_DATA, true)." \n", FILE_APPEND);
-        // file_put_contents($this->logFile, "------------ (11) IPN BODY ------- \n", FILE_APPEND);
 
         /**
         * The name of the alg defined in header of JWT
@@ -251,7 +226,6 @@ class IPN {
             if(strcmp($payloadHash, $objJwt->sub) != 0)
                 {
                 file_put_contents($this->logFile, "IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD \n", FILE_APPEND);
-                file_put_contents($this->logFile, print_r($payloadHash, true)." \n", FILE_APPEND);
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD', E_VERIFICATION_FAILED_TAINTED_PAYLOAD);
                 exit;
                 }
@@ -270,8 +244,8 @@ class IPN {
             switch($objIpn->payment->status)
                 {
                 case self::STATUS_NEW:
-                case self::STATUS_CHARGEBACK_INIT: // chargeback initiat
-                case self::STATUS_CHARGEBACK_ACCEPT: // chargeback acceptat
+                case self::STATUS_CHARGEBACK_INIT:                  // chargeback initiat
+                case self::STATUS_CHARGEBACK_ACCEPT:                // chargeback acceptat
                 case self::STATUS_SCHEDULED:
                 case self::STATUS_3D_AUTH:
                 case self::STATUS_CHARGEBACK_REPRESENTMENT:
@@ -279,14 +253,14 @@ class IPN {
                 case self::STATUS_PENDING_ANY:
                 case self::STATUS_PROGRAMMED_RECURRENT_PAYMENT:
                 case self::STATUS_CANCELED_PROGRAMMED_RECURRENT_PAYMENT:
-                case self::STATUS_TRIAL_PENDING: //specific to Model_Purchase_Sms_Online; wait for ACTON_TRIAL IPN to start trial period
-                case self::STATUS_TRIAL: //specific to Model_Purchase_Sms_Online; trial period has started
-                case self::STATUS_EXPIRED: //cancel a not payed purchase 
-                case self::STATUS_OPENED: // preauthorizate (card)
+                case self::STATUS_TRIAL_PENDING:                    //specific to Model_Purchase_Sms_Online; wait for ACTON_TRIAL IPN to start trial period
+                case self::STATUS_TRIAL:                            //specific to Model_Purchase_Sms_Online; trial period has started
+                case self::STATUS_EXPIRED:                          //cancel a not payed purchase 
+                case self::STATUS_OPENED:                           // preauthorizate (card)
                 case self::STATUS_PENDING:
-                case self::STATUS_ERROR: // error
-                case self::STATUS_DECLINED: // declined
-                case self::STATUS_FRAUD: // fraud
+                case self::STATUS_ERROR:                            // error
+                case self::STATUS_DECLINED:                         // declined
+                case self::STATUS_FRAUD:                            // fraud
                     /**
                      * payment status is in fraud, reviw the payment
                      */
@@ -294,7 +268,7 @@ class IPN {
                     $outputData['errorCode']	= null;
                     $outputData['errorMessage']	= 'payment in reviwing';
                 break;
-                case self::STATUS_PENDING_AUTH: // in asteptare de verificare pentru tranzactii autorizate
+                case self::STATUS_PENDING_AUTH:                     // in asteptare de verificare pentru tranzactii autorizate
                     /**
                      * update payment status, last modified date&time in your system
                      */
@@ -303,7 +277,7 @@ class IPN {
                     $outputData['errorMessage']	= 'update payment status, last modified date&time in your system';
                 break;
                 
-                case self::STATUS_PAID: // capturate (card)
+                case self::STATUS_PAID:                             // capturate (card)
                 case self::STATUS_CONFIRMED:
                     /**
                      * payment was confirmed; deliver goods
@@ -312,7 +286,7 @@ class IPN {
                     // hear, can make Log for $orderLog
                 break;
                 
-                case self::STATUS_CREDIT: // capturate si apoi refund
+                case self::STATUS_CREDIT:                           // capturate si apoi refund
                     /**
                      * a previously confirmed payment eas refinded; cancel goods delivery
                      */
@@ -320,7 +294,7 @@ class IPN {
                     // hear, can make Log for $orderLog
                 break;
                 
-                case self::STATUS_CANCELED: // void
+                case self::STATUS_CANCELED:                         // void
                     /**
                      * payment was cancelled; do not deliver goods
                      */
@@ -344,7 +318,6 @@ class IPN {
     *  Fetch all HTTP request headers
     */
     public function getApacheHeader() {
-        file_put_contents($this->logFile, " (2) - getApacheHeader() \n", FILE_APPEND);
         $aHeaders = apache_request_headers();
         return $aHeaders;
     }
@@ -355,18 +328,14 @@ class IPN {
     * @return bool 
     */
     public function validHeader($httpHeader) {
-        file_put_contents($this->logFile, " (3) - validHeader() \n", FILE_APPEND);
         if(!is_array($httpHeader)){
             return false;
         } else {
-            file_put_contents($this->logFile, " (3-1) - Search for Verification-Token in header \n", FILE_APPEND);
             foreach($httpHeader as $key => $val) {
                 if($key == 'Verification-Token') {
-                    file_put_contents($this->logFile, " (3-2) - Verification-Token is founded in header \n", FILE_APPEND);
                     return true;
                 }
             }
-            file_put_contents($this->logFile, " (3-2) - Verification-Token DID NOT FOUND in header \n", FILE_APPEND);
             return false;
         }
     }
@@ -387,14 +356,11 @@ class IPN {
     }
 
     public function encrypt($x509FilePath)
-	{		
-        file_put_contents($this->logFile, " (8) - check the openssl_pkey_get_public() for Public Key \n", FILE_APPEND);
-
+	    {		
 		$publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
 		if($publicKey === false)
 		{
-            file_put_contents($this->logFile, " (8-1) - openssl_pkey_get_public() IS FALSE \n", FILE_APPEND);
-			
+            file_put_contents($this->logFile, "Error while loading X509 public key certificate! \n", FILE_APPEND);
 			$errorMessage = "Error while loading X509 public key certificate! Reason:";
 			while(($errorString = openssl_error_string()))
 			{
@@ -402,8 +368,6 @@ class IPN {
 			}
 			throw new Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
 		}
-        file_put_contents($this->logFile, " (8-2) - openssl_pkey_get_public() IS TRUE \n", FILE_APPEND);
 		return $publicKey;
-
 	}
 }

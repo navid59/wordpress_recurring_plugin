@@ -121,7 +121,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'options' => false,
                 'placeholder' => 'The notify URL',
                 'helper' => '',
-                'supplemental' => 'ex. subdcription/notify.php',
+                'supplemental' => 'ex. subdcription/notify.php. If you have no any custom slug for Notify URL set it as "recurring_notify"',
                 'default' => ''
             ),
             array(
@@ -145,7 +145,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'options' => false,
                 'placeholder' => 'The login URL for subscribers',
                 'helper' => '',
-                'supplemental' => 'ex. /my-account',
+                'supplemental' => 'ex. /my-account. If you have no any custome slug the defult page is "subscription-account"',
                 'default' => ''
             )
         );
