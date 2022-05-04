@@ -322,10 +322,10 @@ function editPlan(planId) {
 
 function copyPlan(planId, planTitile) {
     var shortCode = '[NTP-Recurring plan_id='+ planId +' button="Subscribe" title="'+ planTitile +'"]';
-    navigator.clipboard.writeText(shortCode);
     jQuery('#shortcode').html(shortCode);
     jQuery('#copyShortCodeModal').modal('toggle');
     jQuery('#copyShortCodeModal').modal('show');
+    navigator.clipboard.writeText(shortCode);
 }
 
 jQuery("#recurring-plan-form").submit(function (e) {
