@@ -49,8 +49,8 @@ class NetopiapaymentsRecurringPayment extends recurring
     add_action( 'admin_init', array( $this, 'recurring_setup_section' ));
     add_action( 'admin_init', array( $this, 'recurring_setup_fields' ));
 
-    add_action( 'admin_init', array( $this, 'recurring_notify_section' ));
-    add_action( 'admin_init', array( $this, 'recurring_notify_fields' ));
+    // add_action( 'admin_init', array( $this, 'recurring_notify_section' ));
+    // add_action( 'admin_init', array( $this, 'recurring_notify_fields' ));
     
     add_action( 'admin_init', array( $this, 'recurring_account_section' ));
     add_action( 'admin_init', array( $this, 'recurring_account_fields' ));
@@ -106,56 +106,56 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_submenu_page($this->slug, $this->menuItems['report']['pageTitle'], $this->menuItems['report']['menuTitle'], $this->menuItems['report']['capability'], $this->menuItems['report']['menuSlug'], $this->menuItems['report']['callback'] );
     }
 
-    public function recurring_notify_section() {
-        add_settings_section( 'urls', 'URLs & Links', array( $this, 'section_callback' ), 'notify_management' );
-        add_settings_section( 'template', 'Templates', array( $this, 'section_callback' ), 'notify_management' );
-    }
+    // public function recurring_notify_section() {
+    //     add_settings_section( 'urls', 'URLs & Links', array( $this, 'section_callback' ), 'notify_management' );
+    //     // add_settings_section( 'template', 'Templates', array( $this, 'section_callback' ), 'notify_management' );
+    // }
 
-    public function recurring_notify_fields() {
-        $fields = array(
-            array(
-                'uid' => $this->slug.'_notify_url',
-                'label' => 'Subscription notify url',
-                'section' => 'urls',
-                'type' => 'link',
-                'options' => false,
-                'placeholder' => 'The notify URL',
-                'helper' => '',
-                'supplemental' => 'ex. subdcription/notify.php. If you have no any custom slug for Notify URL set it as "recurring_notify"',
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_email_template',
-                'label' => 'Email template',
-                'section' => 'template',
-                'type' => 'select',
-                'options' => array(
-                    'confirm' => 'Confirm, is classic template for email, which subscriber will receive after payment.'
-                ),
-                'placeholder' => 'Text goes here',
-                'helper' => '',
-                'supplemental' => '',
-                'default' => 'maybe'
-            ),
-            array(
-                'uid' => $this->slug.'_login_url',
-                'label' => 'Subscription login url',
-                'section' => 'urls',
-                'type' => 'link',
-                'options' => false,
-                'placeholder' => 'The login URL for subscribers',
-                'helper' => '',
-                'supplemental' => 'ex. /my-account. If you have no any custome slug the defult page is "subscription-account"',
-                'default' => ''
-            )
-        );
+    // public function recurring_notify_fields() {
+    //     $fields = array(
+    //         array(
+    //             'uid' => $this->slug.'_notify_url',
+    //             'label' => 'Subscription notify url',
+    //             'section' => 'urls',
+    //             'type' => 'link',
+    //             'options' => false,
+    //             'placeholder' => 'The notify URL',
+    //             'helper' => '',
+    //             'supplemental' => 'ex. subdcription/notify.php. If you have no any custom slug for Notify URL set it as "recurring_notify"',
+    //             'default' => ''
+    //         ),
+    //         // array(
+    //         //     'uid' => $this->slug.'_email_template',
+    //         //     'label' => 'Email template',
+    //         //     'section' => 'template',
+    //         //     'type' => 'select',
+    //         //     'options' => array(
+    //         //         'confirm' => 'Confirm, is classic template for email, which subscriber will receive after payment.'
+    //         //     ),
+    //         //     'placeholder' => 'Text goes here',
+    //         //     'helper' => '',
+    //         //     'supplemental' => '',
+    //         //     'default' => 'maybe'
+    //         // ),
+    //         array(
+    //             'uid' => $this->slug.'_login_url',
+    //             'label' => 'Subscription login url',
+    //             'section' => 'urls',
+    //             'type' => 'link',
+    //             'options' => false,
+    //             'placeholder' => 'The login URL for subscribers',
+    //             'helper' => '',
+    //             'supplemental' => 'ex. /my-account. If you have no any custome slug the defult page is "subscription-account"',
+    //             'default' => ''
+    //         )
+    //     );
 
-        foreach( $fields as $field ){
-            add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'notify_management', $field['section'], $field );
-            register_setting( 'notify_management', $field['uid'] );
-        }
+    //     foreach( $fields as $field ){
+    //         add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'notify_management', $field['section'], $field );
+    //         register_setting( 'notify_management', $field['uid'] );
+    //     }
 
-    }
+    // }
 
     public function recurring_account_section() {
         add_settings_section( 'account', 'Account page setting ', array( $this, 'section_callback' ), 'account_management' );
@@ -254,7 +254,6 @@ class NetopiapaymentsRecurringPayment extends recurring
         add_settings_section( 'general', 'General section ', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'mood', 'Plugin work mood', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'certificate', 'Certificate keys', array( $this, 'section_callback' ), 'netopia_recurring' );
-        add_settings_section( 'declaration', 'Term & Condition Declaration', array( $this, 'section_callback' ), 'netopia_recurring' );
     }
 
     
@@ -283,8 +282,8 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'default' => ''
             ),
             array(
-                'uid' => $this->slug.'_live_public_key',
-                'label' => __('Live public key'),
+                'uid' => $this->slug.'_general_public_key',
+                'label' => __('General public key'),
                 'section' => 'certificate',
                 'type' => 'file',
                 'options' => false,
@@ -293,41 +292,52 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'supplemental' => __('You have it from your admin panel'),
                 'default' => ''
             ),
+            // array(
+            //     'uid' => $this->slug.'_live_public_key',
+            //     'label' => __('Live public key'),
+            //     'section' => 'certificate',
+            //     'type' => 'file',
+            //     'options' => false,
+            //     'placeholder' => __('128 character - without space'),
+            //     'helper' => __(''),
+            //     'supplemental' => __('You have it from your admin panel'),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_live_private_key',
+            //     'label' => __('Live private key'),
+            //     'section' => 'certificate',
+            //     'type' => 'file',
+            //     'options' => false,
+            //     'placeholder' => __('128 character - without space'),
+            //     'helper' => __(''),
+            //     'supplemental' => __('You have it from your admin panel'),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_sandbox_public_key',
+            //     'label' => __('Sandbox public key'),
+            //     'section' => 'certificate',
+            //     'type' => 'file',
+            //     'options' => false,
+            //     'placeholder' => __('128 character - without space'),
+            //     'helper' => __(''),
+            //     'supplemental' => __('You have it from your admin panel'),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_sandbox_private_key',
+            //     'label' => __('sandbox private key'),
+            //     'section' => 'certificate',
+            //     'type' => 'file',
+            //     'options' => false,
+            //     'placeholder' => __('128 character - without space'),
+            //     'helper' => __(''),
+            //     'supplemental' => __('You have it from your admin panel'),
+            //     'default' => ''
+            // ),
             array(
-                'uid' => $this->slug.'_live_private_key',
-                'label' => __('Live private key'),
-                'section' => 'certificate',
-                'type' => 'file',
-                'options' => false,
-                'placeholder' => __('128 character - without space'),
-                'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_sandbox_public_key',
-                'label' => __('Sandbox public key'),
-                'section' => 'certificate',
-                'type' => 'file',
-                'options' => false,
-                'placeholder' => __('128 character - without space'),
-                'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_sandbox_private_key',
-                'label' => __('sandbox private key'),
-                'section' => 'certificate',
-                'type' => 'file',
-                'options' => false,
-                'placeholder' => __('128 character - without space'),
-                'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_live_public_key_file_name',
+                'uid' => $this->slug.'_general_public_key_file_name',
                 'label' => __(''),
                 'section' => 'certificate',
                 'type' => 'hidden',
@@ -337,39 +347,50 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'supplemental' => __(''),
                 'default' => ''
             ),
-            array(
-                'uid' => $this->slug.'_live_private_key_file_name',
-                'label' => __(''),
-                'section' => 'certificate',
-                'type' => 'hidden',
-                'options' => false,
-                'placeholder' => __(''),
-                'helper' => __(''),
-                'supplemental' => __(''),
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_sandbox_public_key_file_name',
-                'label' => __(''),
-                'section' => 'certificate',
-                'type' => 'hidden',
-                'options' => false,
-                'placeholder' => __(''),
-                'helper' => __(''),
-                'supplemental' => __(''),
-                'default' => ''
-            ),
-            array(
-                'uid' => $this->slug.'_sandbox_private_key_file_name',
-                'label' => __(''),
-                'section' => 'certificate',
-                'type' => 'hidden',
-                'options' => false,
-                'placeholder' => __(''),
-                'helper' => __(''),
-                'supplemental' => __(''),
-                'default' => ''
-            ),
+            // array(
+            //     'uid' => $this->slug.'_live_public_key_file_name',
+            //     'label' => __(''),
+            //     'section' => 'certificate',
+            //     'type' => 'hidden',
+            //     'options' => false,
+            //     'placeholder' => __(''),
+            //     'helper' => __(''),
+            //     'supplemental' => __(''),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_live_private_key_file_name',
+            //     'label' => __(''),
+            //     'section' => 'certificate',
+            //     'type' => 'hidden',
+            //     'options' => false,
+            //     'placeholder' => __(''),
+            //     'helper' => __(''),
+            //     'supplemental' => __(''),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_sandbox_public_key_file_name',
+            //     'label' => __(''),
+            //     'section' => 'certificate',
+            //     'type' => 'hidden',
+            //     'options' => false,
+            //     'placeholder' => __(''),
+            //     'helper' => __(''),
+            //     'supplemental' => __(''),
+            //     'default' => ''
+            // ),
+            // array(
+            //     'uid' => $this->slug.'_sandbox_private_key_file_name',
+            //     'label' => __(''),
+            //     'section' => 'certificate',
+            //     'type' => 'hidden',
+            //     'options' => false,
+            //     'placeholder' => __(''),
+            //     'helper' => __(''),
+            //     'supplemental' => __(''),
+            //     'default' => ''
+            // ),
             array(
                 'uid' => $this->slug.'_mood',
                 'label' => '',
@@ -382,21 +403,6 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'helper' => '',
                 'supplemental' => '',
                 'default' => array('sandbox')
-            ),
-            array(
-                'uid' => $this->slug.'_declaration',
-                'label' => '',
-                'section' => 'declaration',
-                'type' => 'special_checkbox',
-                'options' => array(
-                    'declaration_for_business' => __('Declare that accept all the terms & conditions.'),
-                ),
-                'helper' => '',
-                'supplemental' => '',
-                'default' => array(),
-                'items' => array(
-                    'including terms & conditions of NETOPIA Payments',
-                    'including terms & conditions of Recurring service of NETOPIA Payments'),
             )
         );
         foreach( $fields as $field ){
@@ -419,18 +425,15 @@ class NetopiapaymentsRecurringPayment extends recurring
             case 'certificate':
                 echo 'Uploade the Certificate files';
                 break;
-            case 'declaration':
-                echo '';
-                break;
             case 'message':
                 echo __('To customize communication message with your client during subscription and subscription , ...', 'ntpRp');
                 break;
             case 'account':
                 echo '';
                 break;
-            case 'template':
-                echo __('Custom notification emails; will be shared by NETOPIA', 'ntpRp');
-                break;
+            // case 'template':
+            //     echo __('Custom notification emails; will be shared by NETOPIA', 'ntpRp');
+            //     break;
             case 'urls':
                 echo __('<b>Subscription notify url</b> is on the merchant side where NETOPIA will send subscription & payment result notifications', 'ntpRp');
                 echo __('<br><b>Subscription login url</b> is page URL which your subscription can inform about their own activities.', 'ntpRp');
@@ -528,7 +531,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             <h2 class="nav-tab-wrapper">
                 <a href="?page=netopia_recurring&tab=display_about_plugin" class="nav-tab <?php echo $active_tab == 'display_about_plugin' ? 'nav-tab-active' : ''; ?>"><?php echo __('About plugin','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_setting" class="nav-tab <?php echo $active_tab == 'display_setting' ? 'nav-tab-active' : ''; ?>"><?php echo __('Setting','ntpRp')?></a>
-                <a href="?page=netopia_recurring&tab=display_notify_management" class="nav-tab <?php echo $active_tab == 'display_notify_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Notify management','ntpRp')?></a>
+                <!-- <a href="?page=netopia_recurring&tab=display_notify_management" class="nav-tab <?php echo $active_tab == 'display_notify_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Notify management','ntpRp')?></a> -->
                 <a href="?page=netopia_recurring&tab=display_account_management" class="nav-tab <?php echo $active_tab == 'display_account_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Account page management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
                 <!-- <a href="?page=netopia_recurring&tab=display_sync_management" class="nav-tab <?php echo $active_tab == 'display_sync_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Sync Data','ntpRp')?></a> -->
@@ -554,11 +557,13 @@ class NetopiapaymentsRecurringPayment extends recurring
                     submit_button();
                 } elseif($active_tab == 'display_sync_management') {
                     // require_once ('include/sync_data.php');
-                } elseif($active_tab == 'display_notify_management') {
-                    settings_fields( 'notify_management' );
-                    do_settings_sections( 'notify_management' );
-                    submit_button();
-                } else {
+                } 
+                // elseif($active_tab == 'display_notify_management') {
+                //     settings_fields( 'notify_management' );
+                //     do_settings_sections( 'notify_management' );
+                //     submit_button();
+                // } 
+                else {
                     require_once ('include/welcomepage.php');
                 }
                 ?>

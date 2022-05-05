@@ -7,7 +7,7 @@
 Plugin Name: NETOPIA Payments - Recurring payment
 Plugin URI: https://www.netopia-system.com.ro/
 Description: An subscription managment, inclouding periodic payment.
-Author: Netopia
+Author: NETOPIA Payments
 Version: 0.0.1
 License: GPLv2 or later
 Text Domain : ntpRp
