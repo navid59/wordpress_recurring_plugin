@@ -35,7 +35,7 @@ function recurring_install () {
 
     $sql_plan = "CREATE TABLE $plan_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
-    Plan_Id varchar(50) NOT NULL,
+    PlanId varchar(50) NOT NULL,
     Title varchar(50) NOT NULL,
     Amount DOUBLE(5,2) NOT NULL,
     Currency varchar(5) NULL,

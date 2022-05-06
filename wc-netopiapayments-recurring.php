@@ -402,7 +402,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 ),
                 'helper' => '',
                 'supplemental' => '',
-                'default' => array('sandbox')
+                'default' => array('live')
             )
         );
         foreach( $fields as $field ){

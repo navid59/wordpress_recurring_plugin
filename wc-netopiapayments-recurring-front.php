@@ -555,7 +555,7 @@ function recurring_account_getMyHistory() {
                                                 INNER JOIN ".$wpdb->prefix . "ntp_history as h
                                                 ON h.Subscription_Id = s.Subscription_Id 
                                                 INNER JOIN ".$wpdb->prefix . "ntp_plans as p
-                                                ON s.PlanId = p.Plan_Id
+                                                ON s.PlanId = p.PlanId
                                                 WHERE s.UserId = '$current_user->user_login'
                                                 ORDER BY `CreatedAt` DESC", "ARRAY_A");
 
@@ -609,7 +609,7 @@ function recurring_account_getMySubscriptions() {
     $current_user = wp_get_current_user();
 
     $myPlans = $wpdb->get_results("SELECT p.id,
-                                          p.Plan_Id,
+                                          p.PlanId,
                                           p.Title,
                                           p.Amount,
                                           p.Currency,
@@ -627,7 +627,7 @@ function recurring_account_getMySubscriptions() {
                                           s.Subscription_Id
                                     FROM  ".$wpdb->prefix . "ntp_plans as p 
                                     LEFT JOIN ".$wpdb->prefix . "ntp_subscriptions as s 
-                                    ON p.Plan_Id = s.PlanId 
+                                    ON p.PlanId = s.PlanId 
                                     WHERE s.UserID = '".$current_user->user_login."' AND s.Status <> 2", "ARRAY_A");
 
     $htmlThem = '';
@@ -751,7 +751,7 @@ function recurring_account_getMySubscriptions() {
 function assignToRecurring ($data) {
         $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
         $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
-        $planId = isset($data['plan_id']) && $data['plan_id'] !== null ? $data['plan_id'] : null;
+        $planId = isset($data['planId']) && $data['planId'] !== null ? $data['planId'] : null;
         if(!is_null($planId)) {
             $str = recurringModal ($planId, $button, $title);
         } else {

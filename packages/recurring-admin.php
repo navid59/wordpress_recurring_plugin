@@ -32,7 +32,7 @@ class recurringAdmin extends recurring {
                                                     s.status
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                                WHERE s.PlanId = p.Plan_Id 
+                                                WHERE s.PlanId = p.PlanId 
                                                 GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
         if(count($subscriptions)) {
@@ -68,7 +68,7 @@ class recurringAdmin extends recurring {
                                                     s.status
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                                WHERE s.PlanId = p.Plan_Id 
+                                                WHERE s.PlanId = p.PlanId 
                                                 GROUP BY s.UserID 
                                                 ORDER BY s.CreatedAt DESC", "ARRAY_A");
         if(count($subscriptions)) {
@@ -175,7 +175,7 @@ class recurringAdmin extends recurring {
                                     INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
                                     ON h.Subscription_Id = s.Subscription_Id 
                                     INNER JOIN ".$wpdb->prefix . "ntp_plans as p
-                                    ON s.PlanId = p.Plan_Id
+                                    ON s.PlanId = p.PlanId
                                     ORDER BY `CreatedAt` DESC", "ARRAY_A");
         if(count($plans)) {
             $errorCode = "00";
@@ -299,7 +299,7 @@ function recurring_addPlan() {
         $dbInsertResult  = $wpdb->insert(
             $wpdb->prefix . "ntp_plans", 
             array( 
-                'Plan_Id'         => $jsonResultData['data']['planId'],
+                'PlanId'         => $jsonResultData['data']['planId'],
                 'Title'           => $jsonResultData['data']['Title'],
                 'Amount'          => $_POST['Amount'],
                 'Currency'        => $_POST['Currency'],
@@ -360,7 +360,7 @@ function recurring_delPlan() {
                 'UpdatedAt'         => date("Y-m-d")
             ),
             array(
-                'Plan_Id' => $_POST['planId']+0
+                'PlanId' => $_POST['planId']+0
             )
         );
     }
@@ -423,7 +423,7 @@ function recurring_editPlan() {
             'UpdatedAt'         => date("Y-m-d")
         ),
         array(
-            'Plan_Id' => $_POST['planId']+0
+            'PlanId' => $_POST['planId']+0
         )
     );
 
@@ -523,7 +523,7 @@ function getInfinitSubscribtion() {
                                                     ) as PlanList
                                                 FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                                 INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                                WHERE s.PlanId = p.Plan_Id 
+                                                WHERE s.PlanId = p.PlanId 
                                                 GROUP BY UserID
                                                 ORDER BY s.id DESC 
                                                 LIMIT ".$start.",".$limit, "ARRAY_A");
@@ -611,14 +611,14 @@ function recurring_getSubscriptionDetail(){
                                                 s.status
                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                            ON s.PlanId = p.Plan_Id 
+                                            ON s.PlanId = p.PlanId 
                                             WHERE s.userId = '$subscriptionInternUserId'
                                             LIMIT 1", "ARRAY_A");
     if(count($subscription)) {
         /**Get list of user's plans */
         $planList = $wpdb->get_results("SELECT 
                                             p.id,
-                                            p.Plan_Id,
+                                            p.PlanId,
                                             p.Title,
                                             p.Amount,
                                             s.First_Name,
@@ -628,7 +628,7 @@ function recurring_getSubscriptionDetail(){
                                             s.Status
                                         FROM `".$wpdb->prefix . "ntp_plans` as p
                                         INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
-                                        ON s.PlanId = p.Plan_Id
+                                        ON s.PlanId = p.PlanId
                                         WHERE s.UserID = '$subscriptionInternUserId'
                                         ORDER BY s.StartDate DESC", "ARRAY_A");
 
@@ -673,7 +673,7 @@ function recurring_getSubscriptionHistory() {
                                             INNER JOIN ".$wpdb->prefix . "ntp_history as h
                                             ON h.Subscription_Id = s.Subscription_Id 
                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p
-                                            ON s.PlanId = p.Plan_Id
+                                            ON s.PlanId = p.PlanId
                                             WHERE s.UserId = '$userId'
                                             ORDER BY `CreatedAt` DESC", "ARRAY_A");
 
