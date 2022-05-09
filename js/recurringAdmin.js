@@ -213,6 +213,7 @@ function editPlan(planId) {
     }
     jQuery.post(ajaxurl, getPlanData, function(response){
         jsonResponse = JSON.parse(response);
+        console.log(jsonResponse);
         if(jsonResponse.status) {
             jQuery("#editPlanTitile").val(jsonResponse.data.Title);
             jQuery("#editPlanDescription").val(jsonResponse.data.Description);
@@ -230,6 +231,11 @@ function editPlan(planId) {
             }
         } else {
             // Alert &  exit
+            jQuery('#editMsgBlock').addClass('alert-warning');
+            jQuery('#editAlertTitle').html('Error!');
+            jQuery('#editMsgContent').html('Something is wrong!. Please check your configuration');
+            jQuery('#editFormAttributes').hide();
+            jQuery('#editMsgBlock').addClass('show');
         }
     });
 

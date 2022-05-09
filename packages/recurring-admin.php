@@ -451,7 +451,7 @@ function getPlanInfo() {
     $planObj = new recurringFront();
     $arrayData = $planObj->getPlan($planId);
 
-    if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12)) {
+    if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] == 12) || is_null($arrayData)) {
         $status = false;
         $planData = array();
     } else {
