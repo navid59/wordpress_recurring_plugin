@@ -8,7 +8,7 @@
               </button>
             </div>
             <div class="modal-body">
-                <form id="recurring-edit-plan-form" method="post" class="was-validated">
+                <form id="recurring-edit-plan-form" method="post" class="needs-validation" >
                     <div class="form-group">
                         <input type="hidden" class="form-control" id="editPlanId" value="" readonly="readonly">
                     </div>
@@ -93,7 +93,7 @@
                             </p>
                         </div>    
                         <div class="form-group col-md-4">
-                            <button type="button" id="editPlan" class="btn btn-success"><?php echo __('Submmit', 'ntpRp');?></button>
+                            <button type="submit" id="editPlan" class="btn btn-success"><?php echo __('Submmit', 'ntpRp');?></button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                         </div>                        
                     </div>

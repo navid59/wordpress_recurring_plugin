@@ -237,88 +237,93 @@ function editPlan(planId) {
     jQuery('#editPlanModal').modal('toggle');
     jQuery('#editPlanModal').modal('show');
 
-    jQuery("#editPlan").click(function (e) {
-        var planId = jQuery("#editPlanId").val();
-        var planTitile = jQuery("#editPlanTitile").val();
-        var planDescription = jQuery("#editPlanDescription").val();
-        var RecurrenceType = jQuery("#editRecurrenceType").val();
-        var FrequencyType = jQuery("#editFrequencyType").val();
-        var FrequencyValue = jQuery("#editFrequencyValue").val();
-        var Amount = jQuery("#editAmount").val();
-        var Currency = jQuery("#editCurrency").val();
-        var GracePeriod = jQuery("#editGracePeriod").val();
-        if (jQuery("#editInitialPayment").prop("checked")) {
-            var InitialPayment = true;
-        } else {
-            var InitialPayment = false;
-        }
-        if (jQuery("#editConditions").prop("checked")) {
-            var acceptedConditions = true;
-        } else {
-            var acceptedConditions = false;
-        }
-
-        data = {
-            action : 'editPlan',
-            planId : planId,
-            planTitile : planTitile,
-            planDescription : planDescription,
-            RecurrenceType : RecurrenceType,
-            FrequencyType : FrequencyType,
-            FrequencyValue : FrequencyValue,
-            Amount : Amount,
-            Currency : Currency,
-            GracePeriod : GracePeriod,
-            InitialPayment : InitialPayment,
-            TermAndConditionAccepted : acceptedConditions,
-        };
-        
-        if(acceptedConditions) {
-            jQuery.post(ajaxurl, data, function(response){
-                jsonResponse = JSON.parse(response);
-                if(jsonResponse.status) {
-                    jQuery('#editMsgBlock').addClass('alert-success');
-                    jQuery('#editAlertTitle').html('Congratulation!');
-                    jQuery('#editMsgContent').html(jsonResponse.msg);
-                    jQuery('#editMsgBlock').addClass('show');
-
-                    // Disable after success update
-                    jQuery("#editPlanTitile").prop('readonly', true);
-                    jQuery("#editPlanDescription").prop('readonly', true);
-                    jQuery("#editRecurrenceType").attr("disabled", true); 
-                    jQuery("#editFrequencyType").attr("disabled", true); 
-                    jQuery("#editFrequencyValue").prop('readonly', true);
-                    jQuery("#editAmount").prop('readonly', true);
-                    jQuery("#editCurrency").attr("disabled", true); 
-                    jQuery("#editGracePeriod").prop('readonly', true);
-                    jQuery("#editInitialPayment").prop('readonly', true);
-                    jQuery("#editConditions").prop('readonly', true);
-                    
-                    // Remove submit button after success
-                    jQuery("#editPlan").hide();
-
-                    // Refresh page after close Modal
-                    jQuery('#editPlanModal').on('hidden.bs.modal', function() {
-                        window.location.reload();
-                    });
-                }else {
-                    jQuery('#editMsgBlock').addClass('alert-warning');
-                    jQuery('#editAlertTitle').html('Error!');
-                    jQuery('#editMsgContent').html(jsonResponse.msg);
-                    jQuery('#editMsgBlock').addClass('show'); 
-                }
-            });
-        } else {
-            jQuery('#editMsgBlock').addClass('alert-warning');
-            jQuery('#editAlertTitle').html('Error!');
-            jQuery('#editMsgContent').html('You should to accept terms & conditions!');
-            jQuery('#editMsgBlock').addClass('show');
-        }
-
-    });
+    // here submit
+    jQuery('#recurring-edit-plan-form').on('submit', doUpdatePlan);
     
     return false;
 }
+
+function doUpdatePlan(e) {
+    e.preventDefault(); // to stop Submit Event
+    var planId = jQuery("#editPlanId").val();
+    var planTitile = jQuery("#editPlanTitile").val();
+    var planDescription = jQuery("#editPlanDescription").val();
+    var RecurrenceType = jQuery("#editRecurrenceType").val();
+    var FrequencyType = jQuery("#editFrequencyType").val();
+    var FrequencyValue = jQuery("#editFrequencyValue").val();
+    var Amount = jQuery("#editAmount").val();
+    var Currency = jQuery("#editCurrency").val();
+    var GracePeriod = jQuery("#editGracePeriod").val();
+    if (jQuery("#editInitialPayment").prop("checked")) {
+        var InitialPayment = true;
+    } else {
+        var InitialPayment = false;
+    }
+    if (jQuery("#editConditions").prop("checked")) {
+        var acceptedConditions = true;
+    } else {
+        var acceptedConditions = false;
+    }
+
+    data = {
+        action : 'editPlan',
+        planId : planId,
+        planTitile : planTitile,
+        planDescription : planDescription,
+        RecurrenceType : RecurrenceType,
+        FrequencyType : FrequencyType,
+        FrequencyValue : FrequencyValue,
+        Amount : Amount,
+        Currency : Currency,
+        GracePeriod : GracePeriod,
+        InitialPayment : InitialPayment,
+        TermAndConditionAccepted : acceptedConditions,
+    };
+    
+    if(acceptedConditions) {
+        jQuery.post(ajaxurl, data, function(response){
+            jsonResponse = JSON.parse(response);
+            if(jsonResponse.status) {
+                jQuery('#editMsgBlock').addClass('alert-success');
+                jQuery('#editAlertTitle').html('Congratulation!');
+                jQuery('#editMsgContent').html(jsonResponse.msg);
+                jQuery('#editMsgBlock').addClass('show');
+
+                // Disable after success update
+                jQuery("#editPlanTitile").prop('readonly', true);
+                jQuery("#editPlanDescription").prop('readonly', true);
+                jQuery("#editRecurrenceType").attr("disabled", true); 
+                jQuery("#editFrequencyType").attr("disabled", true); 
+                jQuery("#editFrequencyValue").prop('readonly', true);
+                jQuery("#editAmount").prop('readonly', true);
+                jQuery("#editCurrency").attr("disabled", true); 
+                jQuery("#editGracePeriod").prop('readonly', true);
+                jQuery("#editInitialPayment").prop('readonly', true);
+                jQuery("#editConditions").prop('readonly', true);
+                
+                // Remove submit button after success
+                jQuery("#editPlan").hide();
+
+                // Refresh page after close Modal
+                jQuery('#editPlanModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });
+            }else {
+                jQuery('#editMsgBlock').addClass('alert-warning');
+                jQuery('#editAlertTitle').html('Error!');
+                jQuery('#editMsgContent').html(jsonResponse.msg);
+                jQuery('#editMsgBlock').addClass('show'); 
+            }
+        });
+    } else {
+        jQuery('#editMsgBlock').addClass('alert-warning');
+        jQuery('#editAlertTitle').html('Error!');
+        jQuery('#editMsgContent').html('You should to accept terms & conditions!');
+        jQuery('#editMsgBlock').addClass('show');
+    }
+
+};
+
 
 function copyPlan(planId, planTitile) {
     var shortCode = '[NTP-Recurring planId='+ planId +' button="Subscribe" title="'+ planTitile +'"]';
@@ -421,95 +426,3 @@ jQuery('#netopia_recurring_general_public_key').on('change', function () {
         });
     }
 });
-
-// jQuery('#netopia_recurring_live_public_key').on('change', function () {
-//     let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'cer',this);
-//     if(fileVerified) {
-//         file_data = jQuery(this)[0].files[0];
-//         form_data = new FormData();
-//         form_data.append('netopia_recurring_live_public_key', file_data);
-//         form_data.append('action', 'uploadKey');
-        
-//         jQuery.ajax({
-//             url: ajaxurl,
-//             type: 'POST',
-//             contentType: false,
-//             processData: false,
-//             data: form_data,
-//             success: function (response) {
-//                 jQuery(this).val('');
-//                 jQuery('#netopia_recurring_live_public_key_file_name').val(file_data.name);
-//                 jQuery('#description_netopia_recurring_live_public_key').html('File uploaded successfully.');
-//             }
-//         });
-//     }
-// });
-
-// jQuery('#netopia_recurring_live_private_key').on('change', function(){
-//     let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'key',this);
-//     if(fileVerified) {
-//         file_data = jQuery(this)[0].files[0];
-//         form_data = new FormData();
-//         form_data.append('netopia_recurring_live_private_key', file_data);
-//         form_data.append('action', 'uploadKey');
-        
-//         jQuery.ajax({
-//             url: ajaxurl,
-//             type: 'POST',
-//             contentType: false,
-//             processData: false,
-//             data: form_data,
-//             success: function (response) {
-//                 jQuery(this).val('');
-//                 jQuery('#netopia_recurring_live_private_key_file_name').val(file_data.name);
-//                 jQuery('#description_netopia_recurring_live_private_key').html('File uploaded successfully.');
-//             }
-//         });
-//     }
-// });
-
-// jQuery('#netopia_recurring_sandbox_public_key').on('change', function () {
-//     let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'cer',this);
-//     if(fileVerified) {
-//         file_data = jQuery(this)[0].files[0];
-//         form_data = new FormData();
-//         form_data.append('netopia_recurring_sandbox_public_key', file_data);
-//         form_data.append('action', 'uploadKey');
-        
-//         jQuery.ajax({
-//             url: ajaxurl,
-//             type: 'POST',
-//             contentType: false,
-//             processData: false,
-//             data: form_data,
-//             success: function (response) {
-//                 jQuery(this).val('');
-//                 jQuery('#netopia_recurring_sandbox_public_key_file_name').val(file_data.name);
-//                 jQuery('#description_netopia_recurring_sandbox_public_key').html('File uploaded successfully.');
-//             }
-//         });
-//     }
-// });
-
-// jQuery('#netopia_recurring_sandbox_private_key').on('change', function(){
-//     let fileVerified = certificateNotifyHandle(jQuery(this)[0].files[0],'key',this);
-//     if(fileVerified) {
-//         file_data = jQuery(this)[0].files[0];
-//         form_data = new FormData();
-//         form_data.append('netopia_recurring_sandbox_private_key', file_data);
-//         form_data.append('action', 'uploadKey');
-        
-//         jQuery.ajax({
-//             url: ajaxurl,
-//             type: 'POST',
-//             contentType: false,
-//             processData: false,
-//             data: form_data,
-//             success: function (response) {
-//                 jQuery(this).val('');
-//                 jQuery('#netopia_recurring_sandbox_private_key_file_name').val(file_data.name);
-//                 jQuery('#description_netopia_recurring_sandbox_private_key').html('File uploaded successfully.');
-//             }
-//         });
-//     }
-// });

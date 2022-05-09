@@ -127,6 +127,8 @@ jQuery(document).ready(function () {
             }
         });
     });
+
+    jQuery('#subscription-form').on('submit', addSubscription);
 });
 
 
@@ -232,7 +234,8 @@ function unsubscriptionMyAccount() {
     });
 }
 
-function addSubscription() {
+function addSubscription(e) {   
+    e.preventDefault(); // to stop Submit Event
     jQuery('#loading').addClass('show');
     jQuery('#addSubscriptionButton').hide();
 
@@ -278,6 +281,7 @@ function addSubscription() {
         ThreeDS : ThreeDS,
     };
 
+    
     jQuery.ajax({
         url: frontAjax.ajax_url,
         type: 'POST',
@@ -331,7 +335,7 @@ function addSubscription() {
             jQuery('#addSubscriptionButton').show();
             jQuery('#loading').removeClass('show');
         }
-    });    
+    });   
 }
 
 function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {

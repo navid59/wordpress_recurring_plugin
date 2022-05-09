@@ -9,6 +9,9 @@ return '
     <div class="col-md-6 mb-3">
         <label for="firstName">'.__('First name','ntpRp').'</label>
         <input type="text" class="form-control" id="firstName" placeholder="" value="'.$current_user->first_name.'" required>
+        <div class="valid-feedback">
+        '.__('Looks good!').'
+        </div>
         <div class="invalid-feedback">
             '.__('Valid first name is required.','ntpRp').'
         </div>
@@ -16,6 +19,9 @@ return '
     <div class="col-md-6 mb-3">
         <label for="lastName">'.__('Last name','ntpRp').'</label>
         <input type="text" class="form-control" id="lastName" placeholder="" value="'.$current_user->last_name.'" required>
+        <div class="valid-feedback">
+        '.__('Looks good!').'
+        </div>
         <div class="invalid-feedback">
             '.__('Valid last name is required.','ntpRp').'
         </div>

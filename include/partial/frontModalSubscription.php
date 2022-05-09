@@ -18,7 +18,7 @@ echo '
                 <div class="row">
                     <div class="col-md-12 order-md-1">
                     <h4 class="mb-3">'.__('Subscription detail','ntpRp').'</h4>
-                    <form class="needs-validation" novalidate>
+                    <form id="subscription-form" class="needs-validation">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="custom-control custom-checkbox">
@@ -48,7 +48,7 @@ echo '
                         $cardInfo
                         .'
                         <hr class="mb-4">
-                        <button id="addSubscriptionButton" class="btn btn-primary btn-lg btn-block" type="button" onclick="addSubscription(); return false;">Continue to checkout</button>
+                        <button id="addSubscriptionButton" class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
                     </form>
                     </div>
                 </div>

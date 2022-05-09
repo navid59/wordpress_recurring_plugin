@@ -1,5 +1,5 @@
 <div class="jumbotron">
-    <form id="recurring-plan-form" method="post" class="was-validated">
+    <form id="recurring-plan-form" method="post" class="">
         <div class="form-group">
             <label for="planTitile">Plan Title</label>
             <input type="text" class="form-control" id="planTitile" placeholder="<?php echo __('Your plan title', 'ntpRp');?>" required>

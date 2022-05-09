@@ -14,7 +14,7 @@ echo '
             <div class="modal-body">            
                 <div class="row">
                     <div class="col-md-12 order-md-1">
-                        <form id="unsubscription-form" class="needs-validation" novalidate>
+                        <form id="unsubscription-form" class="needs-validation">
                             '.__('Are you sure to unsubscribe from ','ntpRp').'
                             '.$planData['Title'].' !?
                             <br>

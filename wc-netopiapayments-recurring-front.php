@@ -278,7 +278,7 @@ function recurring_getMyAccountDetails() {
                                 'status' => true,
                                 'msg'    => '',
                                 'data'   => '<div class="row" id="myAccountForm">
-                                                <form class="needs-validation" novalidate>
+                                                <form class="needs-validation">
                                                     <h4 class="mb-3">'.__('Personal information').'</h4>
                                                     <div class="row">
                                                         <div class="col-md-6 mb-3">
@@ -699,7 +699,7 @@ function recurring_account_getMySubscriptions() {
                                                 <div class="modal-body">            
                                                     <div class="row">
                                                         <div class="col-md-12 order-md-1">
-                                                            <form id="unsubscription-form" class="needs-validation" novalidate>
+                                                            <form id="unsubscription-form" class="needs-validation">
                                                                 '.__('Are you sure to unsubscribe from ','ntpRp').'
                                                                 <span id="PlanTitle" > - </span> !?
                                                                 <br>
@@ -751,7 +751,8 @@ function recurring_account_getMySubscriptions() {
 function assignToRecurring ($data) {
         $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
         $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
-        $planId = isset($data['planId']) && $data['planId'] !== null ? $data['planId'] : null;
+        $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
+
         if(!is_null($planId)) {
             $str = recurringModal ($planId, $button, $title);
         } else {
