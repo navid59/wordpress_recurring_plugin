@@ -22,7 +22,7 @@ if(isset($plansData['code']) && ($plansData['code'] == 11 || $plansData['code'] 
             printf("<td>%1s</td>",$plan['Description']);
             printf("<td>%1s / %2s</td>",$plan['Frequency_Type'], $plan['Frequency_Value']);
             printf("<td>%1s</td>",$plan['Grace_Period']);
-            printf("<td>%1s</td>",$plan['Initial_Paymen'] === 'true' ? "Yes" : "No");
+            printf("<td>%1s</td>",$plan['Initial_Payment'] === 'true' ? "Yes" : "No");
             $date = new DateTime($plan['CreatedAt']);
             printf("<td>%1s</td>",$date->format('Y-m-d'));
             printf('<td><button type="button" class="btn btn-success" onclick="copyPlan('.$plan['PlanId'].',\''.$plan['Title'].'\')" style="margin-right:5px;" title="'.__('copy Short code','ntpRp').'"><i class="fa fa-code"></i></button>');

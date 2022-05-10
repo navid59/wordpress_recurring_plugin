@@ -1,7 +1,7 @@
 <?php
 echo '
 <!-- Unsubscription Modal -->
-<div class="modal fade" id="unsubscriptionRecurringModal" tabindex="-1" aria-labelledby="unsubscriptionRecurringModalLabel" aria-hidden="true">
+<div class="modal fade" id="unsubscriptionRecurringModal_'.$planId.'" tabindex="-1" aria-labelledby="unsubscriptionRecurringModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">

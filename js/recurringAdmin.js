@@ -153,56 +153,62 @@ function delPlan(planId) {
     jQuery('#deletePlanModal').modal('toggle');
     jQuery('#deletePlanModal').modal('show');
 
-
-    jQuery("#deletePlan").click(function (e) {
-        var planId = jQuery("#planId").val();
-        if (jQuery("#unsubscribe").prop("checked")) {
-            var unsubscribe = true;
-        } else {
-            var unsubscribe = false;
-        }
-        
-        if (jQuery("#conditions").prop("checked")) {
-            var acceptedConditions = true;
-        } else {
-            var acceptedConditions = false;
-        }
-
-        data = {
-            action : 'delPlan',
-            planId : planId,
-            unsubscribe : unsubscribe,
-        };
-
-        if(acceptedConditions) {
-            jQuery.post(ajaxurl, data, function(response){
-                jsonResponse = JSON.parse(response);
-                if(jsonResponse.status) {
-                    jQuery('#msgBlock').addClass('alert-success');
-                    jQuery('#alertTitle').html('Congratulation!');
-                    jQuery('#msgContent').html(jsonResponse.msg);
-                    jQuery('#msgBlock').addClass('show');
-
-                    // Refresh page after close Modal
-                    jQuery('#deletePlanModal').on('hidden.bs.modal', function() {
-                        window.location.reload();
-                    });
-                } else {
-                    jQuery('#msgBlock').addClass('alert-warning');
-                    jQuery('#alertTitle').html('Error!');
-                    jQuery('#msgContent').html(jsonResponse.msg);
-                    jQuery('#msgBlock').addClass('show');
-                }
-            });
-        } else {
-            jQuery('#msgBlock').addClass('alert-warning');
-            jQuery('#alertTitle').html('Error!');
-            jQuery('#msgContent').html('You should to accept terms & conditions!');
-            jQuery('#msgBlock').addClass('show');
-        }
-    });
+    // Submit the form for Update Plan
+    jQuery('#recurring-delete-plan-form').on('submit', doDeletePlan);
+    
     return false;
 }
+
+//////////////////
+function doDeletePlan(e) {
+    e.preventDefault(); // to stop Submit Event
+    var planId = jQuery("#planId").val();
+    if (jQuery("#unsubscribe").prop("checked")) {
+        var unsubscribe = true;
+    } else {
+        var unsubscribe = false;
+    }
+    
+    if (jQuery("#conditions").prop("checked")) {
+        var acceptedConditions = true;
+    } else {
+        var acceptedConditions = false;
+    }
+
+    data = {
+        action : 'delPlan',
+        planId : planId,
+        unsubscribe : unsubscribe,
+    };
+
+    if(acceptedConditions) {
+        jQuery.post(ajaxurl, data, function(response){
+            jsonResponse = JSON.parse(response);
+            if(jsonResponse.status) {
+                jQuery('#msgBlock').addClass('alert-success');
+                jQuery('#alertTitle').html('Congratulation!');
+                jQuery('#msgContent').html(jsonResponse.msg);
+                jQuery('#msgBlock').addClass('show');
+
+                // Refresh page after close Modal
+                jQuery('#deletePlanModal').on('hidden.bs.modal', function() {
+                    window.location.reload();
+                });
+            } else {
+                jQuery('#msgBlock').addClass('alert-warning');
+                jQuery('#alertTitle').html('Error!');
+                jQuery('#msgContent').html(jsonResponse.msg);
+                jQuery('#msgBlock').addClass('show');
+            }
+        });
+    } else {
+        jQuery('#msgBlock').addClass('alert-warning');
+        jQuery('#alertTitle').html('Error!');
+        jQuery('#msgContent').html('You should to accept terms & conditions!');
+        jQuery('#msgBlock').addClass('show');
+    }
+}
+//////////////////
 
 function editPlan(planId) {  
     jQuery("#editPlanId").val(planId);
@@ -224,7 +230,7 @@ function editPlan(planId) {
             jQuery("#editCurrency").val(jsonResponse.data.Currency);
             jQuery("#editGracePeriod").val(jsonResponse.data.GracePeriod);
             
-            if(jsonResponse.data.InitialPayment === true) {
+            if(jsonResponse.data.InitialPayment == 'true') {
                 jQuery('#editInitialPayment').prop( "checked", true );
             }else {
                 jQuery('#editInitialPayment').prop( "checked", false );
@@ -243,7 +249,7 @@ function editPlan(planId) {
     jQuery('#editPlanModal').modal('toggle');
     jQuery('#editPlanModal').modal('show');
 
-    // here submit
+    // Submit the form for Update Plan
     jQuery('#recurring-edit-plan-form').on('submit', doUpdatePlan);
     
     return false;

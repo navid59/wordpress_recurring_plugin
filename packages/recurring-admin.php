@@ -308,7 +308,7 @@ function recurring_addPlan() {
                 'Frequency_Type'  => $_POST['FrequencyType'],
                 'Frequency_Value' => $_POST['FrequencyValue'],
                 'Grace_Period'    => $_POST['GracePeriod'],
-                'Initial_Paymen'  => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
+                'Initial_Payment'  => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
                 'Status'          => $jsonResultData['data']['Status'],
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
@@ -407,32 +407,33 @@ function recurring_editPlan() {
         $msg = $jsonResultData['message'];
     }
     
+    if($status) {
+        // Update Local 
+        $updatePlan = $wpdb->update( 
+            $wpdb->prefix . "ntp_plans", 
+            array( 
+                "Title"             => $_POST['planTitile'],
+                "Description"       => $_POST['planDescription'],
+                "Amount"            => $_POST['Amount']+0 ,
+                "Recurrence_Type"   => $_POST['RecurrenceType'],
+                "Frequency_Type"    => $_POST['FrequencyType'],
+                "Frequency_Value"   => $_POST['FrequencyValue']+0,
+                "Grace_Period"      => $_POST['GracePeriod']+0,
+                "Initial_Payment"    => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
+                'UpdatedAt'         => date("Y-m-d")
+            ),
+            array(
+                'PlanId' => $_POST['planId']+0
+            )
+        );
 
-    // Update Local 
-    $updatePlan = $wpdb->update( 
-        $wpdb->prefix . "ntp_plans", 
-        array( 
-            "Title"             => $_POST['planTitile'],
-            "Description"       => $_POST['planDescription'],
-            "Amount"            => $_POST['Amount']+0 ,
-            "Recurrence_Type"   => $_POST['RecurrenceType'],
-            "Frequency_Type"    => $_POST['FrequencyType'],
-            "Frequency_Value"   => $_POST['FrequencyValue']+0,
-            "Grace_Period"      => $_POST['GracePeriod']+0,
-            "Initial_Paymen"    => $_POST['InitialPayment'] === 'true' ? true : false,
-            'UpdatedAt'         => date("Y-m-d")
-        ),
-        array(
-            'PlanId' => $_POST['planId']+0
-        )
-    );
-
-    if($updatePlan) {
-        $status = true;
-        $msg = $msg.__(' ,ready to use it.','ntpRp');
-    } else {
-        $status = false;
-        $msg = $msg.__(' ,But locally not updated!.','ntpRp');
+        if($updatePlan) {
+            $status = true;
+            $msg = $msg.__(' ,ready to use it.','ntpRp');
+        } else {
+            $status = false;
+            $msg = $msg.__(' ,Local data is not updated!.','ntpRp');
+        }
     }
     
     $mySimulatedResult = array(

@@ -30,7 +30,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                        <button type="button" id="deletePlan" class="btn btn-danger"><?php echo __('Delete', 'ntpRp')?></button>
+                        <button type="submit" id="deletePlan" class="btn btn-danger"><?php echo __('Delete', 'ntpRp')?></button>
                     </div>
                     <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
                         <strong id="alertTitle">!</strong> <span id="msgContent"></span>.

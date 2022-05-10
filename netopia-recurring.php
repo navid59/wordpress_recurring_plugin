@@ -23,6 +23,15 @@ add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 /** To loade the language */
 load_plugin_textdomain( 'ntpRp', false, dirname( plugin_basename( __FILE__ ) ) . '/i18n/languages/' );
 
+/** To make setting link*/
+add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'apd_settings_link' );
+function apd_settings_link( array $links ) {
+    $url = get_admin_url() . "admin.php?page=netopia_recurring&tab=display_setting";
+    $settings_link = '<a href="' . $url . '">' . __('Settings', 'ntpRp') . '</a>';
+      $links[] = $settings_link;
+    return $links;
+  }
+
 include_once( 'config/static.php' );
 include_once( 'packages/recurring.php' );
 include_once( 'packages/recurring-admin.php' );

@@ -139,6 +139,11 @@ function recurring_addSubscription() {
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
             );
+        // Add subscription to DB 
+        $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
+
+        // Sned mail
+        $obj->informMember(__('New subscription','ntpRp'), __('Congratulation you successfully subscribed','ntpRp'));
     } elseif ($jsonResultData['code'] === "19") {
         $arrSubscriptionData = array(
                 'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
@@ -159,11 +164,7 @@ function recurring_addSubscription() {
             );
     }
 
-    // Add subscription to DB 
-    $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
-
-    // Sned mail
-    $obj->informMember("New subscription", "Congratulation you successfully subscribed");
+    
 
     if($jsonResultData['code'] === "00") {
         $customMsg = $obj->getSuccessMessagePayment();
@@ -227,7 +228,7 @@ function recurring_unsubscription() {
         );
 
         // Sned mail
-        $obj->informMember("Unsubscription", "Hope to see you soon");
+        $obj->informMember(__('Unsubscription','ntpRp'), __('Hope to see you soon','ntpRp'));
 
     }
 
@@ -618,7 +619,7 @@ function recurring_account_getMySubscriptions() {
                                           p.Frequency_Type,
                                           p.Frequency_Value,
                                           p.Grace_Period,
-                                          p.Initial_Paymen,
+                                          p.Initial_Payment,
                                           p.Status,
                                           s.id as userId,
                                           s.First_Name,
@@ -752,9 +753,18 @@ function assignToRecurring ($data) {
         $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
         $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
         $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
-
+        
+        // echo "<pre>";
+        // var_dump($planId);
+        // echo "</pre>";
         if(!is_null($planId)) {
-            $str = recurringModal ($planId, $button, $title);
+            // $strArr = explode("pid", $planId);
+            // if(!is_null($strArr[1])) {
+            //     $planId = $strArr[1];
+                $str = recurringModal ($planId, $button, $title);
+            // }else {
+            //     $str = '';
+            // }
         } else {
             $str = ''; 
         } 
@@ -823,7 +833,8 @@ function recurringModal($planId , $button, $title) {
 
     /** Get Plan Info */
     $planData = planInfo($planId);
-    $isActivePlan = count($planData) && $planData['Status'] === 1 ? true : false;
+    $isActivePlan = count($planData) && $planData['Status'] == 1 ? true : false;
+
 
     $unsubscriptionButtonTitile = __('Unsubscription','ntpRp');
     $unsubscriptionTitle = __('Unsubscription','ntpRp'); 
@@ -842,28 +853,28 @@ function recurringModal($planId , $button, $title) {
                 /** Display Unsubscriptiuon */
                 $buttonHtml = '
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unsubscriptionRecurringModal">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unsubscriptionRecurringModal'.$planId.'">
                         '.$unsubscriptionButtonTitile.'
                     </button>';
-                    include_once('include/partial/frontModalUnsubscription.php');
+                    require_once('include/partial/frontModalUnsubscription.php');
             } else {
                 /** Display Subscription */ 
                 /** Display Subscribe button & Modal subscription for LoggedIn user */    
                 $buttonHtml = '
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal_'.$planId.'">
                         '.$buttonTitile.'
                     </button>';
-                include_once('include/partial/frontModalSubscription.php');
+                require_once('include/partial/frontModalSubscription.php');
             }
         } else {
             /** Display Subscribe buttomn & Modal subscription for Guest users */    
             $buttonHtml = '
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
-            include_once('include/partial/frontModalSubscription.php');
+            require_once('include/partial/frontModalSubscription.php');
         }
     } else {
         // Plan is not active / not exist / The licence is expired,... so don't display subscribe / Unsubscribe Botton

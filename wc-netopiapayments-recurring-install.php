@@ -44,7 +44,8 @@ function recurring_install () {
     Frequency_Type varchar(15) NOT NULL,
     Frequency_Value int(5) NOT NULL,
     Grace_Period int(5) NOT NULL,
-    Initial_Paymen ENUM('false', 'true') NOT NULL DEFAULT 'false',
+    Taxable ENUM('false', 'true') NOT NULL DEFAULT 'false',
+    Initial_Payment ENUM('false', 'true') NOT NULL DEFAULT 'false',
     Status int(2) NOT NULL,
     CreatedAt datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
     UpdatedAt datetime DEFAULT NULL,
@@ -88,7 +89,7 @@ function recurring_account_page() {
         // Create post object
         $ntpAccountPage = array(
             'post_title'    => $strPageTitle,
-            'post_content'  => '<!-- wp:shortcode -->[NTP-Recurring-My-Account]<!-- /wp:shortcode -->',
+            'post_content'  => '<!-- wp:shortcode -->[NTPRecurring-My-Account]<!-- /wp:shortcode -->',
             'post_status'   => 'publish',
             'post_author'   => 1,
             'post_type'     => 'page',

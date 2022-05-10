@@ -4,7 +4,7 @@ $authInfo = include_once('frontAuthInfo.php');
 $cardInfo = include_once('frontCardInfo.php');
 echo '
 <!-- Modal -->
-<div class="modal fade" id="recurringModal" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
+<div class="modal fade" id="recurringModal_'.$planId.'" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -61,7 +61,7 @@ echo '
                     </div>
                 </div>
             <div class="modal-footer">
-                '.__('Supported by NETOPIA Payments').'
+                '.__('Supported by NETOPIA Payments','ntpRp').'
             </div>
         </div>
     </div>

@@ -8,7 +8,7 @@
                                     WHERE PlanId = '".$planId."' 
                                     AND Status = 1 
                                     LIMIT 1", "ARRAY_A");
-            $planInfo = count($plans[0]) ? $plans[0] : null;
+            $planInfo = count($plans) ? $plans[0] : null;
 
             if(!empty($planInfo)) {
                 $resultData = [
@@ -27,7 +27,7 @@
                                                 ],
                         'GracePeriod'       => $planInfo['Grace_Period'],
                         'Taxable'           => $planInfo['Taxable'], 
-                        'InitialPayment'    => $planInfo['Initial_Paymen'], 
+                        'InitialPayment'    => $planInfo['Initial_Payment'], 
                         'Status'            => $planInfo['Status'], 
                         'CreatedAt'         => $planInfo['CreatedAt'], 
                         'UpdatedAt'         => $planInfo['UpdatedAt'] 
