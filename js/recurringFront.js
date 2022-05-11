@@ -128,23 +128,25 @@ jQuery(document).ready(function () {
         });
     });
 
-    jQuery('#subscription-form').on('submit', addSubscription);
+    // jQuery('#subscription-form').on('submit', addSubscription);
+    jQuery('.add-subscription-form').on('submit', addSubscription);
 });
 
 
 function unsubscription() {
-    jQuery('#loading').addClass('show');
-    jQuery('#unsubscriptionButton').hide();
-
     var SubscriptionId = jQuery("#Subscription_Id").val();
     var Id = jQuery("#Id").val();
 
+    jQuery('#loading').addClass('show');
+    jQuery('#unsubscriptionButton').hide();
+    
     data = {
         action : 'unsubscription',
         Id : Id,
         SubscriptionId : SubscriptionId,
     }
 
+    console.log('SubscriptionId : '+SubscriptionId);
     jQuery.ajax({
         url: frontAjax.ajax_url,
         type: 'POST',
@@ -236,30 +238,34 @@ function unsubscriptionMyAccount() {
 
 function addSubscription(e) {   
     e.preventDefault(); // to stop Submit Event
-    jQuery('#loading').addClass('show');
-    jQuery('#addSubscriptionButton').hide();
+    var form = jQuery(this);
+    var formId = form.attr('id');
+    console.log('The form ID : '+formId);
 
-    var PlanID = jQuery("#planID").val();
-    var UserID = jQuery("#username").val();
-    var Pass = jQuery("#password").val();
-    var Name = jQuery("#firstName").val();
-    var LastName = jQuery("#lastName").val();
-    var Email = jQuery("#email").val();
-    var Address  = jQuery("#address").val();
-    var City = jQuery("#state").val();
-    var Tel = jQuery("#tel").val();
+    var PlanID = jQuery('#'+formId).find('input[name=planID]').val();
+    var UserID = jQuery('#'+formId).find('input[name=username]').val();
+    var Pass = jQuery('#'+formId).find('input[name=password]').val();
+    var Name = jQuery('#'+formId).find('input[name=firstName]').val();
+    var LastName = jQuery('#'+formId).find('input[name=lastName]').val();
+    var Email = jQuery('#'+formId).find('input[name=email]').val();
+    var Address  = jQuery('#'+formId).find('input[name=address]').val();
+    var City = jQuery('#'+formId).find('input[name=state]').val();
+    var Tel = jQuery('#'+formId).find('input[name=tel]').val();
 
-    var PlanId = jQuery("#PlanId").val();
-    var StartDate =  jQuery("#StartDate").val();
-    var EndDate = jQuery("#EndDate").val();
+    var PlanId = PlanID;//jQuery("#PlanId").val();
+    var StartDate =  jQuery('#'+formId).find('input[name=StartDate]').val();
+    var EndDate = jQuery('#'+formId).find('input[name=EndDate]').val();
 
-    var Account = jQuery("#cc-number").val();
-    var ExpMonth = jQuery("#cc-expiration-month").val();
-    var ExpYear = jQuery("#cc-expiration-year").val();
-    var SecretCode = jQuery("#cc-cvv").val();
+    var Account = jQuery('#'+formId).find('input[name=cc-number]').val();
+    var ExpMonth = jQuery('#'+formId).find('input[name=cc-expiration-month]').val();
+    var ExpYear = jQuery('#'+formId).find('input[name=cc-expiration-year]').val();
+    var SecretCode = jQuery('#'+formId).find('input[name=cc-cvv]').val();
 
     var ThreeDS = sendClientBrowserInfo();
     
+    jQuery('#loading'+PlanID).addClass('show');
+    jQuery('#addSubscriptionButton'+PlanID).hide();
+
     data = {
         action : 'addNewSubscription',
         PlanID : PlanID,
@@ -289,51 +295,51 @@ function addSubscription(e) {
         data: data,
         success: function( response ){
             if(response.status) {
-                jQuery('#msgBlock').addClass('alert-success');
-                jQuery('#alertTitle').html('Congratulation!');
-                jQuery('#msgContent').html(response.msg);
-                jQuery('#msgBlock').addClass('show');
-                jQuery('#loading').removeClass('show');
+                jQuery('#msgBlock'+PlanID).addClass('alert-success');
+                jQuery('#alertTitle'+PlanID).html('Congratulation!');
+                jQuery('#msgContent'+PlanID).html(response.msg);
+                jQuery('#msgBlock'+PlanID).addClass('show');
+                jQuery('#loading'+PlanID).removeClass('show');
 
                 /** Make form Read only on success */
-                jQuery("#planID").prop('readonly', true);
-                jQuery("#username").prop('readonly', true);
-                jQuery("#firstName").prop('readonly', true);
-                jQuery("#lastName").prop('readonly', true);
-                jQuery("#email").prop('readonly', true);
-                jQuery("#address").prop('readonly', true);
-                jQuery("#country").attr("disabled", true); 
-                jQuery("#state").attr("disabled", true); 
-                jQuery("#tel").prop('readonly', true);
-                jQuery("#PlanId").prop('readonly', true);
-                jQuery("#StartDate").prop('readonly', true);
-                jQuery("#EndDate").prop('readonly', true);
-                jQuery("#cc-name").prop('readonly', true);
-                jQuery("#cc-number").prop('readonly', true);
-                jQuery("#cc-expiration-month").prop('readonly', true);
-                jQuery("#cc-expiration-year").prop('readonly', true);
-                jQuery("#cc-cvv").prop('readonly', true);
+                jQuery('#'+formId).find('input[name=planID]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=username]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=firstName]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=lastName]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=email]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=address]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=country]').attr("disabled", true); 
+                jQuery('#'+formId).find('input[name=state]').attr("disabled", true); 
+                jQuery('#'+formId).find('input[name=tel]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=PlanId]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=StartDate]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=EndDate]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=cc-name]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=cc-number]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=cc-expiration-month]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=cc-expiration-year]').prop('readonly', true);
+                jQuery('#'+formId).find('input[name=cc-cvv]').prop('readonly', true);
 
                 // Refresh page after close Modal
                 jQuery('.recurringModal').on('hidden.bs.modal', function() {
                     window.location.reload();
                 });
             } else {
-                jQuery('#msgBlock').addClass('alert-warning');
-                jQuery('#alertTitle').html('Error!');
-                jQuery('#msgContent').html(response.msg);
-                jQuery('#msgBlock').addClass('show');
-                jQuery('#addSubscriptionButton').show();
-                jQuery('#loading').removeClass('show');
+                jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+                jQuery('#alertTitle'+PlanID).html('Error!');
+                jQuery('#msgContent'+PlanID).html(response.msg);
+                jQuery('#msgBlock'+PlanID).addClass('show');
+                jQuery('#addSubscriptionButton'+PlanID).show();
+                jQuery('#loading'+PlanID).removeClass('show');
             }
         },
         error: function( error ){
-            jQuery('#msgBlock').addClass('alert-warning');
-            jQuery('#alertTitle').html('Error!');
-            jQuery('#msgContent').html(response.msg);
-            jQuery('#msgBlock').addClass('show');
-            jQuery('#addSubscriptionButton').show();
-            jQuery('#loading').removeClass('show');
+            jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+            jQuery('#alertTitle'+PlanID).html('Error!');
+            jQuery('#msgContent'+PlanID).html(response.msg);
+            jQuery('#msgBlock'+PlanID).addClass('show');
+            jQuery('#addSubscriptionButton'+PlanID).show();
+            jQuery('#loading'+PlanID).removeClass('show');
         }
     });   
 }
