@@ -1,4 +1,5 @@
 <?php
+die();
 return '
 <h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
 <div class="row">

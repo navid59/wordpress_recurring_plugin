@@ -160,7 +160,7 @@ function unsubscription() {
                 jQuery('#unsubscription-form').hide();               
                 
                 // Refresh page after close Modal
-                jQuery('#unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
+                jQuery('.unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
                     window.location.reload();
                 });                
             } else {
@@ -315,7 +315,7 @@ function addSubscription(e) {
                 jQuery("#cc-cvv").prop('readonly', true);
 
                 // Refresh page after close Modal
-                jQuery('#recurringModal').on('hidden.bs.modal', function() {
+                jQuery('.recurringModal').on('hidden.bs.modal', function() {
                     window.location.reload();
                 });
             } else {

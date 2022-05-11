@@ -1,4 +1,5 @@
 <?php
+die();
 echo '
 <!-- Unsubscription Modal -->
 <div class="modal fade" id="unsubscriptionRecurringModal_'.$planId.'" tabindex="-1" aria-labelledby="unsubscriptionRecurringModalLabel" aria-hidden="true">

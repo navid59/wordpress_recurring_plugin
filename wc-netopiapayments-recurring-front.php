@@ -12,6 +12,10 @@
  add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
  add_action('wp_ajax_logoutAccount', 'recurring_logoutAccount');
 
+/** To assign short code */
+add_shortcode('NTP-Recurring', 'assignToRecurring');
+add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
+
  function ntp_recurring_enqueue_scripts() {
     wp_enqueue_style( 'ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
 
@@ -755,16 +759,10 @@ function assignToRecurring ($data) {
         $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
         
         // echo "<pre>";
-        // var_dump($planId);
+        // var_dump($data);
         // echo "</pre>";
         if(!is_null($planId)) {
-            // $strArr = explode("pid", $planId);
-            // if(!is_null($strArr[1])) {
-            //     $planId = $strArr[1];
-                $str = recurringModal ($planId, $button, $title);
-            // }else {
-            //     $str = '';
-            // }
+            $str = recurringModal ($planId, $button, $title);
         } else {
             $str = ''; 
         } 
@@ -835,7 +833,7 @@ function recurringModal($planId , $button, $title) {
     $planData = planInfo($planId);
     $isActivePlan = count($planData) && $planData['Status'] == 1 ? true : false;
 
-
+    $modalHtml = '';
     $unsubscriptionButtonTitile = __('Unsubscription','ntpRp');
     $unsubscriptionTitle = __('Unsubscription','ntpRp'); 
     
@@ -856,16 +854,20 @@ function recurringModal($planId , $button, $title) {
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unsubscriptionRecurringModal'.$planId.'">
                         '.$unsubscriptionButtonTitile.'
                     </button>';
-                    require_once('include/partial/frontModalUnsubscription.php');
+                   // require_once('include/partial/frontModalUnsubscription.php');
+                   $modalHtml = getUnsubscribeModalHtml($planId, $unsubscriptionTitle, $planData, $subscription);
             } else {
                 /** Display Subscription */ 
                 /** Display Subscribe button & Modal subscription for LoggedIn user */    
                 $buttonHtml = '
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal_'.$planId.'">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                         '.$buttonTitile.'
                     </button>';
-                require_once('include/partial/frontModalSubscription.php');
+                $cardInfo = getCardInfoHtml();
+                $userInfo = getMemberInfoHtml($isLoggedIn);
+                $authInfo = getAuthFromHtml($isLoggedIn);
+                $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo);
             }
         } else {
             /** Display Subscribe buttomn & Modal subscription for Guest users */    
@@ -874,16 +876,285 @@ function recurringModal($planId , $button, $title) {
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
-            require_once('include/partial/frontModalSubscription.php');
+           
+            $cardInfo = getCardInfoHtml();
+            $userInfo = getMemberInfoHtml($isLoggedIn);
+            $authInfo = getAuthFromHtml($isLoggedIn);
+            $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo);
         }
     } else {
         // Plan is not active / not exist / The licence is expired,... so don't display subscribe / Unsubscribe Botton
         $buttonHtml = '';
     }
-    
-    return $buttonHtml;
+
+    return $modalHtml.$buttonHtml;
 }
 
+function getUnsubscribeModalHtml ($planId, $unsubscriptionTitle, $planData, $subscription) {
+    return '<!-- Unsubscription Modal -->
+            <div class="modal fade unsubscriptionRecurringModal" id="unsubscriptionRecurringModal'.$planId.'" tabindex="-1" aria-labelledby="unsubscriptionRecurringModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                            <h2 class="modal-title" id="unsubscriptionRecurringModalLabel">'.$unsubscriptionTitle.'</h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">            
+                            <div class="row">
+                                <div class="col-md-12 order-md-1">
+                                    <form id="unsubscription-form" class="needs-validation">
+                                        '.__('Are you sure to unsubscribe from ','ntpRp').'
+                                        '.$planData['Title'].' !?
+                                        <br>
+                                        '.__('To unsubscribe click on unsubscribe button.','ntpRp').' '.__('Otherwise close the window','ntpRp').'
+                                        <hr>
+                                        <input type="hidden" class="form-control" id="Id" value="'.$subscription[0]->id.'" readonly>
+                                        <input type="hidden" class="form-control" id="Subscription_Id" value="'.$subscription[0]->Subscription_Id.'" readonly>
+                                        <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscription(); return false;">Unsubscribe</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="loading" class="d-flex align-items-center fade">
+                                <strong>'.__('Loading...','ntpRp').'</strong>
+                                <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                            </div>
+                            <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                                <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                            </div>                                
+                        </div>
+                        <div class="modal-footer">
+                            '.__('Supported by NETOPIA Payments').'
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+}
+
+function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo) {
+    return '<!-- Modal -->
+    <div class="modal fade recurringModal" id="recurringModal'.$planId.'" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                    <h2 class="modal-title" id="recurringModalLabel">'.$modalTitle.'</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">            
+                    <div class="row">
+                        <div class="col-md-12 order-md-1">
+                        <h4 class="mb-3">'.__('Subscription detail','ntpRp').'</h4>
+                        <form id="subscription-form" class="needs-validation">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <h3><b>'.$planData['Title'].'</b></h3>
+                                        <h4>'.$planData['Description'].'</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card mb-4 box-shadow">
+                                        <div class="card-header">
+                                            <h4 class="my-0 font-weight-normal">'.__('Amount','ntpRp').'</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <h3 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h3>
+                                            <input type="hidden" class="form-control" id="planID" value="'.$planId.'">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            '.
+                            $userInfo
+                            .
+                            $authInfo
+                            .'
+                            <hr class="mb-4">
+                            '.
+                            $cardInfo
+                            .'
+                            <hr class="mb-4">
+                            <button id="addSubscriptionButton" class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                        </form>
+                        </div>
+                    </div>
+                    <div id="loading" class="d-flex align-items-center fade">
+                        <strong>'.__('Loading...','ntpRp').'</strong>
+                        <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                        <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
+                            <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    '.__('Supported by NETOPIA Payments','ntpRp').'
+                </div>
+            </div>
+        </div>
+    </div>';
+}
+
+function getAuthFromHtml($isLoggedIn) {
+    if($isLoggedIn) {
+        return null;
+    } else {
+        return '
+        <hr class="mb-4">
+        <h4 class="mb-3">'.__('Auth information').'</h4>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="username">'.__('Username','ntpRp').'</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">@</span>
+                    </div>
+                    <input type="text" class="form-control" id="username" placeholder="Username" value="'.$current_user->user_login.'" required>
+                    <div class="invalid-feedback" style="width: 100%;">
+                    '.__('Your username is required.','ntpRp').'
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="password">'.__('Password','ntpRp').'</label>
+                <input type="password" class="form-control" id="password" required>
+                <div class="invalid-feedback">
+                    '.__('Please enter a valid password.','ntpRp').'
+                </div>
+            </div>
+        </div>
+        ';
+        }
+}
+function getMemberInfoHtml($isLoggedIn) {
+    if($isLoggedIn) {
+        return null;
+    } else {
+    return '
+    <hr class="mb-4">
+    <h4 class="mb-3">'.__('Personal information').'</h4>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="firstName">'.__('First name','ntpRp').'</label>
+            <input type="text" class="form-control" id="firstName" placeholder="" value="'.$current_user->first_name.'" required>
+            <div class="valid-feedback">
+            '.__('Looks good!').'
+            </div>
+            <div class="invalid-feedback">
+                '.__('Valid first name is required.','ntpRp').'
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="lastName">'.__('Last name','ntpRp').'</label>
+            <input type="text" class="form-control" id="lastName" placeholder="" value="'.$current_user->last_name.'" required>
+            <div class="valid-feedback">
+            '.__('Looks good!').'
+            </div>
+            <div class="invalid-feedback">
+                '.__('Valid last name is required.','ntpRp').'
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-9">
+            <label for="address">'.__('Address','ntpRp').'</label>
+            <input type="text" class="form-control" id="address" placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" required>
+            <div class="invalid-feedback">
+                '.__('Please enter your shipping address.','ntpRp').'
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="email">'.__('Email','ntpRp').'</label>
+            <input type="email" class="form-control" id="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required>
+            <div class="invalid-feedback">
+                '.__('Please enter a valid email address for shipping updates.','ntpRp').'
+            </div>
+        </div>
+    </div>    
+    
+    <div class="row">
+        <div class="col-md-5 mb-3">
+            <label for="tel">'.__('Tel','ntpRp').'</label>
+            <input type="text" class="form-control" id="tel" placeholder="" required>
+            <div class="invalid-feedback">
+                '.__('Phone required.','ntpRp').'
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label for="country">'.__('Country','ntpRp').'</label>
+            <select class="custom-select d-block w-100" id="country" required>
+            <option value="">Choose...</option>
+            <option value="642">Romania</option>
+            </select>
+            <div class="invalid-feedback">
+                '.__('Please select a valid country.','ntpRp').'
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="state">'.__('State','ntpRp').'</label>
+            <select class="custom-select d-block w-100" id="state" required>'
+            .getJudete().
+            '</select>
+            <div class="invalid-feedback">
+                '.__('Please provide a valid state.','ntpRp').'
+            </div>
+        </div>                        
+    </div>';
+    }
+}
+
+function getCardInfoHtml() {
+    return '<h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="cc-name">Name on card</label>
+            <input type="text" class="form-control" id="cc-name" placeholder="" required>
+            <small class="text-muted">Full name as displayed on card</small>
+            <div class="invalid-feedback">
+                Name on card is required
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="cc-number">Credit card number</label>
+            <input type="text" class="form-control" id="cc-number" placeholder="" required>
+            <div class="invalid-feedback">
+                Credit card number is required
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label for="cc-expiration-month">'.__('Expiration Month','ntpRp').'</label>
+            <input type="text" class="form-control" id="cc-expiration-month" placeholder="" required>
+            <div class="invalid-feedback">
+                Expiration date required
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label for="cc-expiration-year">'.__('Expiration Year','ntpRp').'</label>
+            <input type="text" class="form-control" id="cc-expiration-year" placeholder="" required>
+            <div class="invalid-feedback">
+                Expiration date required
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label for="cc-expiration">CVV</label>
+            <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+            <div class="invalid-feedback">
+                Security code required
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            &nbsp;
+        </div>
+    </div>';
+}
 function getJudete($selectedStr = "") {
     $judete = array(
         'Alba' => 'Alba',

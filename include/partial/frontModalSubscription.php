@@ -1,4 +1,5 @@
 <?php
+die();
 $userInfo = include_once('frontMemberInfo.php');
 $authInfo = include_once('frontAuthInfo.php');
 $cardInfo = include_once('frontCardInfo.php');

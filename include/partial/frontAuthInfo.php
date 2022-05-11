@@ -1,4 +1,5 @@
 <?php
+die();
 if($isLoggedIn) {
     return null;
 } else {
