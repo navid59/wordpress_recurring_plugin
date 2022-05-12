@@ -902,24 +902,25 @@ function getUnsubscribeModalHtml ($planId, $unsubscriptionTitle, $planData, $sub
                         <div class="modal-body">            
                             <div class="row">
                                 <div class="col-md-12 order-md-1">
-                                    <form id="unsubscription-form" class="needs-validation">
+                                    <form id="unsubscription-form'.$subscription[0]->Subscription_Id.'" class="unsubscription-form needs-validation">
                                         '.__('Are you sure to unsubscribe from ','ntpRp').'
                                         '.$planData['Title'].' !?
                                         <br>
                                         '.__('To unsubscribe click on unsubscribe button.','ntpRp').' '.__('Otherwise close the window','ntpRp').'
                                         <hr>
-                                        <input type="hidden" class="form-control" id="Id" value="'.$subscription[0]->id.'" readonly>
-                                        <input type="hidden" class="form-control" id="Subscription_Id" value="'.$subscription[0]->Subscription_Id.'" readonly>
-                                        <button id="unsubscriptionButton" class="btn btn-secondary" type="button" onclick="unsubscription(); return false;">Unsubscribe</button>
+                                        <input type="hidden" class="form-control" id="planId" name="planId" value="'.$planId.'" readonly>
+                                        <input type="hidden" class="form-control" id="Id" name="Id" value="'.$subscription[0]->id.'" readonly>
+                                        <input type="hidden" class="form-control" id="Subscription_Id" name="Subscription_Id" value="'.$subscription[0]->Subscription_Id.'" readonly>
+                                        <button id="unsubscriptionButton'.$planId.'" class="btn btn-secondary" type="submit" >Unsubscribe</button>
                                     </form>
                                 </div>
                             </div>
-                            <div id="loading" class="d-flex align-items-center fade">
+                            <div id="loading'.$subscription[0]->Subscription_Id.'" class="d-flex align-items-center fade">
                                 <strong>'.__('Loading...','ntpRp').'</strong>
                                 <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
                             </div>
-                            <div class="alert alert-dismissible fade" id="msgBlock" role="alert">
-                                <strong id="alertTitle">!</strong> <span id="msgContent"></span>.
+                            <div class="alert alert-dismissible fade" id="msgBlock'.$subscription[0]->Subscription_Id.'" role="alert">
+                                <strong id="alertTitle'.$subscription[0]->Subscription_Id.'">!</strong> <span id="msgContent'.$subscription[0]->Subscription_Id.'"></span>.
                             </div>                                
                         </div>
                         <div class="modal-footer">

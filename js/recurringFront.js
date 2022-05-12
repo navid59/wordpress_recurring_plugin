@@ -130,15 +130,21 @@ jQuery(document).ready(function () {
 
     // jQuery('#subscription-form').on('submit', addSubscription);
     jQuery('.add-subscription-form').on('submit', addSubscription);
+    jQuery('.unsubscription-form').on('submit', unsubscription);
 });
 
 
-function unsubscription() {
-    var SubscriptionId = jQuery("#Subscription_Id").val();
-    var Id = jQuery("#Id").val();
+function unsubscription(e) {
+    e.preventDefault(); // to stop Submit Event
+    var form = jQuery(this);
+    var formId = form.attr('id');
 
-    jQuery('#loading').addClass('show');
-    jQuery('#unsubscriptionButton').hide();
+    var SubscriptionId = jQuery('#'+formId).find('input[name=Subscription_Id]').val();  
+    var Id = jQuery('#'+formId).find('input[name=Id]').val();
+    var planId = jQuery('#'+formId).find('input[name=planId]').val();
+
+    jQuery('#loading'+SubscriptionId).addClass('show');
+    jQuery('#unsubscriptionButton'+planId).hide();
     
     data = {
         action : 'unsubscription',
@@ -154,33 +160,33 @@ function unsubscription() {
         data: data,
         success: function( response ){
             if(response.status) {
-                jQuery('#msgBlock').addClass('alert-success');
-                jQuery('#alertTitle').html('Congratulation!');
-                jQuery('#msgContent').html(response.msg);
-                jQuery('#msgBlock').addClass('show');
-                jQuery('#loading').removeClass('show');
-                jQuery('#unsubscription-form').hide();               
+                jQuery('#msgBlock'+SubscriptionId).addClass('alert-success');
+                jQuery('#alertTitle'+SubscriptionId).html('Congratulation!');
+                jQuery('#msgContent'+SubscriptionId).html(response.msg);
+                jQuery('#msgBlock'+SubscriptionId).addClass('show');
+                jQuery('#loading'+SubscriptionId).removeClass('show');
+                jQuery('#'+formId).hide();               
                 
                 // Refresh page after close Modal
                 jQuery('.unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
                     window.location.reload();
                 });                
             } else {
-                jQuery('#msgBlock').addClass('alert-warning');
-                jQuery('#alertTitle').html('Error!');
-                jQuery('#msgContent').html(response.msg);
-                jQuery('#msgBlock').addClass('show');
-                jQuery('#unsubscriptionButton').show();
-                jQuery('#loading').removeClass('show');
+                jQuery('#msgBlock'+SubscriptionId).addClass('alert-warning');
+                jQuery('#alertTitle'+SubscriptionId).html('Error!');
+                jQuery('#msgContent'+SubscriptionId).html(response.msg);
+                jQuery('#msgBlock'+SubscriptionId).addClass('show');
+                jQuery('#unsubscriptionButton'+planId).show();
+                jQuery('#loading'+SubscriptionId).removeClass('show');
             }
         },
         error: function( error ){
-            jQuery('#msgBlock').addClass('alert-warning');
-            jQuery('#alertTitle').html('Error!');
-            jQuery('#msgContent').html(response.msg);
-            jQuery('#msgBlock').addClass('show');
-            jQuery('#unsubscriptionButton').show();
-            jQuery('#loading').removeClass('show');
+            jQuery('#msgBlock'+SubscriptionId).addClass('alert-warning');
+            jQuery('#alertTitle'+SubscriptionId).html('Error!');
+            jQuery('#msgContent'+SubscriptionId).html(response.msg);
+            jQuery('#msgBlock'+SubscriptionId).addClass('show');
+            jQuery('#unsubscriptionButton'+planId).show();
+            jQuery('#loading'+SubscriptionId).removeClass('show');
         }
     });
 }
