@@ -43,6 +43,7 @@ add_action('wp_enqueue_scripts', 'frontResource');
 
 function recurring_addSubscription() {
     global $wpdb;
+    $obj = new recurringFront();
 
     $current_user = wp_get_current_user();  
     if($current_user->ID == 0) {
@@ -58,7 +59,7 @@ function recurring_addSubscription() {
         );
     } else {
         $MemberDetails = $wpdb->get_results("SELECT *
-                                    FROM  ".$wpdb->prefix . "ntp_subscriptions as s 
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                     WHERE s.UserID = '".$current_user->user_login."' 
                                     ORDER BY s.id DESC 
                                     LIMIT 1", "ARRAY_A");
@@ -86,7 +87,7 @@ function recurring_addSubscription() {
     $arr3DS = (array)$obj3DS;
     
 
-    $obj = new recurringFront();
+    // $obj = new recurringFront();
     $subscriptionData = array(
         "Member" => array (
             "UserID" => $Member['UserID'],
@@ -144,7 +145,7 @@ function recurring_addSubscription() {
                 'UpdatedAt'       => date("Y-m-d")
             );
         // Add subscription to DB 
-        $wpdb->insert( $wpdb->prefix . "ntp_subscriptions", $arrSubscriptionData );
+        $wpdb->insert( $wpdb->prefix . $obj->getDbSourceName('subscription'), $arrSubscriptionData );
 
         // Sned mail
         $obj->informMember(__('New subscription','ntpRp'), __('Congratulation you successfully subscribed','ntpRp'));
@@ -208,8 +209,8 @@ function recurring_getMyNextPayment() {
 
 function recurring_unsubscription() {
     global $wpdb;
-  
     $obj = new recurringFront();
+
     $subscriptionData = array(
             "Signature" => $obj->getSignature(),
             "SubscriptionId" => $_POST['SubscriptionId']+0
@@ -220,7 +221,7 @@ function recurring_unsubscription() {
     // Update subscription to DB 
     if($jsonResultData['code'] === "00") {
         $wpdb->update( 
-            $wpdb->prefix . "ntp_subscriptions", 
+            $wpdb->prefix . $obj->subscription('subscription'), 
             array( 
                 'Status'          => 2,
                 'UpdatedAt'       => date("Y-m-d")
@@ -268,6 +269,7 @@ function recurring_logoutAccount() {
 
 function recurring_getMyAccountDetails() {
     global $wpdb;
+    $obj = new recurringFront();
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
@@ -276,7 +278,7 @@ function recurring_getMyAccountDetails() {
     $userName = $current_user->user_login;
     
     $MyDetails = $wpdb->get_results("SELECT *
-                                    FROM  ".$wpdb->prefix . "ntp_subscriptions as s 
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                     WHERE s.UserID = '".$current_user->user_login."'", "ARRAY_A");
 
     $mySimulatedResult = array(
@@ -401,6 +403,7 @@ function recurring_getMyAccountDetails() {
 function recurring_updateSubscriberAccountDetails() {
     global $wpdb;
     $msg = '';
+    $obj = new recurringFront();
 
     $subscriptionAccountDetails = array (
         "SubscriptionId" => $_POST['SubscriptionId'],
@@ -501,7 +504,7 @@ function recurring_updateSubscriberAccountDetails() {
     */
     
     $updateResult = $wpdb->update( 
-                        $wpdb->prefix . "ntp_subscriptions", 
+                        $wpdb->prefix . $obj->getDbSourceName('subscription'), 
                         array( 
                             'First_Name'      => $subscriptionAccountDetails['Name'],
                             'Last_Name'       => $subscriptionAccountDetails['LastName'],
@@ -542,6 +545,7 @@ function recurring_updateSubscriberAccountDetails() {
 
 function recurring_account_getMyHistory() {
     global $wpdb;
+    $obj = new recurringFront();
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
@@ -556,10 +560,10 @@ function recurring_account_getMyHistory() {
                                                     h.CreatedAt,
                                                     p.Title,
                                                     p.Amount
-                                                FROM ".$wpdb->prefix . "ntp_subscriptions as s
-                                                INNER JOIN ".$wpdb->prefix . "ntp_history as h
+                                                FROM ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s
+                                                INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('history')." as h
                                                 ON h.Subscription_Id = s.Subscription_Id 
-                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p
+                                                INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p
                                                 ON s.PlanId = p.PlanId
                                                 WHERE s.UserId = '$current_user->user_login'
                                                 ORDER BY `CreatedAt` DESC", "ARRAY_A");
@@ -609,6 +613,7 @@ function recurring_account_getMyHistory() {
 
 function recurring_account_getMySubscriptions() {
     global $wpdb;
+    $obj = new recurringFront();
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
@@ -630,8 +635,8 @@ function recurring_account_getMySubscriptions() {
                                           s.Last_Name,
                                           s.Status,
                                           s.Subscription_Id
-                                    FROM  ".$wpdb->prefix . "ntp_plans as p 
-                                    LEFT JOIN ".$wpdb->prefix . "ntp_subscriptions as s 
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
+                                    LEFT JOIN ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                     ON p.PlanId = s.PlanId 
                                     WHERE s.UserID = '".$current_user->user_login."' AND s.Status <> 2", "ARRAY_A");
 
@@ -822,6 +827,7 @@ echo $strHTML;
 
 function recurringModal($planId , $button, $title) {
     global $wpdb;
+    $obj = new recurringFront();
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
@@ -843,7 +849,7 @@ function recurringModal($planId , $button, $title) {
         if($isLoggedIn) {
             // 1 - Check if alerady has this Plan           
             /** Check if user already exist */
-            $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.'ntp_subscriptions'."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
+            $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
             if(count($subscription)) {
                 /** Display Unsubscriptiuon */
                 $buttonHtml = '

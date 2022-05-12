@@ -55,7 +55,7 @@ function getHeaderRequest() {
             $data = file_get_contents('php://input');
             $arrDate = json_decode($data, true);
             $wpdb->insert( 
-                $wpdb->prefix . "ntp_history", 
+                $wpdb->prefix . $obj->getDbSourceName('history'), 
                 array( 
                     'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
                     'TransactionID'  => $arrDate['NotifyOrder']['orderID'],

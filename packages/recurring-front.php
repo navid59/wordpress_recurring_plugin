@@ -2,9 +2,10 @@
     class recurringFront extends recurring {
         function getPlan($planId){
             global $wpdb;
+            $obj = new recurringFront();
 
             $plans = $wpdb->get_results("SELECT *
-                                    FROM  ".$wpdb->prefix . "ntp_plans
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('plan')."
                                     WHERE PlanId = '".$planId."' 
                                     AND Status = 1 
                                     LIMIT 1", "ARRAY_A");
