@@ -525,7 +525,7 @@ class NetopiapaymentsRecurringPayment extends recurring
         ?>
         <div class="wrap">
             <div class="row">
-                <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="150" style="padding: 20px 25px 0px 0px;">
+                <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO; ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->page_title ?></span>
             </div>
             <h2 class="nav-tab-wrapper">
@@ -578,6 +578,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             <div class="row">
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['subscriptionAjax']['pageTitle'] ?></span>
+                <?php echo $this->getWarningAdmin();?>
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
@@ -600,6 +601,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             <div class="row">
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['plan']['pageTitle'] ?></span>
+                <?php echo $this->getWarningAdmin();?>
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="?page=recurring_plan&tab=plan_list" class="nav-tab <?php echo $active_tab == 'plan_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Plan list','ntpRp')?></a>
@@ -625,6 +627,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             <div class="row">
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['report']['pageTitle'] ?></span>
+                <?php echo $this->getWarningAdmin();?>
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="#" class="nav-tab nav-tab-active"><?php echo __('Payment history','ntpRp')?></a>
@@ -633,5 +636,23 @@ class NetopiapaymentsRecurringPayment extends recurring
             <?php include_once('include/reports.php');?>
         <div> 
         <?php
+    }
+
+    function getWarningAdmin() {
+        $obj = new recurringAdmin();
+        if($obj->isLive()) {
+            return '';
+        } else {
+            return '
+                <div class="px-5">
+                    <div class="alert alert alert-info alert-dismissible fade show" role="alert">
+                        <strong>'.__('Warning!!!','ntpRp').'</strong> '.__('You are in test mode', 'ntpRp').'
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                ';
+        }
     }
 }

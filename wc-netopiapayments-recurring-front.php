@@ -923,6 +923,7 @@ function getUnsubscribeModalHtml ($planId, $unsubscriptionTitle, $planData, $sub
                                 <strong id="alertTitle'.$subscription[0]->Subscription_Id.'">!</strong> <span id="msgContent'.$subscription[0]->Subscription_Id.'"></span>.
                             </div>                                
                         </div>
+                        '.getWarningFront().'
                         <div class="modal-footer">
                             '.__('Supported by NETOPIA Payments').'
                         </div>
@@ -990,6 +991,7 @@ function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $ca
                             <strong id="alertTitle'.$planId.'">!</strong> <span id="msgContent'.$planId.'"></span>.
                         </div>
                     </div>
+                    '.getWarningFront().'
                 <div class="modal-footer">
                     '.__('Supported by NETOPIA Payments','ntpRp').'
                 </div>
@@ -1153,6 +1155,21 @@ function getCardInfoHtml() {
         </div>
     </div>';
 }
+
+function getWarningFront() {
+    $obj = new recurringFront();
+    if($obj->isLive()) {
+        return '';
+    } else {
+        return '<div class="alert alert-warning alert-dismissible fade show float-left" role="alert">
+                <strong>'.__('Warning!','ntpRp').'</strong> '.__('You are in test mode', 'ntpRp').'
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>';
+    }
+}
+
 function getJudete($selectedStr = "") {
     $judete = array(
         'Alba' => 'Alba',
