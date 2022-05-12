@@ -35,7 +35,7 @@ function recurring_install () {
     PRIMARY KEY  (id)
     ) $charset_collate;";
 
-$sql_subscription = "CREATE TABLE $subscription_sandbox_table_name (
+$sql_subscription_sandbox = "CREATE TABLE $subscription_sandbox_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     Subscription_Id varchar(50) NOT NULL,
     First_Name varchar(50) NOT NULL,
@@ -86,7 +86,7 @@ $sql_subscription = "CREATE TABLE $subscription_sandbox_table_name (
     PRIMARY KEY  (id)
     ) $charset_collate;";
 
-    $sql_history = "CREATE TABLE $history_sandbox_table_name (
+    $sql_history_sandbox = "CREATE TABLE $history_sandbox_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     Subscription_Id varchar(50) NOT NULL,
     TransactionID varchar(255) NOT NULL,
@@ -100,8 +100,10 @@ $sql_subscription = "CREATE TABLE $subscription_sandbox_table_name (
 
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 dbDelta( $sql_subscription );
+dbDelta( $sql_subscription_sandbox );
 dbDelta( $sql_plan );
 dbDelta( $sql_history );
+dbDelta( $sql_history_sandbox );
 
 add_option( 'recurring_db_version', "1.0" );
 }
