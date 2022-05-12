@@ -16,76 +16,77 @@ class recurringAdmin extends recurring {
      * Get subscription list
      * Use it at Datatable in admin
      */
-    function getSubscriptionList(){
-        global $wpdb;
-        // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
-        $subscriptions = $wpdb->get_results("SELECT s.id,
-                                                    s.Subscription_Id,
-                                                    s.First_Name,
-                                                    s.Last_Name,
-                                                    s.Email,
-                                                    s.Tel,
-                                                    s.UserID,
-                                                    p.Title,
-                                                    p.Amount,
-                                                    s.StartDate,
-                                                    s.status
-                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                                WHERE s.PlanId = p.PlanId 
-                                                GROUP BY s.UserID 
-                                                ORDER BY s.CreatedAt DESC", "ARRAY_A");
-        if(count($subscriptions)) {
-            $errorCode = "00";
-            $errorMsg = "";
-        } else {
-            $errorCode = "11";
-            $errorMsg = __('There is no any subscription, yet','ntpRp');
-        }
+    // function getSubscriptionList(){
+    //     die('Important!! Not Need, Will Delete');
+    //     global $wpdb;
+    //     // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+    //     $subscriptions = $wpdb->get_results("SELECT s.id,
+    //                                                 s.Subscription_Id,
+    //                                                 s.First_Name,
+    //                                                 s.Last_Name,
+    //                                                 s.Email,
+    //                                                 s.Tel,
+    //                                                 s.UserID,
+    //                                                 p.Title,
+    //                                                 p.Amount,
+    //                                                 s.StartDate,
+    //                                                 s.status
+    //                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+    //                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
+    //                                             WHERE s.PlanId = p.PlanId 
+    //                                             GROUP BY s.UserID 
+    //                                             ORDER BY s.CreatedAt DESC", "ARRAY_A");
+    //     if(count($subscriptions)) {
+    //         $errorCode = "00";
+    //         $errorMsg = "";
+    //     } else {
+    //         $errorCode = "11";
+    //         $errorMsg = __('There is no any subscription, yet','ntpRp');
+    //     }
     
-        $resultData = array(
-            "code" => $errorCode,
-            "message" => $errorMsg,
-            "members" => $subscriptions
-            );
-        return $resultData;
-    }
+    //     $resultData = array(
+    //         "code" => $errorCode,
+    //         "message" => $errorMsg,
+    //         "members" => $subscriptions
+    //         );
+    //     return $resultData;
+    // }
 
-    function getSubscriptionInfinite(){
-        die('Important!! Not Need, Will Delete');
-        global $wpdb;
+    // function getSubscriptionInfinite(){
+    //     die('Important!! Not Need, Will Delete');
+    //     global $wpdb;
         
-        $subscriptions = $wpdb->get_results("SELECT s.id,
-                                                    s.Subscription_Id,
-                                                    s.First_Name,
-                                                    s.Last_Name,
-                                                    s.Email,
-                                                    s.Tel,
-                                                    s.UserID,
-                                                    p.Title,
-                                                    p.Amount,
-                                                    s.StartDate,
-                                                    s.status
-                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-                                                WHERE s.PlanId = p.PlanId 
-                                                GROUP BY s.UserID 
-                                                ORDER BY s.CreatedAt DESC", "ARRAY_A");
-        if(count($subscriptions)) {
-            $errorCode = "00";
-            $errorMsg = "";
-        } else {
-            $errorCode = "11";
-            $errorMsg = __('There is no any subscription, yet','ntpRp');
-        }
+    //     $subscriptions = $wpdb->get_results("SELECT s.id,
+    //                                                 s.Subscription_Id,
+    //                                                 s.First_Name,
+    //                                                 s.Last_Name,
+    //                                                 s.Email,
+    //                                                 s.Tel,
+    //                                                 s.UserID,
+    //                                                 p.Title,
+    //                                                 p.Amount,
+    //                                                 s.StartDate,
+    //                                                 s.status
+    //                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
+    //                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
+    //                                             WHERE s.PlanId = p.PlanId 
+    //                                             GROUP BY s.UserID 
+    //                                             ORDER BY s.CreatedAt DESC", "ARRAY_A");
+    //     if(count($subscriptions)) {
+    //         $errorCode = "00";
+    //         $errorMsg = "";
+    //     } else {
+    //         $errorCode = "11";
+    //         $errorMsg = __('There is no any subscription, yet','ntpRp');
+    //     }
     
-        $resultData = array(
-            "code" => $errorCode,
-            "message" => $errorMsg,
-            "members" => $subscriptions
-            );
-        return $resultData;
-    }
+    //     $resultData = array(
+    //         "code" => $errorCode,
+    //         "message" => $errorMsg,
+    //         "members" => $subscriptions
+    //         );
+    //     return $resultData;
+    // }
 
     function getPlanListLive(){
         $url = self::getApiUrl('plan/list');
@@ -102,7 +103,9 @@ class recurringAdmin extends recurring {
 
     function getPlanList(){
         global $wpdb;
-        $plans = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_plans WHERE `Status` = 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
+        $obj = new recurringAdmin();
+
+        $plans = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . $obj->getDbSourceName('plan')." WHERE `Status` = 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
         if(count($plans)) {
             $errorCode = "00";
             $errorMsg = "";
@@ -161,6 +164,8 @@ class recurringAdmin extends recurring {
 
     function getReportList(){
         global $wpdb;
+        $obj = new recurringAdmin();
+
         $plans = $wpdb->get_results("SELECT 
                                     h.id,
                                     s.UserId,
@@ -171,10 +176,10 @@ class recurringAdmin extends recurring {
                                     h.CreatedAt,
                                     p.Title,
                                     p.Amount
-                                    FROM  ".$wpdb->prefix . "ntp_history as h 
-                                    INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('history')." as h 
+                                    INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s
                                     ON h.Subscription_Id = s.Subscription_Id 
-                                    INNER JOIN ".$wpdb->prefix . "ntp_plans as p
+                                    INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p
                                     ON s.PlanId = p.PlanId
                                     ORDER BY `CreatedAt` DESC", "ARRAY_A");
         if(count($plans)) {
@@ -251,10 +256,12 @@ class recurringAdmin extends recurring {
 
     function getLastPayment($subscriptionId) {
         global $wpdb;
+        $obj = new recurringAdmin();
+
         /**Get last payment of user for specific plan */
         $lastPayment = $wpdb->get_results("SELECT 
                                             * 
-                                        FROM `".$wpdb->prefix."ntp_history` 
+                                        FROM `".$wpdb->prefix.$obj->getDbSourceName('history')."` 
                                         WHERE 
                                             Subscription_Id = $subscriptionId 
                                             AND 
@@ -273,7 +280,7 @@ class recurringAdmin extends recurring {
 function recurring_addPlan() {
     global $wpdb;
 
-    $a = new recurringAdmin();
+    $obj = new recurringAdmin();
     $planData = array(
         "Title" => $_POST['planTitile'],
         "RecurrenceType" =>  $_POST['RecurrenceType'],
@@ -288,7 +295,7 @@ function recurring_addPlan() {
         "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false
     );
 
-    $jsonResultData = $a->setPlan($planData);
+    $jsonResultData = $obj->setPlan($planData);
     
     // Add subscription to DB 
     if($jsonResultData['code'] === "00") { 
@@ -297,7 +304,7 @@ function recurring_addPlan() {
         $msg = $jsonResultData['message'];
 
         $dbInsertResult  = $wpdb->insert(
-            $wpdb->prefix . "ntp_plans", 
+            $wpdb->prefix . $obj->getDbSourceName('plan') , 
             array( 
                 'PlanId'         => $jsonResultData['data']['planId'],
                 'Title'           => $jsonResultData['data']['Title'],
@@ -343,18 +350,18 @@ add_action('wp_ajax_addPlan', 'recurring_addPlan');
 
 function recurring_delPlan() {
     global $wpdb;
-    $a = new recurringAdmin();
+    $obj = new recurringAdmin();
     $planData = array(
             "PlanId" => $_POST['planId']+0,
             "Unsubscribe" => $_POST['unsubscribe'] === 'true' ? true : false
     );
 
-    $jsonResultData = $a->delPlan($planData);
+    $jsonResultData = $obj->delPlan($planData);
     
     /** To delete a plan */
     if($jsonResultData['code'] === "00") {
         $wpdb->update( 
-            $wpdb->prefix . "ntp_plans", 
+            $wpdb->prefix . $obj->getDbSourceName('plan') , 
             array( 
                 "Status"             => 2,
                 'UpdatedAt'         => date("Y-m-d")
@@ -377,7 +384,7 @@ add_action('wp_ajax_delPlan', 'recurring_delPlan');
 function recurring_editPlan() {
     global $wpdb;
 
-    $a = new recurringAdmin();
+    $obj = new recurringAdmin();
     $planData = array(
             "PlanId" => $_POST['planId']+0,
             "Title" => $_POST['planTitile'],
@@ -394,7 +401,7 @@ function recurring_editPlan() {
             "TermAndConditionAccepted" => $_POST['TermAndConditionAccepted'] === 'true' ? true : false
     );
 
-    $jsonResultData = $a->editPlan($planData);
+    $jsonResultData = $obj->editPlan($planData);
 
     /** To Update the plan locally as well */
     if($jsonResultData['code'] === "00") {
@@ -410,7 +417,7 @@ function recurring_editPlan() {
     if($status) {
         // Update Local 
         $updatePlan = $wpdb->update( 
-            $wpdb->prefix . "ntp_plans", 
+            $wpdb->prefix . $obj->getDbSourceName('plan'), 
             array( 
                 "Title"             => $_POST['planTitile'],
                 "Description"       => $_POST['planDescription'],
@@ -522,14 +529,14 @@ function getInfinitSubscribtion() {
                                                             'currency', p.Currency
                                                         )
                                                     ) as PlanList
-                                                FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                                INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
+                                                FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
+                                                INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                                 WHERE s.PlanId = p.PlanId 
                                                 GROUP BY UserID
                                                 ORDER BY s.id DESC 
                                                 LIMIT ".$start.",".$limit, "ARRAY_A");
 
-        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix."ntp_subscriptions"." GROUP BY UserID ) as ntp_s", "ARRAY_A");
+        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix.$obj->getDbSourceName('subscription')." GROUP BY UserID ) as ntp_s", "ARRAY_A");
 
 
         for ($i = 0 ; $i < count($subscriptions) ; $i++) {
@@ -597,6 +604,8 @@ function recurring_getSubscriptionDetail(){
     global $wpdb;
     $subscriptionInternUserId = $_POST['userId'];
     $planList = array();
+    $obj = new recurringAdmin();
+
     $subscription = $wpdb->get_results("SELECT s.id,
                                                 s.Subscription_Id,
                                                 s.First_Name,
@@ -610,8 +619,8 @@ function recurring_getSubscriptionDetail(){
                                                 p.Amount,
                                                 s.StartDate,
                                                 s.status
-                                            FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-                                            INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
+                                            FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
+                                            INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                             ON s.PlanId = p.PlanId 
                                             WHERE s.userId = '$subscriptionInternUserId'
                                             LIMIT 1", "ARRAY_A");
@@ -627,13 +636,13 @@ function recurring_getSubscriptionDetail(){
                                             s.Subscription_Id,
                                             s.StartDate,
                                             s.Status
-                                        FROM `".$wpdb->prefix . "ntp_plans` as p
-                                        INNER JOIN ".$wpdb->prefix . "ntp_subscriptions as s
+                                        FROM `".$wpdb->prefix . $obj->getDbSourceName('plan')."` as p
+                                        INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s
                                         ON s.PlanId = p.PlanId
                                         WHERE s.UserID = '$subscriptionInternUserId'
                                         ORDER BY s.StartDate DESC", "ARRAY_A");
 
-        $obj = new recurringAdmin();
+        // $obj = new recurringAdmin();
         for($i = 0; $i < count($planList); $i++) {
             $planList[$i]['Status'] = $obj->getStatusStr('plan', $planList[$i]['Status']);
             $planList[$i]['LastPayment'] = $obj->getLastPayment($planList[$i]['Subscription_Id']);
@@ -660,7 +669,8 @@ add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
 function recurring_getSubscriptionHistory() {
     global $wpdb;
     $userId = $_POST['userId'];
-    // die($userId);
+    $obj = new recurringAdmin();
+
     $userPaymentHistory = $wpdb->get_results("SELECT 
                                                 s.UserId,
                                                 h.Subscription_Id,
@@ -670,15 +680,15 @@ function recurring_getSubscriptionHistory() {
                                                 h.CreatedAt,
                                                 p.Title,
                                                 p.Amount
-                                            FROM ".$wpdb->prefix . "ntp_subscriptions as s
-                                            INNER JOIN ".$wpdb->prefix . "ntp_history as h
+                                            FROM ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s
+                                            INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('history')." as h
                                             ON h.Subscription_Id = s.Subscription_Id 
-                                            INNER JOIN ".$wpdb->prefix . "ntp_plans as p
+                                            INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p
                                             ON s.PlanId = p.PlanId
                                             WHERE s.UserId = '$userId'
                                             ORDER BY `CreatedAt` DESC", "ARRAY_A");
 
-    $obj = new recurringAdmin();
+    // $obj = new recurringAdmin();
     for($i = 0; $i < count($userPaymentHistory); $i++) {
         $userPaymentHistory[$i]['Status'] = $obj->getStatusStr('report', $userPaymentHistory[$i]['Status']);
     }

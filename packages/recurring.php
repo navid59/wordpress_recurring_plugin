@@ -187,5 +187,45 @@
             $mailResult = wp_mail( $to, $subject, $message );
             
         } 
+
+        public function getDbSourceName($section) {
+            $mod = $this->isLive() ? "live" : "sandbox";
+            $DbSrc = '';
+            switch ($mod) {
+                case "live":
+                    switch ($section) {
+                        case "plan":
+                            $DbSrc = "ntp_plans";
+                        break;
+                        case "subscription":
+                            $DbSrc = "ntp_subscriptions";
+                        break;
+                        case "history":
+                            $DbSrc = "ntp_history";
+                        break;
+                        default:
+                            throw new \Exception('NTP recurring -> '.$section.' Connection problem!');
+                    }
+                break;
+                case "sandbox":
+                    switch ($section) {
+                        case "plan":
+                            $DbSrc = "ntp_plans";
+                        break;
+                        case "subscription":
+                            $DbSrc = "ntp_subscriptions_sandbox";
+                        break;
+                        case "history":
+                            $DbSrc = "ntp_history_sandbox";
+                        break;
+                        default:
+                            throw new \Exception('NTP recurring -> '.$section.' Connection problem!');
+                    }
+                break;
+                default:
+                    throw new \Exception('NTP recurring Connection problem!');
+            }
+            return $DbSrc;
+        }
     }    
 ?>
