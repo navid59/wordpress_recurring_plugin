@@ -1020,7 +1020,7 @@ function getAuthFromHtml($isLoggedIn) {
                     <div class="input-group-prepend">
                         <span class="input-group-text">@</span>
                     </div>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="'.$current_user->user_login.'" required>
+                    <input type="text" class="form-control" id="username" name="username" pattern=".{5,}" placeholder="Username" value="'.$current_user->user_login.'" title="5 characters minimum" required>
                     <div class="invalid-feedback" style="width: 100%;">
                     '.__('Your username is required.','ntpRp').'
                     </div>
@@ -1028,7 +1028,7 @@ function getAuthFromHtml($isLoggedIn) {
             </div>
             <div class="col-md-6 mb-3">
                 <label for="password">'.__('Password','ntpRp').'</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password" pattern="(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])\S{6,}" title="6 characters minimum. Contain at least one mixed-case leter and a number." required>
                 <div class="invalid-feedback">
                     '.__('Please enter a valid password.','ntpRp').'
                 </div>
@@ -1047,7 +1047,7 @@ function getMemberInfoHtml($isLoggedIn) {
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="firstName">'.__('First name','ntpRp').'</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="" value="'.$current_user->first_name.'" required>
+            <input type="text" class="form-control" id="firstName" name="firstName" pattern=".{3,}"  title="'.__('please, fill out with full name (3 characters minimum)','ntpRp').' placeholder="" value="'.$current_user->first_name.'" required>
             <div class="valid-feedback">
             '.__('Looks good!').'
             </div>
@@ -1057,7 +1057,7 @@ function getMemberInfoHtml($isLoggedIn) {
         </div>
         <div class="col-md-6 mb-3">
             <label for="lastName">'.__('Last name','ntpRp').'</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="" value="'.$current_user->last_name.'" required>
+            <input type="text" class="form-control" id="lastName" name="lastName" pattern=".{4,}" title="'.__('please, fill out with full last name (4 characters minimum)','ntpRp').' placeholder="" value="'.$current_user->last_name.'" required>
             <div class="valid-feedback">
             '.__('Looks good!').'
             </div>
@@ -1070,7 +1070,7 @@ function getMemberInfoHtml($isLoggedIn) {
     <div class="row">
         <div class="col-md-8 mb-9">
             <label for="address">'.__('Address','ntpRp').'</label>
-            <input type="text" class="form-control" id="address" name="address" placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" required>
+            <input type="text" class="form-control" id="address" name="address" pattern=".{10,}" title="'.__('please, fill out with full address (10 characters minimum)','ntpRp').' placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" required>
             <div class="invalid-feedback">
                 '.__('Please enter your shipping address.','ntpRp').'
             </div>
@@ -1087,7 +1087,7 @@ function getMemberInfoHtml($isLoggedIn) {
     <div class="row">
         <div class="col-md-5 mb-3">
             <label for="tel">'.__('Tel','ntpRp').'</label>
-            <input type="text" class="form-control" id="tel" name="tel" placeholder="" required>
+            <input type="text" class="form-control" id="tel" name="tel" placeholder="" pattern="[0-9]{5,14}" title="'.__('please, fill out with correct phone number! (only digit)','ntpRp').'" required>
             <div class="invalid-feedback">
                 '.__('Phone required.','ntpRp').'
             </div>
@@ -1096,7 +1096,7 @@ function getMemberInfoHtml($isLoggedIn) {
             <label for="country">'.__('Country','ntpRp').'</label>
             <select class="custom-select d-block w-100" id="country" required>
             <option value="">Choose...</option>
-            <option value="642">Romania</option>
+            <option value="642" selected>Romania</option>
             </select>
             <div class="invalid-feedback">
                 '.__('Please select a valid country.','ntpRp').'
@@ -1122,7 +1122,7 @@ function getCardInfoHtml() {
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="cc-name">Name on card</label>
-            <input type="text" class="form-control" id="cc-name" name="cc-name" placeholder="" required>
+            <input type="text" class="form-control" id="cc-name" name="cc-name" pattern=".{3,}" title="'.__('please, fill out with full name!','ntpRp').' placeholder="" required>
             <small class="text-muted">Full name as displayed on card</small>
             <div class="invalid-feedback">
                 Name on card is required
@@ -1130,7 +1130,7 @@ function getCardInfoHtml() {
         </div>
         <div class="col-md-6 mb-3">
             <label for="cc-number">Credit card number</label>
-            <input type="text" class="form-control" id="cc-number" name="cc-number" pattern="[0-9]{16}" placeholder="" title="'.__('Card number must contain 16 digit','ntpRp').'" required>
+            <input type="text" class="form-control" id="cc-number" name="cc-number" pattern="[0-9]{16}" placeholder="" title="'.__('Card number must contain 16 digit (Only digit)','ntpRp').'" required>
             <div class="invalid-feedback">
                 Credit card number is required
             </div>
