@@ -221,7 +221,7 @@ function recurring_unsubscription() {
     // Update subscription to DB 
     if($jsonResultData['code'] === "00") {
         $wpdb->update( 
-            $wpdb->prefix . $obj->subscription('subscription'), 
+            $wpdb->prefix . $obj->getDbSourceName('subscription'), 
             array( 
                 'Status'          => 2,
                 'UpdatedAt'       => date("Y-m-d")
@@ -1116,6 +1116,8 @@ function getMemberInfoHtml($isLoggedIn) {
 }
 
 function getCardInfoHtml() {
+    $minYear = Date('Y');
+    $maxYear = date('Y', strtotime('+10 year'));
     return '<h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -1128,7 +1130,7 @@ function getCardInfoHtml() {
         </div>
         <div class="col-md-6 mb-3">
             <label for="cc-number">Credit card number</label>
-            <input type="text" class="form-control" id="cc-number" name="cc-number" placeholder="" required>
+            <input type="text" class="form-control" id="cc-number" name="cc-number" pattern="[0-9]{16}" placeholder="" title="'.__('Card number must contain 16 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Credit card number is required
             </div>
@@ -1137,21 +1139,21 @@ function getCardInfoHtml() {
     <div class="row">
         <div class="col-md-3 mb-3">
             <label for="cc-expiration-month">'.__('Expiration Month','ntpRp').'</label>
-            <input type="text" class="form-control" id="cc-expiration-month" name="cc-expiration-month" placeholder="" required>
+            <input type="number" min="1" max="12" class="form-control" id="cc-expiration-month" name="cc-expiration-month" placeholder=""  title="'.__('Month moust be a digit between 1 and 12','ntpRp').'" required>
             <div class="invalid-feedback">
                 Expiration date required
             </div>
         </div>
         <div class="col-md-3 mb-3">
             <label for="cc-expiration-year">'.__('Expiration Year','ntpRp').'</label>
-            <input type="text" class="form-control" id="cc-expiration-year" name="cc-expiration-year" placeholder="" required>
+            <input type="number" min="'.$minYear.'" max="'.$maxYear.'" class="form-control" id="cc-expiration-year" name="cc-expiration-year" pattern="[0-9]{4}" placeholder="" title="'.__('Expire year must contain 4 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Expiration date required
             </div>
         </div>
         <div class="col-md-3 mb-3">
             <label for="cc-expiration">CVV</label>
-            <input type="text" class="form-control" id="cc-cvv" name="cc-cvv" placeholder="" required>
+            <input type="text" minlength="3" maxlength="3"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{3}" placeholder="" title="'.__('CVV must contain 3 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Security code required
             </div>

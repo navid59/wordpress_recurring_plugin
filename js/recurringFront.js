@@ -272,65 +272,82 @@ function addSubscription(e) {
     jQuery('#loading'+PlanID).addClass('show');
     jQuery('#addSubscriptionButton'+PlanID).hide();
 
-    data = {
-        action : 'addNewSubscription',
-        PlanID : PlanID,
-        UserID : UserID,
-        Pass : Pass,
-        Name : Name,
-        LastName : LastName,
-        Email : Email,
-        Address : Address,
-        City : City,
-        Tel : Tel,
-        PlanId : PlanId,
-        StartDate : StartDate,
-        EndDate : EndDate,
-        Account : Account,
-        ExpMonth : ExpMonth,
-        ExpYear : ExpYear,
-        SecretCode : SecretCode,
-        ThreeDS : ThreeDS,
-    };
-
+    if(!luhn_validate(Account)) {
+        jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+        jQuery('#alertTitle'+PlanID).html('Error!');
+        jQuery('#msgContent'+PlanID).html('Your card is not a valid card, please use a valid one!');
+        jQuery('#msgBlock'+PlanID).addClass('show');
+        jQuery('#addSubscriptionButton'+PlanID).show();
+        jQuery('#loading'+PlanID).removeClass('show');
+    } else {
+        data = {
+            action : 'addNewSubscription',
+            PlanID : PlanID,
+            UserID : UserID,
+            Pass : Pass,
+            Name : Name,
+            LastName : LastName,
+            Email : Email,
+            Address : Address,
+            City : City,
+            Tel : Tel,
+            PlanId : PlanId,
+            StartDate : StartDate,
+            EndDate : EndDate,
+            Account : Account,
+            ExpMonth : ExpMonth,
+            ExpYear : ExpYear,
+            SecretCode : SecretCode,
+            ThreeDS : ThreeDS,
+        };
     
-    jQuery.ajax({
-        url: frontAjax.ajax_url,
-        type: 'POST',
-        dataType: 'json',
-        data: data,
-        success: function( response ){
-            if(response.status) {
-                jQuery('#msgBlock'+PlanID).addClass('alert-success');
-                jQuery('#alertTitle'+PlanID).html('Congratulation!');
-                jQuery('#msgContent'+PlanID).html(response.msg);
-                jQuery('#msgBlock'+PlanID).addClass('show');
-                jQuery('#loading'+PlanID).removeClass('show');
-
-                /** Make form Read only on success */
-                jQuery('#'+formId).find('input[name=planID]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=username]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=firstName]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=lastName]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=email]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=address]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=country]').attr("disabled", true); 
-                jQuery('#'+formId).find('input[name=state]').attr("disabled", true); 
-                jQuery('#'+formId).find('input[name=tel]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=PlanId]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=StartDate]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=EndDate]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=cc-name]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=cc-number]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=cc-expiration-month]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=cc-expiration-year]').prop('readonly', true);
-                jQuery('#'+formId).find('input[name=cc-cvv]').prop('readonly', true);
-
-                // Refresh page after close Modal
-                jQuery('.recurringModal').on('hidden.bs.modal', function() {
-                    window.location.reload();
-                });
-            } else {
+        
+        jQuery.ajax({
+            url: frontAjax.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function( response ){
+                if(response.status) {
+                    jQuery('#msgBlock'+PlanID).addClass('alert-success');
+                    jQuery('#alertTitle'+PlanID).html('Congratulation!');
+                    jQuery('#msgContent'+PlanID).html(response.msg);
+                    jQuery('#msgBlock'+PlanID).addClass('show');
+                    jQuery('#loading'+PlanID).removeClass('show');
+    
+                    /** Make form Read only on success */
+                    jQuery('#'+formId).find('input[name=planID]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=username]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=firstName]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=lastName]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=email]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=address]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=country]').attr("disabled", true); 
+                    jQuery('#'+formId).find('input[name=state]').attr("disabled", true); 
+                    jQuery('#'+formId).find('input[name=tel]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=PlanId]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=StartDate]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=EndDate]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=cc-name]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=cc-number]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=cc-expiration-month]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=cc-expiration-year]').prop('readonly', true);
+                    jQuery('#'+formId).find('input[name=cc-cvv]').prop('readonly', true);
+    
+                    // Refresh page after close Modal
+                    jQuery('.recurringModal').on('hidden.bs.modal', function() {
+                        window.location.reload();
+                    });
+                } else {
+                    jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+                    jQuery('#alertTitle'+PlanID).html('Error!');
+                    jQuery('#msgContent'+PlanID).html(response.msg);
+                    jQuery('#msgBlock'+PlanID).addClass('show');
+                    jQuery('#addSubscriptionButton'+PlanID).show();
+                    jQuery('#loading'+PlanID).removeClass('show');
+                }
+            },
+            error: function( error ){
                 jQuery('#msgBlock'+PlanID).addClass('alert-warning');
                 jQuery('#alertTitle'+PlanID).html('Error!');
                 jQuery('#msgContent'+PlanID).html(response.msg);
@@ -338,16 +355,8 @@ function addSubscription(e) {
                 jQuery('#addSubscriptionButton'+PlanID).show();
                 jQuery('#loading'+PlanID).removeClass('show');
             }
-        },
-        error: function( error ){
-            jQuery('#msgBlock'+PlanID).addClass('alert-warning');
-            jQuery('#alertTitle'+PlanID).html('Error!');
-            jQuery('#msgContent'+PlanID).html(response.msg);
-            jQuery('#msgBlock'+PlanID).addClass('show');
-            jQuery('#addSubscriptionButton'+PlanID).show();
-            jQuery('#loading'+PlanID).removeClass('show');
-        }
-    });   
+        });
+    }
 }
 
 function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
@@ -469,6 +478,26 @@ function updateMyAccountDetails() {
     });
 }
 
-function loginMyAccount() {
-    alert('Clicked on Login Button!!!');
+/* luhn_checksum
+ * Implement the Luhn algorithm to calculate the Luhn check digit.
+ * Return the check digit.
+ */
+function luhn_checksum(code) {
+    var len = code.length
+    var parity = len % 2
+    var sum = 0
+    for (var i = len-1; i >= 0; i--) {
+        var d = parseInt(code.charAt(i))
+        if (i % 2 == parity) { d *= 2 }
+        if (d > 9) { d -= 9 }
+        sum += d
+    }
+    return sum % 10
+}
+
+/* luhn_validate
+ * Return true if specified code (with check digit) is valid.
+ */
+function luhn_validate(fullcode) {
+    return luhn_checksum(fullcode) == 0
 }
