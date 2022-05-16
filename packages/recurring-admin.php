@@ -297,62 +297,71 @@ function recurring_addPlan() {
     global $wpdb;
 
     $obj = new recurringAdmin();
-    $planData = array(
-        "Title" => $_POST['planTitile'],
-        "RecurrenceType" =>  $_POST['RecurrenceType'],
-        "Frequency" => array (
-            "Type" => $_POST['FrequencyType'],
-            "Value" => $_POST['FrequencyValue']
-        ),
-        "Description" => $_POST['planDescription'],
-        "GracePeriod" => $_POST['GracePeriod'],
-        "Amount" => $_POST['Amount'] ,
-        "Currency" => $_POST['Currency'],
-        "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false
-    );
 
-    $jsonResultData = $obj->setPlan($planData);
-    
-    // Add subscription to DB 
-    if($jsonResultData['code'] === "00") { 
-        // Api response
-        $status = true;
-        $msg = $jsonResultData['message'];
-
-        $dbInsertResult  = $wpdb->insert(
-            $wpdb->prefix . $obj->getDbSourceName('plan') , 
-            array( 
-                'PlanId'         => $jsonResultData['data']['planId'],
-                'Title'           => $jsonResultData['data']['Title'],
-                'Amount'          => $_POST['Amount'],
-                'Currency'        => $_POST['Currency'],
-                'Description'     => $_POST['planDescription'],
-                'Recurrence_Type' => $_POST['RecurrenceType'],
-                'Frequency_Type'  => $_POST['FrequencyType'],
-                'Frequency_Value' => $_POST['FrequencyValue'],
-                'Grace_Period'    => $_POST['GracePeriod'],
-                'Initial_Payment'  => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
-                'Status'          => $jsonResultData['data']['Status'],
-                'CreatedAt'       => date("Y-m-d"),
-                'UpdatedAt'       => date("Y-m-d")
-            )
+    if($obj->isCredentialActived() == 'true'){
+        $planData = array(
+            "Title" => $_POST['planTitile'],
+            "RecurrenceType" =>  $_POST['RecurrenceType'],
+            "Frequency" => array (
+                "Type" => $_POST['FrequencyType'],
+                "Value" => $_POST['FrequencyValue']
+            ),
+            "Description" => $_POST['planDescription'],
+            "GracePeriod" => $_POST['GracePeriod'],
+            "Amount" => $_POST['Amount'] ,
+            "Currency" => $_POST['Currency'],
+            "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false
         );
-
-        if($dbInsertResult) {
-            // local response
+    
+        $jsonResultData = $obj->setPlan($planData);
+        
+        // Add subscription to DB 
+        if($jsonResultData['code'] === "00") { 
+            // Api response
             $status = true;
-            $msg = $msg.__(' is ready to use.');
+            $msg = $jsonResultData['message'];
+    
+            $dbInsertResult  = $wpdb->insert(
+                $wpdb->prefix . $obj->getDbSourceName('plan') , 
+                array( 
+                    'PlanId'         => $jsonResultData['data']['planId'],
+                    'Title'           => $jsonResultData['data']['Title'],
+                    'Amount'          => $_POST['Amount'],
+                    'Currency'        => $_POST['Currency'],
+                    'Description'     => $_POST['planDescription'],
+                    'Recurrence_Type' => $_POST['RecurrenceType'],
+                    'Frequency_Type'  => $_POST['FrequencyType'],
+                    'Frequency_Value' => $_POST['FrequencyValue'],
+                    'Grace_Period'    => $_POST['GracePeriod'],
+                    'Initial_Payment'  => $_POST['InitialPayment'] == 'true' ? 'true' : 'false',
+                    'Status'          => $jsonResultData['data']['Status'],
+                    'CreatedAt'       => date("Y-m-d"),
+                    'UpdatedAt'       => date("Y-m-d")
+                )
+            );
+    
+            if($dbInsertResult) {
+                // local response
+                $status = true;
+                $msg = $msg.__(' is ready to use.');
+            } else {
+                 // local response
+                 $status = false;
+                 $msg = __('Plan added in Recurring API Successfully! But is not added in your system successfully');
+            }
+    
         } else {
-             // local response
-             $status = false;
-             $msg = __('Plan added in Recurring API Successfully! But is not added in your system successfully');
+            // Api response
+            $status = false;
+            $msg = $jsonResultData['message'];
         }
-
     } else {
-        // Api response
-        $status = false;
-        $msg = $jsonResultData['message'];
+         // Merchant credential Data is not valid yet
+         $status = false;
+         $msg = __('Your credential Data is not valid yer, Sorry!','ntpRp');
     }
+
+
 
     $addPlanResult = array(
             'status'=> $status,
