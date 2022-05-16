@@ -759,15 +759,20 @@ function recurring_account_getMySubscriptions() {
 
 
 function assignToRecurring ($data) {
-        $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
-        $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
-        $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
-        
-        if(!is_null($planId)) {
-            $str = recurringModal ($planId, $button, $title);
-        } else {
-            $str = ''; 
-        } 
+        $obj = new recurringFront();
+       if($obj->isCredentialActived() == 'true'){
+            $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
+            $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
+            $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
+            
+            if(!is_null($planId)) {
+                $str = recurringModal ($planId, $button, $title);
+            } else {
+                $str = ''; 
+            } 
+       } else {
+        $str = ''; 
+       }
     return $str;
 }
 

@@ -12,7 +12,26 @@
 
         function isLive() {
             $mood = get_option($this->slug.'_mood', array());
-            return $mood[0] == 'live' ? true : false; 
+            if(count($mood)){
+                return $mood[0] == 'live' ? true : false;
+            } else {
+                /* Do nothing 
+                *  Is just for handel PHP Error Notify on Merchant Server
+                */
+                return;
+            }  
+        }
+
+        function isCredentialActived() {
+            $credentialStatus = get_option($this->slug.'_is_valid', array());
+            if(count($credentialStatus)){
+                 return $credentialStatus;
+            } else {
+                 /* Do nothing 
+                 *  Is just for handel PHP Error Notify on Merchant Server
+                 */
+                return;
+            }  
         }
 
         function getApiUrl($action){

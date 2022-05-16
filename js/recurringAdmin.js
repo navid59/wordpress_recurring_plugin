@@ -61,13 +61,12 @@ jQuery(document).ready(function () {
             signature : signature
         }
 
-        //////////////
         jQuery.post(ajaxurl, subscriptionDetailData, function(response){
             jsonResponse = JSON.parse(response);
             console.log(jsonResponse);
             if(jsonResponse.code == "00") {
                 jQuery("#netopia_recurring_is_valid").val('true');
-                toastr.success('Credential data are verified', 'success!');
+                toastr.success('Credential data are verified. Save the data', 'success!');
                 return true;
             } else {
                 toastr.error('Invalid credential data', 'Error!');
@@ -75,8 +74,6 @@ jQuery(document).ready(function () {
                 return false;
             }
         });
-        //////////////
-
     });
 });
 
