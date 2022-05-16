@@ -47,6 +47,37 @@ jQuery(document).ready(function () {
  
     // Hide Normal pagination 
     jQuery('#dtInfiniteScrollingExample_paginate').hide();
+
+    // Validate Credential
+    jQuery('#netopia_recurring_is_valid_verify').click(function (e){
+        var apikey = jQuery('#netopia_recurring_api_key').val();
+        var signature = jQuery('#netopia_recurring_signature').val();
+        // console.log(apikey);
+        // console.log(signature);
+
+        subscriptionDetailData = {
+            action : 'verifyCredentialData',
+            apikey : apikey,
+            signature : signature
+        }
+
+        //////////////
+        jQuery.post(ajaxurl, subscriptionDetailData, function(response){
+            jsonResponse = JSON.parse(response);
+            console.log(jsonResponse);
+            if(jsonResponse.code == "00") {
+                jQuery("#netopia_recurring_is_valid").val('true');
+                toastr.success('Credential data are verified', 'success!');
+                return true;
+            } else {
+                toastr.error('Invalid credential data', 'Error!');
+                jQuery("#netopia_recurring_is_valid").val('false');
+                return false;
+            }
+        });
+        //////////////
+
+    });
 });
 
 

@@ -275,6 +275,22 @@ class recurringAdmin extends recurring {
             return '-';
         }
     }
+
+    /**
+    * Verify Credential Data
+    */
+    function isValidCredentialData($apiKey, $signature ){
+        $url = self::getApiUrl('validate');
+        $data = array(
+            "ApiKey" => $apiKey,
+            'Signature' => $signature
+        );
+    
+        $postData = json_encode($data);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
 }
 
 function recurring_addPlan() {
@@ -711,5 +727,21 @@ function recurring_uploadKey() {
     echo json_encode($uploadeResult);
 }
 add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
+
+function recurring_verifyCredentialData() {
+    $obj = new recurringAdmin();
+    $apiKey = $_POST['apikey'];
+    $signature = $_POST['signature'];
+
+    $jsonResultData = $obj->isValidCredentialData($apiKey, $signature);
+
+    $validateCredentialResult = array(
+        'code'=> $jsonResultData['code'],
+        'msg'=> $jsonResultData['message'],
+        );
+    echo json_encode($validateCredentialResult);
+    die();
+}
+add_action('wp_ajax_verifyCredentialData', 'recurring_verifyCredentialData');
 
 ?>
