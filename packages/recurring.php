@@ -24,7 +24,7 @@
 
         function isCredentialActived() {
             $credentialStatus = get_option($this->slug.'_is_valid', array());
-            if(count($credentialStatus)){
+            if(!empty($credentialStatus)){
                  return $credentialStatus;
             } else {
                  /* Do nothing 
