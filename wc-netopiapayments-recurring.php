@@ -211,13 +211,24 @@ class NetopiapaymentsRecurringPayment extends recurring
         $fields = array(
             array(
                 'uid' => $this->slug.'_api_key',
-                'label' => __('API Key'),
+                'label' => __('Live API Key'),
                 'section' => 'general',
                 'type' => 'text',
                 'options' => false,
-                'placeholder' => __('40 character - without space'),
+                'placeholder' => __('~ 60 character - without space'),
                 'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
+                'supplemental' => __('You have it from NETOPIA Payments platform'),
+                'default' => ''
+            ),
+            array(
+                'uid' => $this->slug.'_api_key_sandbox',
+                'label' => __('Sandbox API Key'),
+                'section' => 'general',
+                'type' => 'text',
+                'options' => false,
+                'placeholder' => __('~ 60 character - without space'),
+                'helper' => __(''),
+                'supplemental' => __('You have it from NETOPIA Payments platform'),
                 'default' => ''
             ),
             array(
@@ -226,9 +237,9 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'general',
                 'type' => 'text',
                 'options' => false,
-                'placeholder' => __('128 character - without space'),
+                'placeholder' => __('24 character - without space'),
                 'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
+                'supplemental' => __('You have it from NETOPIA Payments platform'),
                 'default' => ''
             ),
             array(
@@ -237,9 +248,9 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'certificate',
                 'type' => 'file',
                 'options' => false,
-                'placeholder' => __('128 character - without space'),
+                'placeholder' => __(''),
                 'helper' => __(''),
-                'supplemental' => __('You have it from your admin panel'),
+                'supplemental' => __('You have it from NETOPIA Payments platform'),
                 'default' => ''
             ),
             array(
@@ -266,17 +277,17 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'supplemental' => '',
                 'default' => array('live')
             ),
-            array(
-                'uid' => $this->slug.'_is_valid',
-                'label' => __('Validate credential data'),
-                'section' => 'general',
-                'type' => 'verify_button',
-                'options' => false,
-                'placeholder' => "",
-                'helper' => __(''),
-                'supplemental' => "",
-                'default' => 'false'
-            ),
+            // array(
+            //     'uid' => $this->slug.'_is_valid',
+            //     'label' => __('Validate credential data'),
+            //     'section' => 'general',
+            //     'type' => 'verify_button',
+            //     'options' => false,
+            //     'placeholder' => "",
+            //     'helper' => __(''),
+            //     'supplemental' => "",
+            //     'default' => 'false'
+            // ),
         );
         foreach( $fields as $field ){
             add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'netopia_recurring', $field['section'], $field );
@@ -379,10 +390,10 @@ class NetopiapaymentsRecurringPayment extends recurring
             case 'file': // If it is a File type for uploade files, ...
                 printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
             break;
-            case 'verify_button':
-                printf( '<input name="%1$s" id="%1$s" type="hidden" placeholder="%2$s" value="%3$s" />', $arguments['uid'], $arguments['placeholder'], $value );
-                printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
-            break;
+            // case 'verify_button':
+            //     printf( '<input name="%1$s" id="%1$s" type="hidden" placeholder="%2$s" value="%3$s" />', $arguments['uid'], $arguments['placeholder'], $value );
+            //     printf('<button type="button" id="%2$s_verify" class="button button-primary">%1$s</button>', 'check', $arguments['uid']);
+            // break;
         }
 
         // If there is help text
@@ -478,7 +489,6 @@ class NetopiapaymentsRecurringPayment extends recurring
             <div class="row">
                 <img src="<?php echo URL_NETOPIA_PAYMENTS_LOGO ?>" width="150" style="padding: 20px 25px 0px 0px;">
                 <span style="font-size: xx-large"><?=$this->menuItems['plan']['pageTitle'] ?></span>
-                <?php echo $this->getWarningAdmin();?>
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="?page=recurring_plan&tab=plan_list" class="nav-tab <?php echo $active_tab == 'plan_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Plan list','ntpRp')?></a>

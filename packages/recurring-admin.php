@@ -739,8 +739,8 @@ add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
 
 function recurring_verifyCredentialData() {
     $obj = new recurringAdmin();
-    $apiKey = $_POST['apikey'];
-    $signature = $_POST['signature'];
+    $apiKey = $obj->getApiKey();
+    $signature = $obj->getSignature();
 
     $jsonResultData = $obj->isValidCredentialData($apiKey, $signature);
 

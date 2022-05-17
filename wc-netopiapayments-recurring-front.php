@@ -1082,7 +1082,7 @@ function getMemberInfoHtml($isLoggedIn) {
         </div>
         <div class="col-md-4 mb-3">
             <label for="email">'.__('Email','ntpRp').'</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" value="'.$current_user->user_email.'" required>
+            <input type="email" class="form-control" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="you@example.com" value="'.$current_user->user_email.'" required>
             <div class="invalid-feedback">
                 '.__('Please enter a valid email address for shipping updates.','ntpRp').'
             </div>

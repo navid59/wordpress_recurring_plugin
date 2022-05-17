@@ -7,7 +7,12 @@
         }
 
         function getApiKey() {
-            return get_option($this->slug.'_api_key', array());
+            if($this->isLive()) {
+                return get_option($this->slug.'_api_key', array());
+            } else {
+                return get_option($this->slug.'_api_key_sandbox', array());
+            }
+            
         }
 
         function isLive() {

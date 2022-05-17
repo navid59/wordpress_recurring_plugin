@@ -36,7 +36,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label for="FrequencyValue"><?php echo __('Frequency Value','ntpRp'); ?></label>
-                <input type="text" class="form-control" id="FrequencyValue" pattern="[0-9]{1,3}" title="Only number more than zero" placeholder="<?php echo __('Your plan Frequency Value', 'ntpRp');?>" required>
+                <input type="text" class="form-control" id="FrequencyValue" pattern="[0-9]{1,4}" title="Only number greater than zero" placeholder="<?php echo __('Your plan Frequency Value', 'ntpRp');?>" required>
                 <div class="valid-feedback"><?php echo __('Valid plan frequency value.','ntpRp'); ?></div>
                 <div class="invalid-feedback"><?php echo __('Please fill out plan frequency value.','ntpRp'); ?></div>
             </div>
@@ -59,7 +59,7 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="GracePeriod"><?php echo __('Grace Period','ntpRp'); ?></label>
-                <input type="text" class="form-control" id="GracePeriod"  pattern="[0-9]" title="Only digit" placeholder="<?php echo __('The grace period', 'ntpRp');?>" required>
+                <input type="text" class="form-control" id="GracePeriod"  pattern="[0-9]{1,}" title="Only number" placeholder="<?php echo __('The grace period', 'ntpRp');?>" required>
                 <div class="valid-feedback"><?php echo __('Valid plan grace period.','ntpRp'); ?></div>
                 <div class="invalid-feedback"><?php echo __('Please fill out plan grace period.','ntpRp'); ?></div>
             </div>
