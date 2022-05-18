@@ -760,7 +760,6 @@ function recurring_account_getMySubscriptions() {
 
 function assignToRecurring ($data) {
         $obj = new recurringFront();
-       if($obj->isCredentialActived() == 'true'){
             $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
             $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
             $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
@@ -770,9 +769,6 @@ function assignToRecurring ($data) {
             } else {
                 $str = ''; 
             } 
-       } else {
-        $str = ''; 
-       }
     return $str;
 }
 

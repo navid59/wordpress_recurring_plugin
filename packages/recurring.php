@@ -27,17 +27,7 @@
             }  
         }
 
-        function isCredentialActived() {
-            $credentialStatus = get_option($this->slug.'_is_valid', array());
-            if(!empty($credentialStatus)){
-                 return $credentialStatus;
-            } else {
-                 /* Do nothing 
-                 *  Is just for handel PHP Error Notify on Merchant Server
-                 */
-                return;
-            }  
-        }
+
 
         function getApiUrl($action){
             if($this->isLive()) {

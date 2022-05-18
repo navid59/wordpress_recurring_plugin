@@ -298,7 +298,6 @@ function recurring_addPlan() {
 
     $obj = new recurringAdmin();
 
-    if($obj->isCredentialActived() == 'true'){
         $planData = array(
             "Title" => $_POST['planTitile'],
             "RecurrenceType" =>  $_POST['RecurrenceType'],
@@ -355,11 +354,6 @@ function recurring_addPlan() {
             $status = false;
             $msg = $jsonResultData['message'];
         }
-    } else {
-         // Merchant credential Data is not valid yet
-         $status = false;
-         $msg = __('Your credential Data is not valid yer, Sorry!','ntpRp');
-    }
 
 
 

@@ -373,75 +373,89 @@ function copyPlan(planId, planTitile) {
     navigator.clipboard.writeText(shortCode);
 }
 
-jQuery("#recurring-plan-form").submit(function (e) {
-    subscriptionDetailData = {
-        action : 'verifyCredentialData'
-    }
+function addPlanInAction() {
 
-    jQuery.post(ajaxurl, subscriptionDetailData, function(response){
-        jsonResponse = JSON.parse(response);
-        // console.log(jsonResponse);
-        if(jsonResponse.code == "00") {
-            /**
-             * After verify Credential data,... 
-             * Will send plan info to API
-             */
-            var planTitile = jQuery("#planTitile").val();
-            var planDescription = jQuery("#planDescription").val();
-            var RecurrenceType = jQuery("#RecurrenceType").val();
-            var FrequencyType = jQuery("#FrequencyType").val();
-            var FrequencyValue = jQuery("#FrequencyValue").val();
-            var Amount = jQuery("#Amount").val();
-            var Currency = jQuery("#Currency").val();
-            var GracePeriod = jQuery("#GracePeriod").val();
-            if (jQuery("#InitialPayment").prop("checked")) {
-                var InitialPayment = true;
-            } else {
-                var InitialPayment = false;
-            }
-            
-            data = {
-                action : 'addPlan',
-                planTitile : planTitile,
-                planDescription : planDescription,
-                RecurrenceType : RecurrenceType,
-                FrequencyType : FrequencyType,
-                FrequencyValue : FrequencyValue,
-                Amount : Amount,
-                Currency : Currency,
-                GracePeriod : GracePeriod,
-                InitialPayment : InitialPayment,
-            };
-
-            jQuery.post(ajaxurl, data, function(response){
-                jsonResponse = JSON.parse(response);
-                if(jsonResponse.status) {
-                    jQuery('#msgBlock').addClass('alert-success');
-                    jQuery('#alertTitle').html('Congratulation!');
-                    jQuery('#msgContent').html(jsonResponse.msg);
-                    jQuery('#msgBlock').addClass('show');
-
-                    // Reset form and hide it
-                    document.getElementById("recurring-plan-form").reset();
-                    jQuery('#recurring-plan-form').hide();
-                    jQuery('#addNewPlan').addClass('show');
-
-                }else {
-                    jQuery('#msgBlock').addClass('alert-warning');
-                    jQuery('#alertTitle').html('Error!');
-                    jQuery('#msgContent').html(jsonResponse.msg);
-                    jQuery('#msgBlock').addClass('show');
+    var planTitile = jQuery("#planTitile").val();
+                var planDescription = jQuery("#planDescription").val();
+                var RecurrenceType = jQuery("#RecurrenceType").val();
+                var FrequencyType = jQuery("#FrequencyType").val();
+                var FrequencyValue = jQuery("#FrequencyValue").val();
+                var Amount = jQuery("#Amount").val();
+                var Currency = jQuery("#Currency").val();
+                var GracePeriod = jQuery("#GracePeriod").val();
+                if (jQuery("#InitialPayment").prop("checked")) {
+                    var InitialPayment = true;
+                } else {
+                    var InitialPayment = false;
                 }
-            });
-        } else {
-            /**
-             * Verify Credential data FAILED!!!,... 
-             * Will NOT send plan info to API
-             */
-            toastr.error('Invalid credential data. Please first set the corect API key & Signature in Recurring v1->Setting section, and then try again!', 'Error!');
-            jQuery("#netopia_recurring_is_valid").val('false');
-        }
-    });
+                
+                data = {
+                    action : 'addPlan',
+                    planTitile : planTitile,
+                    planDescription : planDescription,
+                    RecurrenceType : RecurrenceType,
+                    FrequencyType : FrequencyType,
+                    FrequencyValue : FrequencyValue,
+                    Amount : Amount,
+                    Currency : Currency,
+                    GracePeriod : GracePeriod,
+                    InitialPayment : InitialPayment,
+                };
+
+                console.log(data);
+
+                jQuery.post(ajaxurl, data, function(response){
+                    jsonResponse = JSON.parse(response);
+                    if(jsonResponse.status) {
+                        jQuery('#msgBlock').addClass('alert-success');
+                        jQuery('#alertTitle').html('Congratulation!');
+                        jQuery('#msgContent').html(jsonResponse.msg);
+                        jQuery('#msgBlock').addClass('show');
+
+                        // Reset form and hide it
+                        document.getElementById("recurring-plan-form").reset();
+                        jQuery('#recurring-plan-form').hide();
+                        jQuery('#addNewPlan').addClass('show');
+
+                    }else {
+                        jQuery('#msgBlock').addClass('alert-warning');
+                        jQuery('#alertTitle').html('Error!');
+                        jQuery('#msgContent').html(jsonResponse.msg);
+                        jQuery('#msgBlock').addClass('show');
+                    }
+                });
+
+}
+
+jQuery("#recurring-plan-form").submit(function (e) {
+
+
+                /////////////////
+                subscriptionDetailData = {
+                    action : 'verifyCredentialData'
+                }
+            
+                jQuery.post(ajaxurl, subscriptionDetailData, function(response){
+                    jsonResponse = JSON.parse(response);
+                    console.log(jsonResponse);
+                    if(jsonResponse.code == "00") {
+                         /**
+                         * Verify Credential data With success!!!,... 
+                         * Will send plan info to API
+                         */ 
+                          addPlanInAction();    
+                    } else {
+                        /**
+                         * Verify Credential data FAILED!!!,... 
+                         * Will NOT send plan info to API
+                         */
+                         toastr.error('Invalid credential data. Please first set the corect API key & Signature in Recurring v1->Setting section, and then try again!', 'Error!');
+                    }
+                });
+                /////////////////
+
+                 
+
     // important to Return
     return false;
 });
