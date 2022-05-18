@@ -279,11 +279,12 @@ class recurringAdmin extends recurring {
     /**
     * Verify Credential Data
     */
-    function isValidCredentialData($apiKey, $signature ){
+    function isValidCredentialData($apiKey, $signature, $isTestMod ){
         $url = self::getApiUrl('validate');
         $data = array(
             "ApiKey" => $apiKey,
-            'Signature' => $signature
+            'Signature' => $signature,
+            'IsTestMod' => $isTestMod ? "true" : "false"
         );
     
         $postData = json_encode($data);
@@ -735,8 +736,9 @@ function recurring_verifyCredentialData() {
     $obj = new recurringAdmin();
     $apiKey = $obj->getApiKey();
     $signature = $obj->getSignature();
+    $isTestMod = !$obj->isLive();
 
-    $jsonResultData = $obj->isValidCredentialData($apiKey, $signature);
+    $jsonResultData = $obj->isValidCredentialData($apiKey, $signature, $isTestMod);
 
     $validateCredentialResult = array(
         'code'=> $jsonResultData['code'],
