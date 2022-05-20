@@ -87,7 +87,6 @@ function recurring_addSubscription() {
     $arr3DS = (array)$obj3DS;
     
 
-    // $obj = new recurringFront();
     $subscriptionData = array(
         "Member" => array (
             "UserID" => $Member['UserID'],
@@ -96,9 +95,11 @@ function recurring_addSubscription() {
             "Email" => $Member['Email'],
             "Address" => $Member['Address'],
             "City" => $Member['City'],
-            "Tel" => strval($Member['Tel'])
+            "Tel" => strval($Member['Tel']),
+            'IsTestMod' => $obj->isLive() ? "false" : "true" 
         ),
         "Merchant" => array(
+            "Apikey"    => $obj->getApiKey(),
             "Signature" => $obj->getSignature(),
             "NotifyUrl" => $obj->getNotifyUrl(),
             "Tolerance" =>  true,
@@ -122,7 +123,6 @@ function recurring_addSubscription() {
         )
       );   
      
-
     $jsonResultData = $obj->setSubscription($subscriptionData);
 
     // Add subscription to DB 
@@ -168,22 +168,23 @@ function recurring_addSubscription() {
                 'UpdatedAt'       => date("Y-m-d")
             );
     }
-
     
-
     if($jsonResultData['code'] === "00") {
         $customMsg = $obj->getSuccessMessagePayment();
         $status = true;
+        $detail = "";
         $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
     } else {
         $customMsg = $obj->getFailedMessagePayment();
         $status = false;
+        $detail = $jsonResultData['data']['details'];
         $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
     }
 
     $addSubscriptionResult = array(
         'status'=> $status,
         'msg'=> $msg,
+        'detail'=> $detail,
         );
     echo json_encode($addSubscriptionResult);
     wp_die();
@@ -869,9 +870,10 @@ function recurringModal($planId , $button, $title) {
                         '.$buttonTitile.'
                     </button>';
                 $cardInfo = getCardInfoHtml();
+                $threeDsForm = get3DsFormHtml($planId);
                 $userInfo = getMemberInfoHtml($isLoggedIn);
                 $authInfo = getAuthFromHtml($isLoggedIn);
-                $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo);
+                $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
             }
         } else {
             /** Display Subscribe buttomn & Modal subscription for Guest users */    
@@ -881,10 +883,11 @@ function recurringModal($planId , $button, $title) {
                     '.$buttonTitile.'
                 </button>';
            
-            $cardInfo = getCardInfoHtml();
-            $userInfo = getMemberInfoHtml($isLoggedIn);
-            $authInfo = getAuthFromHtml($isLoggedIn);
-            $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo);
+            $cardInfo    = getCardInfoHtml();
+            $threeDsForm = get3DsFormHtml($planId);
+            $userInfo    = getMemberInfoHtml($isLoggedIn);
+            $authInfo    = getAuthFromHtml($isLoggedIn);
+            $modalHtml   = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
         }
     } else {
         // Plan is not active / not exist / The licence is expired,... so don't display subscribe / Unsubscribe Botton
@@ -940,7 +943,7 @@ function getUnsubscribeModalHtml ($planId, $unsubscriptionTitle, $planData, $sub
             ';
 }
 
-function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo) {
+function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm) {
     return '<!-- Modal -->
     <div class="modal fade recurringModal" id="recurringModal'.$planId.'" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -996,7 +999,15 @@ function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $ca
                     </div>
                         <div class="alert alert-dismissible fade" id="msgBlock'.$planId.'" role="alert">
                             <strong id="alertTitle'.$planId.'">!</strong> <span id="msgContent'.$planId.'"></span>.
+                            <div id="spinner'.$planId.'" class="spinner-grow text-primary d-none"  role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
+                    </div>
+                    <div class="align-items-center">
+                    '.
+                    $threeDsForm
+                    .'
                     </div>
                     '.getWarningFront().'
                 <div class="modal-footer">
@@ -1154,7 +1165,7 @@ function getCardInfoHtml() {
         </div>
         <div class="col-md-3 mb-3">
             <label for="cc-expiration">CVV</label>
-            <input type="text" minlength="3" maxlength="3"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{3}" placeholder="" title="'.__('CVV must contain 3 digit','ntpRp').'" required>
+            <input type="text" minlength="3" maxlength="3"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{4}" placeholder="" title="'.__('CVV must contain 3 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Security code required
             </div>
@@ -1164,6 +1175,45 @@ function getCardInfoHtml() {
         </div>
     </div>';
 }
+function get3DsFormHtml($planId) {
+    return '
+    <form name="3DSAuthorizeForm'.$planId.'" id="3DSAuthorizeForm'.$planId.'" target="" action="" method="POST">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="paReq">paReq</label>
+                <input type="text" class="form-control" id="paReq'.$planId.'" name="paReq" readonly >
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="backUrl">backUrl</label>
+                <input type="text" class="form-control" id="backUrl'.$planId.'" name="backUrl" readonly >
+            </div>
+        </div>
+        <div class="row">
+            <input type="submit" name="authorizesubmit" id="check3DS'.$planId.'" class="btn btn-warning btn-lg btn-block" >Forward to Bank Page</button>
+        </div>
+    </form>';
+
+    /**
+     * Currentlly Just keep the JS, Didn't use it
+     */
+    $jsStr = '
+    <script type="text/javascript">
+        window.onload=function(){
+            var auto = setTimeout(function(){ autoRefresh(); }, 100);
+            function submitform(){
+            alert("Temporar to see the Form value for TEST");
+            document.forms["3DSAuthorizeForm'.$planId.'"].submit();
+            }
+            function autoRefresh(){
+            clearTimeout(auto);
+            auto = setTimeout(function(){ submitform(); autoRefresh(); }, 1000);
+            }
+        }
+    </script>
+    ';
+}
+
+
 
 function getWarningFront() {
     $obj = new recurringFront();

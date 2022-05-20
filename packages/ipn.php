@@ -102,7 +102,12 @@ class IPN {
                $outputData['errorMessage']	= 'Need to Validate API Key';
 
                return $outputData;
-            } else {
+            } elseif( isset($_POST['paRes']) && !empty($_POST['paRes']) ) {
+                /** Log IPN */
+                file_put_contents($this->logFile, "[".$logDate."] Come from bank and has Pares \n", FILE_APPEND);
+                echo 'Come from bank and has Pares' . PHP_EOL;
+                exit;
+            }else {
                 /** Log IPN */
                 file_put_contents($this->logFile, "[".$logDate."] IPN__header is not an valid HTTP HEADER \n", FILE_APPEND);
                 echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;

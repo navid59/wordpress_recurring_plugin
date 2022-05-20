@@ -9,6 +9,7 @@ include_once( 'packages/ipn.php' );
 add_filter( 'query_vars', 'ntp_add_query_vars');
 function ntp_add_query_vars($vars){
    $vars[] = "recurring_notify";
+   $vars[] = "recurring_3DSAuthorize";
    return $vars;
 }
 
@@ -27,6 +28,61 @@ function ntpRecurringNotifyValidation($template) {
         getHeaderRequest();
         die();
     }
+}
+add_action('template_include', 'ntpRecurring3DSAuthorize');
+function ntpRecurring3DSAuthorize($template) {
+    global $wp_query;
+
+    // If the 'recurring_3DSAuthorize' query var isn't appended to the URL,
+    // don't do anything and return default
+    if(!isset($wp_query->query['pagename']) || $wp_query->query['pagename'] !== 'recurring_3DSAuthorize') {
+        return $template;
+    } else {
+        // Step #1 - Make sure request is come from NETOPIA Recurring API
+        // Step #2 - Make sure if request is for this Comerciant
+        get3DSAuthorizeRedirect();
+        die();
+    }
+}
+
+function get3DSAuthorizeRedirect() {
+    /** Log Time & Path*/
+    $logDate = new DateTime();
+    $logDate = $logDate->format("y:m:d h:i:s");
+    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/3DSAuth_'.date("j.n.Y").'.log';
+    /** 3DSAuth log */
+    file_put_contents($logFile, "[".$logDate."] 3DSAuth Hint \n", FILE_APPEND);
+
+    echo "<pre>";
+    var_dump($_REQUEST);
+    echo "</pre>";
+    // echo "You will be redirect to bank!!";
+    echo $strHtmlForm = stripslashes($_POST['html']);
+    file_put_contents($logFile, "[".$logDate."] ".print_r($_POST['html'], true)." \n", FILE_APPEND);
+    file_put_contents($logFile, "[".$logDate."] --------------------------------- \n", FILE_APPEND);
+    ?>
+    <form name="3DSAuthorizeForm" id="3DSAuthorizeForm" target="" action="https://secure.sandbox.netopia-payments.com/sandbox/authorize" method="POST">
+        <input type="text" name="paReq" value="oEcADE3fRoK8BCPBx90In7YGw7DfsKubchD0PyHmy7L42m5YfnKdnPYAAvk8B_OyKmMKdHo4KvxExTygaSkuMTQ=">
+        <input type="text" name="backUrl" value="https://navid.ro">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script type="text/javascript">
+        window.onload=function(){
+            var auto = setTimeout(function(){ autoRefresh(); }, 100);
+
+            function submitform(){
+            alert('Temporar to see the Form value for TEST');
+            document.forms["3DSAuthorizeForm"].submit();
+            }
+
+            function autoRefresh(){
+            clearTimeout(auto);
+            auto = setTimeout(function(){ submitform(); autoRefresh(); }, 1000);
+            }
+        }
+    </script>
+   <?php
 }
 
 function getHeaderRequest() {

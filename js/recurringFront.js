@@ -339,12 +339,39 @@ function addSubscription(e) {
                         window.location.reload();
                     });
                 } else {
-                    jQuery('#msgBlock'+PlanID).addClass('alert-warning');
-                    jQuery('#alertTitle'+PlanID).html('Error!');
-                    jQuery('#msgContent'+PlanID).html(response.msg);
-                    jQuery('#msgBlock'+PlanID).addClass('show');
-                    jQuery('#addSubscriptionButton'+PlanID).show();
-                    jQuery('#loading'+PlanID).removeClass('show');
+                    console.log(response.detail);
+                    /**
+                     * If need auth 
+                     */
+                    if(response.detail.PaymentCode == "100") {
+                        let actionUrl = response.detail.PaymentDetails.ThreeDS.url;
+                        let paReq     = response.detail.PaymentDetails.ThreeDS.paReq;
+                        let backUrl   = response.detail.PaymentDetails.ThreeDS.backUrl;
+                        jQuery('#3DSAuthorizeForm'+PlanID).attr('action', actionUrl);
+                        jQuery('#paReq'+PlanID).val(paReq);
+                        jQuery('#backUrl'+PlanID).val(backUrl);
+
+                        jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+                        jQuery('#alertTitle'+PlanID).html('Warning!');
+                        jQuery('#msgContent'+PlanID).html(response.msg);
+                        jQuery('#msgBlock'+PlanID).addClass('show')
+                        jQuery('#msgContent'+PlanID).append('You will redirect to your bank. Please not close the page');
+                        jQuery('#loading'+PlanID).removeClass('show');
+                        jQuery('#spinner'+PlanID).removeClass('d-none');
+                        /**
+                         * Redirect to bank for 3DSAuthorize
+                         */
+                        jQuery('#3DSAuthorizeForm'+PlanID).submit();
+
+
+                    } else {
+                        jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+                        jQuery('#alertTitle'+PlanID).html('Error!');
+                        jQuery('#msgContent'+PlanID).html(response.msg);
+                        jQuery('#msgBlock'+PlanID).addClass('show');
+                        jQuery('#addSubscriptionButton'+PlanID).show();
+                        jQuery('#loading'+PlanID).removeClass('show');
+                    }                    
                 }
             },
             error: function( error ){
