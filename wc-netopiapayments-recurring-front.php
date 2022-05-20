@@ -4,6 +4,11 @@
 
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
+
+ add_action('wp_ajax_sessionOnNewSubscription', 'recurring_sessionOnNewSubscription');
+ add_action('wp_ajax_nopriv_sessionOnNewSubscription', 'recurring_sessionOnNewSubscription');
+
+ 
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
  add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
@@ -40,6 +45,31 @@ add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 
 add_action('wp_enqueue_scripts', 'frontResource');
 
+function recurring_sessionOnNewSubscription() {
+    global $wpdb;
+    $obj = new recurringFront();
+
+    $current_user = wp_get_current_user();
+    
+    $ntpRpCookies = array(
+        'PlanID' => $_POST['PlanID'],
+        'AuthenticationToken' => $_POST['AuthenticationToken'],
+        'NtpID' => $_POST['NtpID']
+    );
+
+    setcookie('ntpRp-cookies-PlanID', $ntpRpCookies['PlanID'], time() + 600 , '/');
+    setcookie('ntpRp-cookies-AuthenticationToken', $ntpRpCookies['AuthenticationToken'], time() + 600 , '/');
+    setcookie('ntpRp-cookies-NtpID', $ntpRpCookies['NtpID'], time() + 600 , '/');
+
+    $sesssionResult = array(
+        'status'=> true,
+        'msg'=> "Happy Cookie",
+        'currentUserData'=> $_SESSION[$current_user->id],
+    );
+    echo json_encode($sesssionResult);
+    wp_die();
+
+}
 
 function recurring_addSubscription() {
     global $wpdb;
@@ -99,10 +129,11 @@ function recurring_addSubscription() {
             'IsTestMod' => $obj->isLive() ? "false" : "true" 
         ),
         "Merchant" => array(
-            "Apikey"    => $obj->getApiKey(),
-            "Signature" => $obj->getSignature(),
-            "NotifyUrl" => $obj->getNotifyUrl(),
-            "Tolerance" =>  true,
+            "Apikey"        => $obj->getApiKey(),
+            "Signature"     => $obj->getSignature(),
+            "NotifyUrl"     => $obj->getNotifyUrl(),
+            "RedirectUrl"   => $_POST['BackUrl'],
+            "Tolerance"     =>  true,
             "IntervalRetry" => 3
         ),
         "Plan" =>  array(
@@ -869,6 +900,24 @@ function recurringModal($planId , $button, $title) {
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                         '.$buttonTitile.'
                     </button>';
+
+                    if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET[planId] == $planId)) {
+                        $paRes = $_POST['paRes'];
+                        $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>';
+                        $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+                        $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+
+                        $buttonHtml .= 'cookie NtpID : '.$ntpRpNtpID;
+                        $buttonHtml .= 'cookie Auth: '.$ntpRpAuthenticationToken;
+
+                        
+                                        
+                    }
                 $cardInfo = getCardInfoHtml();
                 $threeDsForm = get3DsFormHtml($planId);
                 $userInfo = getMemberInfoHtml($isLoggedIn);
@@ -882,6 +931,24 @@ function recurringModal($planId , $button, $title) {
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
+            if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET['planId'] == $planId)) {
+                $paRes = $_POST['paRes'];
+                $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>';
+                $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+                $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+
+                $buttonHtml .= 'cookie NtpID : '.$ntpRpNtpID;
+                $buttonHtml .= 'cookie Auth: '.$ntpRpAuthenticationToken;
+
+                
+                                
+            }
+            
            
             $cardInfo    = getCardInfoHtml();
             $threeDsForm = get3DsFormHtml($planId);
@@ -1022,6 +1089,9 @@ function getAuthFromHtml($isLoggedIn) {
     if($isLoggedIn) {
         return null;
     } else {
+        /** Get Current user Info */
+        $current_user = wp_get_current_user();
+
         return '
         <hr class="mb-4">
         <h4 class="mb-3">'.__('Auth information').'</h4>
@@ -1053,6 +1123,9 @@ function getMemberInfoHtml($isLoggedIn) {
     if($isLoggedIn) {
         return null;
     } else {
+    /** Get Current user Info */
+    $current_user = wp_get_current_user();
+
     return '
     <hr class="mb-4">
     <h4 class="mb-3">'.__('Personal information').'</h4>
@@ -1165,7 +1238,7 @@ function getCardInfoHtml() {
         </div>
         <div class="col-md-3 mb-3">
             <label for="cc-expiration">CVV</label>
-            <input type="text" minlength="3" maxlength="3"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{4}" placeholder="" title="'.__('CVV must contain 3 digit','ntpRp').'" required>
+            <input type="text" maxlength="4"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{3,4}" placeholder="" title="'.__('CVV must number and contain min 3 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Security code required
             </div>
@@ -1176,6 +1249,8 @@ function getCardInfoHtml() {
     </div>';
 }
 function get3DsFormHtml($planId) {
+    $obj = new recurringFront();
+    $backUrl = $obj->getRedirectUrl($planId);
     return '
     <form name="3DSAuthorizeForm'.$planId.'" id="3DSAuthorizeForm'.$planId.'" target="" action="" method="POST">
         <div class="row">
@@ -1185,32 +1260,13 @@ function get3DsFormHtml($planId) {
             </div>
             <div class="col-md-6 mb-3">
                 <label for="backUrl">backUrl</label>
-                <input type="text" class="form-control" id="backUrl'.$planId.'" name="backUrl" readonly >
+                <input type="text" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" readonly >
             </div>
         </div>
         <div class="row">
             <input type="submit" name="authorizesubmit" id="check3DS'.$planId.'" class="btn btn-warning btn-lg btn-block" >Forward to Bank Page</button>
         </div>
     </form>';
-
-    /**
-     * Currentlly Just keep the JS, Didn't use it
-     */
-    $jsStr = '
-    <script type="text/javascript">
-        window.onload=function(){
-            var auto = setTimeout(function(){ autoRefresh(); }, 100);
-            function submitform(){
-            alert("Temporar to see the Form value for TEST");
-            document.forms["3DSAuthorizeForm'.$planId.'"].submit();
-            }
-            function autoRefresh(){
-            clearTimeout(auto);
-            auto = setTimeout(function(){ submitform(); autoRefresh(); }, 1000);
-            }
-        }
-    </script>
-    ';
 }
 
 

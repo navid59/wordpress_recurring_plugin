@@ -257,6 +257,7 @@ function addSubscription(e) {
     var Address  = jQuery('#'+formId).find('input[name=address]').val();
     var City = jQuery('#'+formId).find('input[name=state]').val();
     var Tel = jQuery('#'+formId).find('input[name=tel]').val();
+    
 
     var PlanId = PlanID;//jQuery("#PlanId").val();
     var StartDate =  jQuery('#'+formId).find('input[name=StartDate]').val();
@@ -268,6 +269,8 @@ function addSubscription(e) {
     var SecretCode = jQuery('#'+formId).find('input[name=cc-cvv]').val();
 
     var ThreeDS = sendClientBrowserInfo();
+
+    var BackUrl = jQuery('#backUrl'+PlanID).val();
     
     jQuery('#loading'+PlanID).addClass('show');
     jQuery('#addSubscriptionButton'+PlanID).hide();
@@ -299,6 +302,7 @@ function addSubscription(e) {
             ExpYear : ExpYear,
             SecretCode : SecretCode,
             ThreeDS : ThreeDS,
+            BackUrl : BackUrl,
         };
     
         
@@ -347,6 +351,9 @@ function addSubscription(e) {
                         let actionUrl = response.detail.PaymentDetails.ThreeDS.url;
                         let paReq     = response.detail.PaymentDetails.ThreeDS.paReq;
                         let backUrl   = response.detail.PaymentDetails.ThreeDS.backUrl;
+                        let authenticationToken   = response.detail.PaymentDetails.AuthenticationToken;
+                        let ntpID   = response.detail.PaymentDetails.NtpID;
+                        
                         jQuery('#3DSAuthorizeForm'+PlanID).attr('action', actionUrl);
                         jQuery('#paReq'+PlanID).val(paReq);
                         jQuery('#backUrl'+PlanID).val(backUrl);
@@ -356,12 +363,23 @@ function addSubscription(e) {
                         jQuery('#msgContent'+PlanID).html(response.msg);
                         jQuery('#msgBlock'+PlanID).addClass('show')
                         jQuery('#msgContent'+PlanID).append('You will redirect to your bank. Please not close the page');
+
+                        /////////////////////////////////////////////
+                        jQuery('#msgContent'+PlanID).append('<br>Set in session <br>');
+                        jQuery('#msgContent'+PlanID).append('AuthenticationToken: '+authenticationToken);
+                        jQuery('#msgContent'+PlanID).append('NtpID: '+ntpID);
+                        
+                        /** Call session */
+                        setSessionOnNewSubscription(PlanID, authenticationToken, ntpID);
+                        
+                        /////////////////////////////////////////////
+
                         jQuery('#loading'+PlanID).removeClass('show');
                         jQuery('#spinner'+PlanID).removeClass('d-none');
                         /**
                          * Redirect to bank for 3DSAuthorize
                          */
-                        jQuery('#3DSAuthorizeForm'+PlanID).submit();
+                        // jQuery('#3DSAuthorizeForm'+PlanID).submit(); // Temporary Hidde
 
 
                     } else {
@@ -384,6 +402,37 @@ function addSubscription(e) {
             }
         });
     }
+}
+
+function setSessionOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
+    console.log(PlanID);
+    console.log(AuthenticationToken);
+    console.log(NtpID);
+    
+    data = {
+        action : 'sessionOnNewSubscription',
+        PlanID : PlanID,
+        AuthenticationToken : AuthenticationToken,
+        NtpID : NtpID,                          
+    };
+
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            jQuery('#msgContent'+PlanID).append('---------- Call session Success ---------');
+            if(response.status) {
+                jQuery('#msgContent'+PlanID).append('---------- Session Status OK ---------');
+            } else {
+                jQuery('#msgContent'+PlanID).append('---------- Session Status FAILED ---------');
+            }
+        },
+        error: function( error ){
+            jQuery('#msgContent'+PlanID).append('---------- Call session Failes---------');
+        }
+    });
 }
 
 function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {

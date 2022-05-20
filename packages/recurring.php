@@ -43,6 +43,13 @@
             return get_site_url()."/recurring_notify"; 
         }
 
+        function getRedirectUrl($planId) {
+            $parts = parse_url( home_url() );
+            $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg( 'planId', $planId );
+            $backUrl = $current_uri;
+            return $backUrl;
+        }
+
         function getSuccessMessagePayment() {
             $msg = get_option($this->slug.'_subscription_reg_msg');
             return $msg; 
