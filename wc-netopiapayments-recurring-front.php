@@ -5,8 +5,11 @@
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
 
- add_action('wp_ajax_sessionOnNewSubscription', 'recurring_sessionOnNewSubscription');
- add_action('wp_ajax_nopriv_sessionOnNewSubscription', 'recurring_sessionOnNewSubscription');
+ add_action('wp_ajax_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
+ add_action('wp_ajax_nopriv_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
+
+ add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
+ add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
 
  
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
@@ -45,7 +48,7 @@ add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 
 add_action('wp_enqueue_scripts', 'frontResource');
 
-function recurring_sessionOnNewSubscription() {
+function recurring_cookieVerifyAuth() {
     global $wpdb;
     $obj = new recurringFront();
 
@@ -64,12 +67,36 @@ function recurring_sessionOnNewSubscription() {
     $sesssionResult = array(
         'status'=> true,
         'msg'=> "Happy Cookie",
-        'currentUserData'=> $_SESSION[$current_user->id],
     );
     echo json_encode($sesssionResult);
     wp_die();
-
 }
+
+
+//////////
+function recurring_verifyAuth(){
+    $obj = new recurringFront();
+
+    $verifyAuthFormData = array(
+        "authenticationToken" => $_POST['authenticationToken'],
+        "ntpID" => $_POST['ntpID'],
+        "formData" => array(
+            "paRes" => $_POST['paRes']
+        )
+    );
+    
+
+    $jsonResultData = $obj->setVerifyAuth($verifyAuthFormData);
+    
+    $verifyAuthResult = array(
+            'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
+            'msg'=> !empty($jsonResultData['message']) ? $jsonResultData['message'] : '',
+            'data' =>  $jsonResultData
+            );
+    echo json_encode($verifyAuthResult);
+    die();
+}
+//////////
 
 function recurring_addSubscription() {
     global $wpdb;
@@ -864,6 +891,9 @@ function recurringModal($planId , $button, $title) {
 
     /** Get Current user Info */
     $current_user = wp_get_current_user();
+    // echo "<pre>";
+    // var_dump($current_user);
+    // echo "</pre>";
 
     /** Get Plan Info */
     $planData = planInfo($planId);
@@ -903,19 +933,30 @@ function recurringModal($planId , $button, $title) {
 
                     if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET[planId] == $planId)) {
                         $paRes = $_POST['paRes'];
-                        $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
-                                            <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>';
+                        // $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
+                        //                     <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
+                        //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        //                     <span aria-hidden="true">&times;</span>
+                        //                     </button>
+                        //                 </div>';
                         $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
                         $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
 
-                        $buttonHtml .= 'cookie NtpID : '.$ntpRpNtpID;
-                        $buttonHtml .= 'cookie Auth: '.$ntpRpAuthenticationToken;
+                        /** call verify auth */
+                        $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
+                                            <strong>'.__('Completing the process...','ntpRp').'</strong>
+                                            <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                        </div>
+                                        <div class="alert alert-dismissible fade" id="msgBlock-verifyAuthForm'.$planId.'" role="alert">
+                                            <strong id="alertTitle-verifyAuthForm'.$planId.'">!</strong> <span id="msgContent-verifyAuthForm'.$planId.'"></span>.
+                                        </div> ';
 
-                        
+                        $buttonHtml .= '<form id="verifyAuthForm'.$planId.'">';
+                        $buttonHtml .= '<input type="text" id="paRes'.$planId.'" name="paRes" value="'.$paRes.'">';
+                        $buttonHtml .= '<input type="text" id="ntpRpNtpID'.$planId.'" name="ntpRpNtpID" value="'.$ntpRpNtpID.'">';
+                        $buttonHtml .= '<input type="text" id="ntpRpAuthenticationToken'.$planId.'" name="ntpRpAuthenticationToken" value="'.$ntpRpAuthenticationToken.'">';
+                        $buttonHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'">';
+                        $buttonHtml .= '</form>';
                                         
                     }
                 $cardInfo = getCardInfoHtml();
@@ -933,20 +974,30 @@ function recurringModal($planId , $button, $title) {
                 </button>';
             if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET['planId'] == $planId)) {
                 $paRes = $_POST['paRes'];
-                $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
-                                    <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>';
+                // $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
+                //                     <strong>Holy guacamole!</strong> Plan ID : '.$planId.'
+                //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                //                     <span aria-hidden="true">&times;</span>
+                //                     </button>
+                //                 </div>';
                 $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
                 $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
 
-                $buttonHtml .= 'cookie NtpID : '.$ntpRpNtpID;
-                $buttonHtml .= 'cookie Auth: '.$ntpRpAuthenticationToken;
+                /** call verify auth */
+                $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
+                                    <strong>'.__('Completing the process...','ntpRp').'</strong>
+                                    <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                </div>
+                                <div class="alert alert-dismissible fade" id="msgBlock-verifyAuthForm'.$planId.'" role="alert">
+                                    <strong id="alertTitle-verifyAuthForm'.$planId.'">!</strong> <span id="msgContent-verifyAuthForm'.$planId.'"></span>.
+                                </div> ';
 
-                
-                                
+                $buttonHtml .= '<form id="verifyAuthForm'.$planId.'" class="verify-action-form">';
+                $buttonHtml .= '<input type="text" id="ntpRpPaRes'.$planId.'" name="ntpRpPaRes" value="'.$paRes.'">';
+                $buttonHtml .= '<input type="text" id="ntpRpNtpID'.$planId.'" name="ntpRpNtpID" value="'.$ntpRpNtpID.'">';
+                $buttonHtml .= '<input type="text" id="ntpRpAuthenticationToken'.$planId.'" name="ntpRpAuthenticationToken" value="'.$ntpRpAuthenticationToken.'">';
+                $buttonHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'">';
+                $buttonHtml .= '</form>';
             }
             
            
@@ -1255,16 +1306,14 @@ function get3DsFormHtml($planId) {
     <form name="3DSAuthorizeForm'.$planId.'" id="3DSAuthorizeForm'.$planId.'" target="" action="" method="POST">
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="paReq">paReq</label>
-                <input type="text" class="form-control" id="paReq'.$planId.'" name="paReq" readonly >
+                <input type="hidden" class="form-control" id="paReq'.$planId.'" name="paReq" readonly >
             </div>
             <div class="col-md-6 mb-3">
-                <label for="backUrl">backUrl</label>
-                <input type="text" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" readonly >
+                <input type="hidden" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" readonly >
             </div>
         </div>
         <div class="row">
-            <input type="submit" name="authorizesubmit" id="check3DS'.$planId.'" class="btn btn-warning btn-lg btn-block" >Forward to Bank Page</button>
+            <input type="submit" name="authorizesubmit" id="check3DS'.$planId.'" class="btn btn-warning btn-lg btn-block d-none" >
         </div>
     </form>';
 }

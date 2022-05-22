@@ -71,5 +71,14 @@
             $resultData = self::getData($url, $postData);
             return $resultData;
         }
+
+        function setVerifyAuth($formData){
+
+            $url = self::getApiUrl('3DS/verify-auth'); 
+            $postData = json_encode($formData);
+
+            $resultData = self::getData($url, $postData);
+            return $resultData;
+        }
     }
 ?>

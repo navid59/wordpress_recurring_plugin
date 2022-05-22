@@ -128,9 +128,9 @@ jQuery(document).ready(function () {
         });
     });
 
-    // jQuery('#subscription-form').on('submit', addSubscription);
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);
+    jQuery('.verify-action-form').on('submit', VerifyAuthAction);
 });
 
 
@@ -246,7 +246,6 @@ function addSubscription(e) {
     e.preventDefault(); // to stop Submit Event
     var form = jQuery(this);
     var formId = form.attr('id');
-    console.log('The form ID : '+formId);
 
     var PlanID = jQuery('#'+formId).find('input[name=planID]').val();
     var UserID = jQuery('#'+formId).find('input[name=username]').val();
@@ -364,22 +363,17 @@ function addSubscription(e) {
                         jQuery('#msgBlock'+PlanID).addClass('show')
                         jQuery('#msgContent'+PlanID).append('You will redirect to your bank. Please not close the page');
 
-                        /////////////////////////////////////////////
-                        jQuery('#msgContent'+PlanID).append('<br>Set in session <br>');
-                        jQuery('#msgContent'+PlanID).append('AuthenticationToken: '+authenticationToken);
-                        jQuery('#msgContent'+PlanID).append('NtpID: '+ntpID);
+                                                
+                        /** Call set cookies */
+                        setCookieVerifyAuthOnNewSubscription(PlanID, authenticationToken, ntpID);
                         
-                        /** Call session */
-                        setSessionOnNewSubscription(PlanID, authenticationToken, ntpID);
-                        
-                        /////////////////////////////////////////////
 
                         jQuery('#loading'+PlanID).removeClass('show');
                         jQuery('#spinner'+PlanID).removeClass('d-none');
                         /**
                          * Redirect to bank for 3DSAuthorize
                          */
-                        // jQuery('#3DSAuthorizeForm'+PlanID).submit(); // Temporary Hidde
+                        jQuery('#3DSAuthorizeForm'+PlanID).submit();
 
 
                     } else {
@@ -404,13 +398,13 @@ function addSubscription(e) {
     }
 }
 
-function setSessionOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
+function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
     console.log(PlanID);
     console.log(AuthenticationToken);
     console.log(NtpID);
     
     data = {
-        action : 'sessionOnNewSubscription',
+        action : 'cookieVerifyAuth',
         PlanID : PlanID,
         AuthenticationToken : AuthenticationToken,
         NtpID : NtpID,                          
@@ -422,17 +416,74 @@ function setSessionOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
         dataType: 'json',
         data: data,
         success: function( response ){
-            jQuery('#msgContent'+PlanID).append('---------- Call session Success ---------');
             if(response.status) {
-                jQuery('#msgContent'+PlanID).append('---------- Session Status OK ---------');
+                console.log('cookies set for 3DS, success');
             } else {
-                jQuery('#msgContent'+PlanID).append('---------- Session Status FAILED ---------');
+                console.log('cookies set for 3DS, Failed!');
             }
         },
         error: function( error ){
-            jQuery('#msgContent'+PlanID).append('---------- Call session Failes---------');
+            console.log('call set cookies for 3DS, Failed!');
         }
     });
+}
+
+function VerifyAuthAction(e) {
+    e.preventDefault(); // to stop Submit Event
+    var form = jQuery(this);
+    var formId = form.attr('id');
+
+    var ntpRpAuthenticationToken = jQuery('#'+formId).find('input[name=ntpRpAuthenticationToken]').val();
+    var ntpRpNtpID = jQuery('#'+formId).find('input[name=ntpRpNtpID]').val();
+    var ntpRpPaRes = jQuery('#'+formId).find('input[name=ntpRpPaRes]').val();
+
+    console.log(ntpRpAuthenticationToken);
+    console.log(ntpRpNtpID);
+    console.log(ntpRpPaRes);
+
+    data = {
+        action : 'doVerifyAuth',
+        authenticationToken : ntpRpAuthenticationToken,
+        ntpID : ntpRpNtpID,
+        paRes : ntpRpPaRes,
+    };
+
+
+    jQuery.ajax({
+        url: frontAjax.ajax_url,
+        type: 'POST',
+        dataType: 'json',
+        data: data,
+        success: function( response ){
+            if(response.status) {
+                /////////
+                jQuery('#msgBlock-'+formId).addClass('alert-success');
+                jQuery('#alertTitle-'+formId).html('Warning!');
+                jQuery('#msgContent-'+formId).html(response.msg);
+                jQuery('#loading-'+formId).removeClass('show');
+                jQuery('#msgBlock-'+formId).addClass('show')
+                jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
+                /////////
+            } else {
+                ////////
+                jQuery('#msgBlock-'+formId).addClass('alert-warning');
+                jQuery('#alertTitle-'+formId).html('Warning!');
+                jQuery('#msgContent-'+formId).html(response.msg);
+                jQuery('#loading-'+formId).removeClass('show');
+                jQuery('#msgBlock-'+formId).addClass('show')
+                jQuery('#msgContent-'+formId).append('Verify Auth is failed!. Please try again');
+                ////////
+            }
+        },
+        error: function( error ){
+            jQuery('#msgBlock-'+formId).addClass('alert-danger');
+            jQuery('#alertTitle-'+formId).html('Error!');
+            jQuery('#msgContent-'+formId).html(response.msg);
+            jQuery('#loading-'+formId).removeClass('show');
+            jQuery('#msgBlock-'+formId).addClass('show')
+        }
+    });
+
 }
 
 function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
