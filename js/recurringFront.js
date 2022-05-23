@@ -456,23 +456,19 @@ function VerifyAuthAction(e) {
         data: data,
         success: function( response ){
             if(response.status) {
-                /////////
                 jQuery('#msgBlock-'+formId).addClass('alert-success');
                 jQuery('#alertTitle-'+formId).html('Warning!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
                 jQuery('#msgBlock-'+formId).addClass('show')
-                jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
-                /////////
+                // jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
             } else {
-                ////////
                 jQuery('#msgBlock-'+formId).addClass('alert-warning');
                 jQuery('#alertTitle-'+formId).html('Warning!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
                 jQuery('#msgBlock-'+formId).addClass('show')
-                jQuery('#msgContent-'+formId).append('Verify Auth is failed!. Please try again');
-                ////////
+                // jQuery('#msgContent-'+formId).append('Verify Auth is failed!. Please try again');
             }
         },
         error: function( error ){

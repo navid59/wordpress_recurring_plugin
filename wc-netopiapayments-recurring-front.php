@@ -78,11 +78,13 @@ function recurring_verifyAuth(){
     $obj = new recurringFront();
 
     $verifyAuthFormData = array(
+        "signature" => $obj->getSignature(),
         "authenticationToken" => $_POST['authenticationToken'],
         "ntpID" => $_POST['ntpID'],
         "formData" => array(
             "paRes" => $_POST['paRes']
-        )
+        ),
+        "isTestMod" => $obj->isLive() ? "false" : "true" 
     );
     
 
