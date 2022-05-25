@@ -74,6 +74,20 @@
 
         function setVerifyAuth($formData){
 
+            if(count($formData['authenticationToken']) || count($formData['ntpID'])) {
+                $responseArr = [
+                    "status" => false,
+                    "msg"    => "Is Canceled. Could be because of timeout.",
+                    "data"   => [
+                        "code"    => "12",
+                        "message" => "Could be because of timeout"
+                    ]
+                ];
+                $responseJson = json_encode($responseArr);
+                echo $responseJson;
+                die();
+            }
+
             $url = self::getApiUrl('3DS/verify-auth'); 
             $postData = json_encode($formData);
 
