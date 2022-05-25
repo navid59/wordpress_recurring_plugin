@@ -27,7 +27,15 @@
             }  
         }
 
+        function getNTPID() {
+            $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+            return $ntpRpNtpID;
+        }
 
+        function getAuthenticationToken() {
+            $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+            return $ntpRpAuthenticationToken;
+        }
 
         function getApiUrl($action){
             if($this->isLive()) {
@@ -43,9 +51,10 @@
             return get_site_url()."/recurring_notify"; 
         }
 
-        function getRedirectUrl($planId) {
+        function getBackUrl($planId) {
             $parts = parse_url( home_url() );
             $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg( 'planId', $planId );
+            // $current_uri = basename($_SERVER['REQUEST_URI']) . add_query_arg( 'planId', $planId );
             $backUrl = $current_uri;
             return $backUrl;
         }

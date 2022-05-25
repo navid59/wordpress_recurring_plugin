@@ -31,7 +31,7 @@
                                 <select id="editRecurrenceType" class="form-control" required>
                                     <option value=""><?php echo __('Choose...','ntpRp'); ?></option>
                                     <option value="Dynamic" selected><?php echo __('Dynamic','ntpRp'); ?></option>
-                                    <option value="Fix"><?php echo __('Fix','ntpRp'); ?></option>
+                                    <!-- <option value="Fix"><?php echo __('Fix','ntpRp'); ?></option> -->
                                 </select>
                                 <div class="valid-feedback"><?php echo __('Valid recurrence type.','ntpRp'); ?></div>
                                 <div class="invalid-feedback"><?php echo __('Please choose recurrence type.','ntpRp'); ?></div>
@@ -41,7 +41,7 @@
                                 <select id="editFrequencyType" class="form-control" required>
                                     <option value=""><?php echo __('Choose...','ntpRp'); ?></option>
                                     <option value="Day"><?php echo __('Daily','ntpRp'); ?></option>
-                                    <option value="Month" selected><?php echo __('Monthly','ntpRp'); ?></option>
+                                    <option value="Month"><?php echo __('Monthly','ntpRp'); ?></option>
                                     <option value="Year"><?php echo __('Yearly','ntpRp'); ?></option>
                                 </select>
                                 <div class="valid-feedback"><?php echo __('Valid frequency type.','ntpRp'); ?></div>

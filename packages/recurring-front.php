@@ -59,7 +59,7 @@
         function setSubscription($formData){
             $url = self::getApiUrl('subscription'); 
             $postData = json_encode($formData);
-        
+
             $resultData = self::getData($url, $postData);
             return $resultData;
         }

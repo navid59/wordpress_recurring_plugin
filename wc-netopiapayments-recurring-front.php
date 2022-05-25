@@ -77,17 +77,20 @@ function recurring_cookieVerifyAuth() {
 function recurring_verifyAuth(){
     $obj = new recurringFront();
 
+    /** To convert form data in a single Array */
+    $singleArrayFormData = [];
+    foreach ($_POST['formData'] as $formDataItem) {
+        $singleArrayFormData[$formDataItem['name']] = $formDataItem['value']; 
+    }
+
     $verifyAuthFormData = array(
         "signature" => $obj->getSignature(),
-        "authenticationToken" => $_POST['authenticationToken'],
-        "ntpID" => $_POST['ntpID'],
-        "formData" => array(
-            "paRes" => $_POST['paRes']
-        ),
+        "authenticationToken" => $obj->getAuthenticationToken(),
+        "ntpID" => $obj->getNTPID(),
+        "formData" => $singleArrayFormData,
         "isTestMod" => $obj->isLive() ? "false" : "true" 
     );
     
-
     $jsonResultData = $obj->setVerifyAuth($verifyAuthFormData);
     
     $verifyAuthResult = array(
@@ -183,6 +186,10 @@ function recurring_addSubscription() {
         )
       );   
      
+    // echo "<pre>";
+    // var_dump($subscriptionData);
+    // echo "</pre>";
+
     $jsonResultData = $obj->setSubscription($subscriptionData);
 
     // Add subscription to DB 
@@ -210,23 +217,26 @@ function recurring_addSubscription() {
         // Sned mail
         $obj->informMember(__('New subscription','ntpRp'), __('Congratulation you successfully subscribed','ntpRp'));
     } elseif ($jsonResultData['code'] === "19") {
-        $arrSubscriptionData = array(
-                'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
-                'First_Name'      => $_POST['Name'],
-                'Last_Name'       => $_POST['LastName'],
-                'Email'           => $_POST['Email'],
-                'Tel'             => $_POST['Tel'],
-                'Address'         => $_POST['Address'],
-                'City'            => $_POST['City'],
-                'UserID'          => $_POST['UserID'],
-                'NextPaymentDate' => date("Y-m-d"),
-                'PlanId'          => $_POST['PlanID'],
-                'StartDate'       => date("Y-m-d"),
-                'EndDate'         => "",
-                'Status'          => 0, // Payament is faeiled
-                'CreatedAt'       => date("Y-m-d"),
-                'UpdatedAt'       => date("Y-m-d")
-            );
+        /** Do nothing
+         *  Do not remove as well too
+         *  */  
+        // $arrSubscriptionData = array(
+        //         'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
+        //         'First_Name'      => $_POST['Name'],
+        //         'Last_Name'       => $_POST['LastName'],
+        //         'Email'           => $_POST['Email'],
+        //         'Tel'             => $_POST['Tel'],
+        //         'Address'         => $_POST['Address'],
+        //         'City'            => $_POST['City'],
+        //         'UserID'          => $_POST['UserID'],
+        //         'NextPaymentDate' => date("Y-m-d"),
+        //         'PlanId'          => $_POST['PlanID'],
+        //         'StartDate'       => date("Y-m-d"),
+        //         'EndDate'         => "",
+        //         'Status'          => 0, // Payament is faeiled
+        //         'CreatedAt'       => date("Y-m-d"),
+        //         'UpdatedAt'       => date("Y-m-d")
+        //     );
     }
     
     if($jsonResultData['code'] === "00") {
@@ -428,7 +438,7 @@ function recurring_getMyAccountDetails() {
                                                         </div>
                                                         <div class="col-md-4 mb-3">
                                                             <label for="state">'.__('State','ntpRp').'</label>
-                                                            <select class="custom-select d-block w-100" id="state" required>'
+                                                            <select class="custom-select d-block w-100" id="state" name="state" required>'
                                                             .getJudete($MyDetails[0]['City']).
                                                             '</select>
                                                             <div class="invalid-feedback">
@@ -911,8 +921,7 @@ function recurringModal($planId , $button, $title) {
     $isLoggedIn = $current_user->ID != 0 ? true : false;
 
     if($isActivePlan) {
-        if($isLoggedIn) {
-            // 1 - Check if alerady has this Plan           
+        if($isLoggedIn) {    
             /** Check if user already exist */
             $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
             if(count($subscription)) {
@@ -922,68 +931,27 @@ function recurringModal($planId , $button, $title) {
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unsubscriptionRecurringModal'.$planId.'">
                         '.$unsubscriptionButtonTitile.'
                     </button>';
-                   // require_once('include/partial/frontModalUnsubscription.php');
                    $modalHtml = getUnsubscribeModalHtml($planId, $unsubscriptionTitle, $planData, $subscription);
             } else {
-                /** Display Subscription */ 
-                /** Display Subscribe button & Modal subscription for LoggedIn user */    
+                /** Display Subscribe buttomn & Modal subscription for Logedin users */    
                 $buttonHtml = '
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
-                        '.$buttonTitile.'
-                    </button>';
-
-                    if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET[planId] == $planId)) {
-                        $paRes = $_POST['paRes'];
-                        // $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
-                        //                     <strong>Holy guacamole!</strong> Plan ID : '.$planId.' - Pares : '.$paRes.'
-                        //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        //                     <span aria-hidden="true">&times;</span>
-                        //                     </button>
-                        //                 </div>';
-                        $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
-                        $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
-
-                        /** call verify auth */
-                        $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
-                                            <strong>'.__('Completing the process...','ntpRp').'</strong>
-                                            <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
-                                        </div>
-                                        <div class="alert alert-dismissible fade" id="msgBlock-verifyAuthForm'.$planId.'" role="alert">
-                                            <strong id="alertTitle-verifyAuthForm'.$planId.'">!</strong> <span id="msgContent-verifyAuthForm'.$planId.'"></span>.
-                                        </div> ';
-
-                        $buttonHtml .= '<form id="verifyAuthForm'.$planId.'">';
-                        $buttonHtml .= '<input type="text" id="paRes'.$planId.'" name="paRes" value="'.$paRes.'">';
-                        $buttonHtml .= '<input type="text" id="ntpRpNtpID'.$planId.'" name="ntpRpNtpID" value="'.$ntpRpNtpID.'">';
-                        $buttonHtml .= '<input type="text" id="ntpRpAuthenticationToken'.$planId.'" name="ntpRpAuthenticationToken" value="'.$ntpRpAuthenticationToken.'">';
-                        $buttonHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'">';
-                        $buttonHtml .= '</form>';
-                                        
-                    }
-                $cardInfo = getCardInfoHtml();
-                $threeDsForm = get3DsFormHtml($planId);
-                $userInfo = getMemberInfoHtml($isLoggedIn);
-                $authInfo = getAuthFromHtml($isLoggedIn);
-                $modalHtml = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
-            }
-        } else {
-            /** Display Subscribe buttomn & Modal subscription for Guest users */    
-            $buttonHtml = '
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
-            if(isset($_POST['paRes']) && !empty($_POST['paRes']) && ($_GET['planId'] == $planId)) {
-                $paRes = $_POST['paRes'];
-                // $buttonHtml .= '<div id="buttonNotify'.$planId.'" class="alert alert-warning alert-dismissible fade show" role="alert">
-                //                     <strong>Holy guacamole!</strong> Plan ID : '.$planId.'
-                //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                //                     <span aria-hidden="true">&times;</span>
-                //                     </button>
-                //                 </div>';
-                $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
-                $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+
+            // echo "<pre> User Logedin) <br>";
+            // var_dump($_REQUEST);
+            // echo "</pre>";
+
+            if(isset($_POST) && !empty($_POST) && isset($_GET['planId']) && ($_GET['planId'] == $planId)) {
+                $verifyAuthFormHtml .= '<form id="verifyAuthForm'.$planId.'" name="verifyAuthForm'.$planId.'" class="verify-action-form">';
+                foreach($_POST as $key => $val){
+                    $verifyAuthFormHtml .= '<input type="hidden" id="'.$key.$planId.'" name="'.$key.'" value="'.$val.'">';
+                }
+
+                $verifyAuthFormHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'"  value="Verify Auth Submmit - LOGGED IN user - AUTO FORM">';
+                $verifyAuthFormHtml .= '</form>';
 
                 /** call verify auth */
                 $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
@@ -994,13 +962,52 @@ function recurringModal($planId , $button, $title) {
                                     <strong id="alertTitle-verifyAuthForm'.$planId.'">!</strong> <span id="msgContent-verifyAuthForm'.$planId.'"></span>.
                                 </div> ';
 
-                $buttonHtml .= '<form id="verifyAuthForm'.$planId.'" class="verify-action-form">';
-                $buttonHtml .= '<input type="text" id="ntpRpPaRes'.$planId.'" name="ntpRpPaRes" value="'.$paRes.'">';
-                $buttonHtml .= '<input type="text" id="ntpRpNtpID'.$planId.'" name="ntpRpNtpID" value="'.$ntpRpNtpID.'">';
-                $buttonHtml .= '<input type="text" id="ntpRpAuthenticationToken'.$planId.'" name="ntpRpAuthenticationToken" value="'.$ntpRpAuthenticationToken.'">';
-                $buttonHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'">';
-                $buttonHtml .= '</form>';
+                $buttonHtml .= $verifyAuthFormHtml;
             }
+
+
+            
+        
+            $cardInfo    = getCardInfoHtml();
+            $threeDsForm = get3DsFormHtml($planId);
+            $userInfo    = getMemberInfoHtml($isLoggedIn);
+            $authInfo    = getAuthFromHtml($isLoggedIn);
+            $modalHtml   = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
+            }
+        } else {
+            /** Display Subscribe buttomn & Modal subscription for Guest users */    
+            $buttonHtml = '
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
+                    '.$buttonTitile.'
+                </button>';
+
+            // echo "<pre> User GUST) <br>";
+            // var_dump($_REQUEST);
+            // echo "</pre>";
+
+            if(isset($_POST) && !empty($_POST) && isset($_GET['planId']) && ($_GET['planId'] == $planId)) {
+                $verifyAuthFormHtml .= '<form id="verifyAuthForm'.$planId.'" name="verifyAuthForm'.$planId.'" class="verify-action-form">';
+                foreach($_POST as $key => $val){
+                    $verifyAuthFormHtml .= '<input type="hidden" id="'.$key.$planId.'" name="'.$key.'" value="'.$val.'">';
+                }
+
+                $verifyAuthFormHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'"  value="Verify Auth Submmit - Guest AUTO FORM">';
+                $verifyAuthFormHtml .= '</form>';
+
+                /** call verify auth */
+                $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
+                                    <strong>'.__('Completing the process...','ntpRp').'</strong>
+                                    <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                </div>
+                                <div class="alert alert-dismissible fade" id="msgBlock-verifyAuthForm'.$planId.'" role="alert">
+                                    <strong id="alertTitle-verifyAuthForm'.$planId.'">!</strong> <span id="msgContent-verifyAuthForm'.$planId.'"></span>.
+                                </div> ';
+
+                $buttonHtml .= $verifyAuthFormHtml;
+            }
+
+
             
            
             $cardInfo    = getCardInfoHtml();
@@ -1242,7 +1249,7 @@ function getMemberInfoHtml($isLoggedIn) {
         </div>
         <div class="col-md-4 mb-3">
             <label for="state">'.__('State','ntpRp').'</label>
-            <select class="custom-select d-block w-100" id="state" required>'
+            <select class="custom-select d-block w-100" id="state" name="state" required>'
             .getJudete().
             '</select>
             <div class="invalid-feedback">
@@ -1303,21 +1310,11 @@ function getCardInfoHtml() {
 }
 function get3DsFormHtml($planId) {
     $obj = new recurringFront();
-    $backUrl = $obj->getRedirectUrl($planId);
+    $backUrl = $obj->getBackUrl($planId);
     return '
-    <form name="3DSAuthorizeForm'.$planId.'" id="3DSAuthorizeForm'.$planId.'" target="" action="" method="POST">
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <input type="hidden" class="form-control" id="paReq'.$planId.'" name="paReq" readonly >
-            </div>
-            <div class="col-md-6 mb-3">
-                <input type="hidden" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" readonly >
-            </div>
-        </div>
-        <div class="row">
-            <input type="submit" name="authorizesubmit" id="check3DS'.$planId.'" class="btn btn-warning btn-lg btn-block d-none" >
-        </div>
-    </form>';
+        <div id="dynamicForm'.$planId.'"></div>
+        <input type="hidden" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" title="independent element" readonly >
+    ';
 }
 
 

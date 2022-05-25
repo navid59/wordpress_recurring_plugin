@@ -131,6 +131,28 @@ jQuery(document).ready(function () {
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);
     jQuery('.verify-action-form').on('submit', VerifyAuthAction);
+
+    /**
+     * To Auto submit the "Verify Auth Submmit - Guest AUTO FORM"
+    */
+
+    // const queryString = window.location.search;
+    // const urlParams = new URLSearchParams(queryString);
+    // const urlPlanId = urlParams.get('planId')
+    
+    // if(urlPlanId != null){
+    //     var isVerifyAuthFormExist = document.getElementById("VerifyAuthSubmmit"+urlPlanId);
+    //     if(isVerifyAuthFormExist) {
+    //         document.getElementById("verifyAuthForm"+urlPlanId).submit();
+    //         jQuery( "#VerifyAuthForm"+urlPlanId ).submit(function( event ) {
+    //             alert( "Handler for .submit() called." );
+    //             event.preventDefault();
+    //           });
+    //     }
+    // } else {
+    //     // Do nothing
+    // }    
+
 });
 
 
@@ -269,7 +291,7 @@ function addSubscription(e) {
 
     var ThreeDS = sendClientBrowserInfo();
 
-    var BackUrl = jQuery('#backUrl'+PlanID).val();
+    var BackUrl = jQuery('#backUrl'+PlanID).val(); // will be contain current page + ID of plan
     
     jQuery('#loading'+PlanID).addClass('show');
     jQuery('#addSubscriptionButton'+PlanID).hide();
@@ -342,39 +364,62 @@ function addSubscription(e) {
                         window.location.reload();
                     });
                 } else {
-                    console.log(response.detail);
+                    console.log(response);
                     /**
                      * If need auth 
                      */
                     if(response.detail.PaymentCode == "100") {
                         let actionUrl = response.detail.PaymentDetails.ThreeDS.url;
-                        let paReq     = response.detail.PaymentDetails.ThreeDS.paReq;
-                        let backUrl   = response.detail.PaymentDetails.ThreeDS.backUrl;
                         let authenticationToken   = response.detail.PaymentDetails.AuthenticationToken;
                         let ntpID   = response.detail.PaymentDetails.NtpID;
+
+                        // form data 
+                        var formDataObj = response.detail.PaymentDetails.ThreeDS.formData;
+
+                        var dynamicForm = document.createElement("form");
+                        dynamicForm.setAttribute("method", "post");
+                        dynamicForm.setAttribute("name", "authorizeForm"+PlanID);
+                        dynamicForm.setAttribute("action", actionUrl);
+
+                        // create input elements for dynamic form
+                        jQuery.each(formDataObj, function(propName, propVal) {
+                            var tmpVar = document.createElement("input");
+                                tmpVar.setAttribute("type", "hidden");
+                                tmpVar.setAttribute("name", propName);
+                                tmpVar.setAttribute("value", propVal);
+                                dynamicForm.appendChild(tmpVar);
+                                // console.log(tmpVar);
+                        });
+
+                        // create a submit button
+                        var s = document.createElement("input");
+                            s.setAttribute("type", "submit");
+                            s.setAttribute("value", "Redirecting to your bank");
+                            s.setAttribute("id", "VerifyAuthSubmmit"+PlanID);
+                            s.setAttribute("name", "VerifyAuthSubmmit"+PlanID);
+
+                        // Append the form elements to the form
+                        dynamicForm.appendChild(s);
                         
-                        jQuery('#3DSAuthorizeForm'+PlanID).attr('action', actionUrl);
-                        jQuery('#paReq'+PlanID).val(paReq);
-                        jQuery('#backUrl'+PlanID).val(backUrl);
+                        // Append the form to the HTML
+                        jQuery("#dynamicForm"+PlanID).html(dynamicForm);
 
                         jQuery('#msgBlock'+PlanID).addClass('alert-warning');
                         jQuery('#alertTitle'+PlanID).html('Warning!');
                         jQuery('#msgContent'+PlanID).html(response.msg);
                         jQuery('#msgBlock'+PlanID).addClass('show')
                         jQuery('#msgContent'+PlanID).append('You will redirect to your bank. Please not close the page');
-
-                                                
+                                              
                         /** Call set cookies */
                         setCookieVerifyAuthOnNewSubscription(PlanID, authenticationToken, ntpID);
                         
-
                         jQuery('#loading'+PlanID).removeClass('show');
                         jQuery('#spinner'+PlanID).removeClass('d-none');
-                        /**
-                         * Redirect to bank for 3DSAuthorize
-                         */
-                        jQuery('#3DSAuthorizeForm'+PlanID).submit();
 
+                        /**
+                         * Redirect the authorizeFormXXXX to bank for Authorize
+                         */
+                        dynamicForm.submit();
 
                     } else {
                         jQuery('#msgBlock'+PlanID).addClass('alert-warning');
@@ -399,10 +444,6 @@ function addSubscription(e) {
 }
 
 function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
-    console.log(PlanID);
-    console.log(AuthenticationToken);
-    console.log(NtpID);
-    
     data = {
         action : 'cookieVerifyAuth',
         PlanID : PlanID,
@@ -432,22 +473,12 @@ function VerifyAuthAction(e) {
     e.preventDefault(); // to stop Submit Event
     var form = jQuery(this);
     var formId = form.attr('id');
-
-    var ntpRpAuthenticationToken = jQuery('#'+formId).find('input[name=ntpRpAuthenticationToken]').val();
-    var ntpRpNtpID = jQuery('#'+formId).find('input[name=ntpRpNtpID]').val();
-    var ntpRpPaRes = jQuery('#'+formId).find('input[name=ntpRpPaRes]').val();
-
-    console.log(ntpRpAuthenticationToken);
-    console.log(ntpRpNtpID);
-    console.log(ntpRpPaRes);
+    var formData = form.serializeArray();
 
     data = {
         action : 'doVerifyAuth',
-        authenticationToken : ntpRpAuthenticationToken,
-        ntpID : ntpRpNtpID,
-        paRes : ntpRpPaRes,
+        formData : formData,
     };
-
 
     jQuery.ajax({
         url: frontAjax.ajax_url,
@@ -477,6 +508,9 @@ function VerifyAuthAction(e) {
             jQuery('#msgContent-'+formId).html(response.msg);
             jQuery('#loading-'+formId).removeClass('show');
             jQuery('#msgBlock-'+formId).addClass('show')
+        },
+        complete: function (data) {
+            // do nothing
         }
     });
 

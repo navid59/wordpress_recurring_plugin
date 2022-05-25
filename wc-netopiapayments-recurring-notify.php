@@ -10,9 +10,12 @@ add_filter( 'query_vars', 'ntp_add_query_vars');
 function ntp_add_query_vars($vars){
    $vars[] = "recurring_notify";
    $vars[] = "recurring_3DSAuthorize";
+
+//    echo "<pre>";
+//    var_dump($vars);
+//    echo "</pre>";
    return $vars;
 }
-
 
 add_action('template_include', 'ntpRecurringNotifyValidation');
 function ntpRecurringNotifyValidation($template) {
@@ -64,7 +67,7 @@ function get3DSAuthorizeRedirect() {
     <form name="3DSAuthorizeForm" id="3DSAuthorizeForm" target="" action="https://secure.sandbox.netopia-payments.com/sandbox/authorize" method="POST">
         <input type="text" name="paReq" value="oEcADE3fRoK8BCPBx90In7YGw7DfsKubchD0PyHmy7L42m5YfnKdnPYAAvk8B_OyKmMKdHo4KvxExTygaSkuMTQ=">
         <input type="text" name="backUrl" value="https://navid.ro">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit AAAAA</button>
     </form>
 
     <script type="text/javascript">

@@ -66,7 +66,7 @@ return '
     </div>
     <div class="col-md-4 mb-3">
         <label for="state">'.__('State','ntpRp').'</label>
-        <select class="custom-select d-block w-100" id="state" required>'
+        <select class="custom-select d-block w-100" id="state" name="state" required>'
         .getJudete().
         '</select>
         <div class="invalid-feedback">
