@@ -74,7 +74,7 @@
 
         function setVerifyAuth($formData){
 
-            if(count($formData['authenticationToken']) || count($formData['ntpID'])) {
+            if(empty($formData['authenticationToken']) || empty($formData['ntpID'])) {
                 $responseArr = [
                     "status" => false,
                     "msg"    => "Is Canceled. Could be because of timeout.",
