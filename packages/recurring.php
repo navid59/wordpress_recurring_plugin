@@ -37,6 +37,11 @@
             return $ntpRpAuthenticationToken;
         }
 
+        function getSubscriptionData() {
+            $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
+            return (stripslashes($ntpRpSubscriptionData));
+        }
+
         function getApiUrl($action){
             if($this->isLive()) {
                 $Url = BASE_URL_RECURRING_API_LIVE.$action;

@@ -73,8 +73,8 @@ function recurring_cookieVerifyAuth() {
 }
 
 
-//////////
 function recurring_verifyAuth(){
+    global $wpdb;
     $obj = new recurringFront();
 
     /** To convert form data in a single Array */
@@ -92,6 +92,78 @@ function recurring_verifyAuth(){
     );
     
     $jsonResultData = $obj->setVerifyAuth($verifyAuthFormData);
+
+    /**
+     *  Here Add data to DB, ...
+     */
+    
+    $current_user = wp_get_current_user();
+    
+    /** get Cookie Info */
+    $cookieDataJson = $obj->getSubscriptionData();
+    $cookieDataObj = json_decode($cookieDataJson);
+
+    
+
+    $memberInfos = $wpdb->get_results("SELECT *
+                                    FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
+                                    WHERE s.UserID = '".$current_user->user_login."' 
+                                    ORDER BY s.id DESC 
+                                    LIMIT 1", "ARRAY_A");
+    if(count($memberInfos)) {
+        $memberInfo = $memberInfos[0];
+
+        $Member = array (
+            "First_Name" => $memberInfo['First_Name'],
+            "Last_Name"  => $memberInfo['Last_Name'],
+            "UserID"     => $memberInfo['UserID'],
+            "Email"      => $memberInfo['Email'],
+            "Address"    => $memberInfo['Address'],
+            "City"       => $memberInfo['City'],
+            "Tel"        => $memberInfo['Tel']
+        );        
+    } else {
+        $Member = array (
+            "First_Name" => $cookieDataObj->First_Name,
+            "Last_Name"  => $cookieDataObj->Last_Name,
+            "UserID"     => $cookieDataObj->UserID,
+            "Email"      => $cookieDataObj->Email,
+            "Address"    => $cookieDataObj->Address,
+            "City"       => $cookieDataObj->City,
+            "Tel"        => strval($cookieDataObj->Tel)
+        );
+    }
+    
+    /** Base on verify Auth "00" / "19",...  Data will be Add in DB */
+    if($jsonResultData['code']== "00") {
+
+        $Member['Subscription_Id'] = $cookieDataObj->Subscription_Id;
+        $Member['PlanId'] = $cookieDataObj->PlanId;
+        $Member['Status'] = 1;
+        $Member['NextPaymentDate'] = "2020-01-01"; // BAD BAD CHECK IT
+        $Member['CreatedAt'] = date("Y-m-d");
+        $Member['UpdatedAt'] = date("Y-m-d");
+        $Member['StartDate'] = $cookieDataObj->StartDate;
+
+        // Add subscription to DB 
+        $wpdb->insert( $wpdb->prefix . $obj->getDbSourceName('subscription'), $Member );
+
+        // Sned mail
+        $obj->informMember(__('New subscription','ntpRp'), __('Congratulation you successfully subscribed','ntpRp'));
+
+        // Response 
+        $customMsg = $obj->getSuccessMessagePayment();
+        $status = true;
+        $detail = "";
+        $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
+    } else {
+
+        $customMsg = $obj->getFailedMessagePayment();
+        $status = false;
+        $detail = "";
+        $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
+    }
+    
     
     $verifyAuthResult = array(
             'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
@@ -101,7 +173,7 @@ function recurring_verifyAuth(){
     echo json_encode($verifyAuthResult);
     die();
 }
-//////////
+
 
 function recurring_addSubscription() {
     global $wpdb;
@@ -220,23 +292,28 @@ function recurring_addSubscription() {
         /** Do nothing
          *  Do not remove as well too
          *  */  
-        // $arrSubscriptionData = array(
-        //         'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
-        //         'First_Name'      => $_POST['Name'],
-        //         'Last_Name'       => $_POST['LastName'],
-        //         'Email'           => $_POST['Email'],
-        //         'Tel'             => $_POST['Tel'],
-        //         'Address'         => $_POST['Address'],
-        //         'City'            => $_POST['City'],
-        //         'UserID'          => $_POST['UserID'],
-        //         'NextPaymentDate' => date("Y-m-d"),
-        //         'PlanId'          => $_POST['PlanID'],
-        //         'StartDate'       => date("Y-m-d"),
-        //         'EndDate'         => "",
-        //         'Status'          => 0, // Payament is faeiled
-        //         'CreatedAt'       => date("Y-m-d"),
-        //         'UpdatedAt'       => date("Y-m-d")
-        //     );
+        $arrSubscriptionData = array(
+            'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
+            'First_Name'      => $Member['Name'],
+            'Last_Name'       => $Member['LastName'],
+            'Email'           => $Member['Email'],
+            'Tel'             => $Member['Tel'],
+            'Address'         => $Member['Address'],
+            'City'            => $Member['City'],
+            'UserID'          => $Member['UserID'],
+            'NextPaymentDate' => date("Y-m-d"),
+            'PlanId'          => $_POST['PlanID'],
+            'StartDate'       => date("Y-m-d"),
+            'EndDate'         => "",
+            'Status'          => 0, // Payment is failed
+            'CreatedAt'       => date("Y-m-d"),
+            'UpdatedAt'       => date("Y-m-d")
+            );
+
+            $arrSubscriptionDataJson =  json_encode($arrSubscriptionData);
+            
+            /** Set Subscription info as cookie to be uesd at the and base on Payment result */
+            setcookie('ntpRp-cookies-json', $arrSubscriptionDataJson, time() + 600 , '/');
     }
     
     if($jsonResultData['code'] === "00") {
@@ -912,6 +989,7 @@ function recurringModal($planId , $button, $title) {
     $isActivePlan = count($planData) && $planData['Status'] == 1 ? true : false;
 
     $modalHtml = '';
+    $verifyAuthFormHtml = '';
     $unsubscriptionButtonTitile = __('Unsubscription','ntpRp');
     $unsubscriptionTitle = __('Unsubscription','ntpRp'); 
     
@@ -970,7 +1048,7 @@ function recurringModal($planId , $button, $title) {
         
             $cardInfo    = getCardInfoHtml();
             $threeDsForm = get3DsFormHtml($planId);
-            $userInfo    = getMemberInfoHtml($isLoggedIn);
+            $userInfo    = getMemberInfoHtml();
             $authInfo    = getAuthFromHtml($isLoggedIn);
             $modalHtml   = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
             }
@@ -1012,7 +1090,7 @@ function recurringModal($planId , $button, $title) {
            
             $cardInfo    = getCardInfoHtml();
             $threeDsForm = get3DsFormHtml($planId);
-            $userInfo    = getMemberInfoHtml($isLoggedIn);
+            $userInfo    = getMemberInfoHtml();
             $authInfo    = getAuthFromHtml($isLoggedIn);
             $modalHtml   = getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $cardInfo, $threeDsForm);
         }
@@ -1179,84 +1257,113 @@ function getAuthFromHtml($isLoggedIn) {
         ';
         }
 }
-function getMemberInfoHtml($isLoggedIn) {
-    if($isLoggedIn) {
-        return null;
-    } else {
+function getMemberInfoHtml() {
+    global $wpdb;
+    $obj = new recurringFront();
+    
     /** Get Current user Info */
     $current_user = wp_get_current_user();
+    $isLoggedIn = $current_user->ID != 0 ? true : false;
 
-    return '
-    <hr class="mb-4">
-    <h4 class="mb-3">'.__('Personal information').'</h4>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="firstName">'.__('First name','ntpRp').'</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" pattern=".{3,}"  title="'.__('please, fill out with full name (3 characters minimum)','ntpRp').' placeholder="" value="'.$current_user->first_name.'" required>
-            <div class="valid-feedback">
-            '.__('Looks good!').'
-            </div>
-            <div class="invalid-feedback">
-                '.__('Valid first name is required.','ntpRp').'
-            </div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="lastName">'.__('Last name','ntpRp').'</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" pattern=".{4,}" title="'.__('please, fill out with full last name (4 characters minimum)','ntpRp').' placeholder="" value="'.$current_user->last_name.'" required>
-            <div class="valid-feedback">
-            '.__('Looks good!').'
-            </div>
-            <div class="invalid-feedback">
-                '.__('Valid last name is required.','ntpRp').'
-            </div>
-        </div>
-    </div>
+
+    /** Get Current user Info */
+    if($isLoggedIn) {
+        $subscriptionInfo = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `UserID` LIKE '".$current_user->user_login."'");
+        if(count($subscriptionInfo)) {
+            $subscriptionInfo = $subscriptionInfo[0];
+        }
+    }
+
+    $firstName = !is_null($current_user->first_name) ? $current_user->first_name : "";
+    $lastName = !is_null($current_user->last_name) ? $current_user->last_name : "";
+    $userEmail = !is_null($current_user->user_email) ? $current_user->user_email : "";
+    $userAddress  = isset($subscriptionInfo->Address) && !is_null($subscriptionInfo->Address) ? $subscriptionInfo->Address : "";
+    $userCity = isset($subscriptionInfo->City) && !is_null($subscriptionInfo->City) ? $subscriptionInfo->City : "";
+    $userTel = isset($subscriptionInfo->Tel) && !is_null($subscriptionInfo->Tel) ? $subscriptionInfo->Tel : "";
     
-    <div class="row">
-        <div class="col-md-8 mb-9">
-            <label for="address">'.__('Address','ntpRp').'</label>
-            <input type="text" class="form-control" id="address" name="address" pattern=".{10,}" title="'.__('please, fill out with full address (10 characters minimum)','ntpRp').' placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" required>
-            <div class="invalid-feedback">
-                '.__('Please enter your shipping address.','ntpRp').'
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label for="email">'.__('Email','ntpRp').'</label>
-            <input type="email" class="form-control" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="you@example.com" value="'.$current_user->user_email.'" required>
-            <div class="invalid-feedback">
-                '.__('Please enter a valid email address for shipping updates.','ntpRp').'
-            </div>
-        </div>
-    </div>    
     
-    <div class="row">
-        <div class="col-md-5 mb-3">
-            <label for="tel">'.__('Tel','ntpRp').'</label>
-            <input type="text" class="form-control" id="tel" name="tel" placeholder="" pattern="[0-9]{5,14}" title="'.__('please, fill out with correct phone number! (only digit)','ntpRp').'" required>
-            <div class="invalid-feedback">
-                '.__('Phone required.','ntpRp').'
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="country">'.__('Country','ntpRp').'</label>
-            <select class="custom-select d-block w-100" id="country" required>
-            <option value="">Choose...</option>
-            <option value="642" selected>Romania</option>
-            </select>
-            <div class="invalid-feedback">
-                '.__('Please select a valid country.','ntpRp').'
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label for="state">'.__('State','ntpRp').'</label>
-            <select class="custom-select d-block w-100" id="state" name="state" required>'
-            .getJudete().
-            '</select>
-            <div class="invalid-feedback">
-                '.__('Please provide a valid state.','ntpRp').'
-            </div>
-        </div>                        
-    </div>';
+    /** Generate HTML form */
+    $memberInfoHtmlForm = '
+                            <hr class="mb-4">
+                            <h4 class="mb-3">'.__('Personal information').'</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName">'.__('First name','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" pattern=".{3,}"  title="'.__('please, fill out with full name (3 characters minimum)','ntpRp').' placeholder="" value="'.$firstName.'" required>
+                                    <div class="valid-feedback">
+                                    '.__('Looks good!').'
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        '.__('Valid first name is required.','ntpRp').'
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName">'.__('Last name','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" pattern=".{4,}" title="'.__('please, fill out with full last name (4 characters minimum)','ntpRp').' placeholder="" value="'.$lastName.'" required>
+                                    <div class="valid-feedback">
+                                    '.__('Looks good!').'
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        '.__('Valid last name is required.','ntpRp').'
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-9">
+                                    <label for="address">'.__('Address','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="address" name="address" pattern=".{10,}" title="'.__('please, fill out with full address (10 characters minimum)','ntpRp').' placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" value="'.$userAddress.'" required>
+                                    <div class="invalid-feedback">
+                                        '.__('Please enter your shipping address.','ntpRp').'
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="email">'.__('Email','ntpRp').'</label>
+                                    <input type="email" class="form-control" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder="you@example.com" value="'.$userEmail.'" required>
+                                    <div class="invalid-feedback">
+                                        '.__('Please enter a valid email address for shipping updates.','ntpRp').'
+                                    </div>
+                                </div>
+                            </div>    
+                            
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="tel">'.__('Tel','ntpRp').'</label>
+                                    <input type="text" class="form-control" id="tel" name="tel" placeholder="" pattern="[0-9]{5,14}" title="'.__('please, fill out with correct phone number! (only digit)','ntpRp').'" value="'.$userTel.'" required>
+                                    <div class="invalid-feedback">
+                                        '.__('Phone required.','ntpRp').'
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="country">'.__('Country','ntpRp').'</label>
+                                    <select class="custom-select d-block w-100" id="country" required>
+                                    <option value="">Choose...</option>
+                                    <option value="642" selected>Romania</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        '.__('Please select a valid country.','ntpRp').'
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="state">'.__('State','ntpRp').'</label>
+                                    <select class="custom-select d-block w-100" id="state" name="state" required>'
+                                    .getJudete().
+                                    '</select>
+                                    <div class="invalid-feedback">
+                                        '.__('Please provide a valid state.','ntpRp').'
+                                    </div>
+                                </div>                        
+                            </div>';
+
+    if($isLoggedIn) {
+        if(empty($subscriptionInfo->Address) || empty($subscriptionInfo->City) || empty($subscriptionInfo->Tel)) {
+            //return $memberInfoHtmlForm;
+            return null;
+        } else {
+            return null;
+        }
+    } else {
+        return $memberInfoHtmlForm;
     }
 }
 

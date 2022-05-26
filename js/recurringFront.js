@@ -395,8 +395,9 @@ function addSubscription(e) {
                         var s = document.createElement("input");
                             s.setAttribute("type", "submit");
                             s.setAttribute("value", "Redirecting to your bank");
-                            s.setAttribute("id", "VerifyAuthSubmmit"+PlanID);
-                            s.setAttribute("name", "VerifyAuthSubmmit"+PlanID);
+                            s.setAttribute("id", "authorizeFormSubmmit"+PlanID);
+                            s.setAttribute("name", "authorizeFormSubmmit"+PlanID);
+                            s.setAttribute("class", "d-none");
 
                         // Append the form elements to the form
                         dynamicForm.appendChild(s);
@@ -491,14 +492,16 @@ function VerifyAuthAction(e) {
                 jQuery('#alertTitle-'+formId).html('Warning!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
-                jQuery('#msgBlock-'+formId).addClass('show')
+                jQuery('#msgBlock-'+formId).addClass('show');
+                jQuery('#doSubscribe'+formId).addClass('d-none'); ////
+                // Add Unsubscribe buttomn
                 // jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
             } else {
                 jQuery('#msgBlock-'+formId).addClass('alert-warning');
                 jQuery('#alertTitle-'+formId).html('Warning!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
-                jQuery('#msgBlock-'+formId).addClass('show')
+                jQuery('#msgBlock-'+formId).addClass('show');
                 // jQuery('#msgContent-'+formId).append('Verify Auth is failed!. Please try again');
             }
         },
@@ -507,7 +510,7 @@ function VerifyAuthAction(e) {
             jQuery('#alertTitle-'+formId).html('Error!');
             jQuery('#msgContent-'+formId).html(response.msg);
             jQuery('#loading-'+formId).removeClass('show');
-            jQuery('#msgBlock-'+formId).addClass('show')
+            jQuery('#msgBlock-'+formId).addClass('show');
         },
         complete: function (data) {
             // do nothing
