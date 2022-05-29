@@ -361,7 +361,8 @@ function recurring_unsubscription() {
 
     $subscriptionData = array(
             "Signature" => $obj->getSignature(),
-            "SubscriptionId" => $_POST['SubscriptionId']+0
+            "SubscriptionId" => $_POST['SubscriptionId']+0,
+            "isTestMod" => $obj->isLive() ? "false" : "true" 
       );   
      
     $jsonResultData = $obj->setUnsubscription($subscriptionData);
