@@ -270,8 +270,8 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'mood',
                 'type' => 'radio',
                 'options' => array(
-                    'live' => __('Live Mood. By set as Live you define the plugin to work in production environment.'),
-                    'sandbox' => __('Sandbox Mood. By set as sandbox give you opurtunety to test the plugin in TEST MOOD, without actual payment.'),
+                    'live' => __('Live Mod. By set as Live you define the plugin to work in production environment.'),
+                    'sandbox' => __('Sandbox Mod. By set as sandbox give you opurtunety to test the plugin in TEST MOD, without actual payment.'),
                 ),
                 'helper' => '',
                 'supplemental' => '',

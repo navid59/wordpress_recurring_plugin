@@ -130,7 +130,9 @@ jQuery(document).ready(function () {
 
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);
-    jQuery('.verify-action-form').on('submit', VerifyAuthAction);
+    /** Navid Verify Auth */
+    // jQuery('.verify-action-form').on('submit', VerifyAuthAction);
+    jQuery('.verify-action-botton').on('click', VerifyAuthAction);
 
     /**
      * To Auto submit the "Verify Auth Submmit - Guest AUTO FORM"
@@ -139,13 +141,15 @@ jQuery(document).ready(function () {
     // const queryString = window.location.search;
     // const urlParams = new URLSearchParams(queryString);
     // const urlPlanId = urlParams.get('planId')
-    
+    // console.log('pppppppppppppppppppppppppppppp');
     // if(urlPlanId != null){
     //     var isVerifyAuthFormExist = document.getElementById("VerifyAuthSubmmit"+urlPlanId);
+    //     console.log(isVerifyAuthFormExist);
     //     if(isVerifyAuthFormExist) {
     //         document.getElementById("verifyAuthForm"+urlPlanId).submit();
+    //         console.log('aloooooo');
     //         jQuery( "#VerifyAuthForm"+urlPlanId ).submit(function( event ) {
-    //             alert( "Handler for .submit() called." );
+    //             // alert( "Handler for .submit() called." );
     //             event.preventDefault();
     //           });
     //     }
@@ -470,11 +474,18 @@ function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID
     });
 }
 
-function VerifyAuthAction(e) {
-    e.preventDefault(); // to stop Submit Event
-    var form = jQuery(this);
-    var formId = form.attr('id');
-    var formData = form.serializeArray();
+
+
+function VerifyAuthAction(buttonAct, planId) {
+    var buttonAct = buttonAct;
+    console.log(buttonAct);
+    var form = buttonAct.closest("form");
+    console.log(form);
+    var formId = form.id;
+    console.log(form);
+    var formData =jQuery(form).serializeArray();
+   // console.log(formData);
+
 
     data = {
         action : 'doVerifyAuth',
@@ -489,12 +500,11 @@ function VerifyAuthAction(e) {
         success: function( response ){
             if(response.status) {
                 jQuery('#msgBlock-'+formId).addClass('alert-success');
-                jQuery('#alertTitle-'+formId).html('Warning!');
+                jQuery('#alertTitle-'+formId).html('Congratulation!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
                 jQuery('#msgBlock-'+formId).addClass('show');
-                jQuery('#doSubscribe'+formId).addClass('d-none'); ////
-                // Add Unsubscribe buttomn
+                jQuery('#'+planId).addClass('d-none'); // Remove Subscribe button
                 // jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
             } else {
                 jQuery('#msgBlock-'+formId).addClass('alert-warning');

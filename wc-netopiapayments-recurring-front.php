@@ -1014,22 +1014,15 @@ function recurringModal($planId , $button, $title) {
                 /** Display Subscribe buttomn & Modal subscription for Logedin users */    
                 $buttonHtml = '
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
+                <button type="button" id="'.$planId.'" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
 
-            // echo "<pre> User Logedin) <br>";
-            // var_dump($_REQUEST);
-            // echo "</pre>";
 
             if(isset($_POST) && !empty($_POST) && isset($_GET['planId']) && ($_GET['planId'] == $planId)) {
-                $verifyAuthFormHtml .= '<form id="verifyAuthForm'.$planId.'" name="verifyAuthForm'.$planId.'" class="verify-action-form">';
-                foreach($_POST as $key => $val){
-                    $verifyAuthFormHtml .= '<input type="hidden" id="'.$key.$planId.'" name="'.$key.'" value="'.$val.'">';
-                }
-
-                $verifyAuthFormHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'"  value="Verify Auth Submmit - LOGGED IN user - AUTO FORM">';
-                $verifyAuthFormHtml .= '</form>';
+                
+                /** Build Verify Auth Form */
+                $verifyAuthFormHtml .= generateVerifyAuthForm($_POST, $planId);
 
                 /** call verify auth */
                 $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
@@ -1056,23 +1049,14 @@ function recurringModal($planId , $button, $title) {
             /** Display Subscribe buttomn & Modal subscription for Guest users */    
             $buttonHtml = '
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
+                <button type="button" id="'.$planId.'" class="btn btn-primary" data-toggle="modal" data-target="#recurringModal'.$planId.'">
                     '.$buttonTitile.'
                 </button>';
 
-            // echo "<pre> User GUST) <br>";
-            // var_dump($_REQUEST);
-            // echo "</pre>";
-
             if(isset($_POST) && !empty($_POST) && isset($_GET['planId']) && ($_GET['planId'] == $planId)) {
-                $verifyAuthFormHtml .= '<form id="verifyAuthForm'.$planId.'" name="verifyAuthForm'.$planId.'" class="verify-action-form">';
-                foreach($_POST as $key => $val){
-                    $verifyAuthFormHtml .= '<input type="hidden" id="'.$key.$planId.'" name="'.$key.'" value="'.$val.'">';
-                }
-
-                $verifyAuthFormHtml .= '<input type="submit" id="VerifyAuthSubmmit'.$planId.'" name="VerifyAuthSubmmit'.$planId.'"  value="Verify Auth Submmit - Guest AUTO FORM">';
-                $verifyAuthFormHtml .= '</form>';
-
+                /** Build Verify Auth Form */
+                $verifyAuthFormHtml .= generateVerifyAuthForm($_POST, $planId);
+                
                 /** call verify auth */
                 $buttonHtml .= '<div id="loading-verifyAuthForm'.$planId.'" class="d-flex align-items-center fade show" role="alert">
                                     <strong>'.__('Completing the process...','ntpRp').'</strong>
@@ -1083,10 +1067,7 @@ function recurringModal($planId , $button, $title) {
                                 </div> ';
 
                 $buttonHtml .= $verifyAuthFormHtml;
-            }
-
-
-            
+            }          
            
             $cardInfo    = getCardInfoHtml();
             $threeDsForm = get3DsFormHtml($planId);
@@ -1365,6 +1346,51 @@ function getMemberInfoHtml() {
     } else {
         return $memberInfoHtmlForm;
     }
+}
+
+function generateVerifyAuthForm($postParams, $planId) {
+    $tmpHtml .= '
+        <SCRIPT LANGUAGE="Javascript" >
+            var verifyAuthDynamicForm = document.createElement("form");
+            verifyAuthDynamicForm.setAttribute("method", "post");
+            verifyAuthDynamicForm.setAttribute("id", "verifyAuthForm'.$planId.'");
+            verifyAuthDynamicForm.setAttribute("name", "verifyAuthForm'.$planId.'");
+            //verifyAuthDynamicForm.setAttribute("action", actionUrl);
+            ';
+                
+        // create input elements for dynamic form
+        foreach($postParams as $key => $val){
+            $tmpHtml .= '
+            var tmpVar'.$key.' = document.createElement("input");
+                tmpVar'.$key.'.setAttribute("type", "text");
+                tmpVar'.$key.'.setAttribute("name", "'.$key.'");
+                tmpVar'.$key.'.setAttribute("value","'.$val.'");
+                verifyAuthDynamicForm.appendChild(tmpVar'.$key.');
+                ';
+        }        
+
+        $tmpHtml .= '
+        // create a submit button
+            var s = document.createElement("input");
+                s.setAttribute("type", "button");
+                s.setAttribute("value", "Navid do Verify-Auth - Should be auto submit");
+                s.setAttribute("id", "VerifyAuthButton'.$planId.'");
+                s.setAttribute("name", "VerifyAuthSubmmit'.$planId.'");
+                s.setAttribute("class", "verify-action-botton");
+
+            // Append the form elements to the form
+            verifyAuthDynamicForm.appendChild(s);
+
+            document.getElementsByTagName("body")[0].appendChild(verifyAuthDynamicForm);
+
+            /**
+            * Redirect the authorizeForm to bank for Authorize
+            */
+            // verifyAuthDynamicForm.submit();
+            //document.getElementById("VerifyAuthButton'.$planId.'").click();
+            VerifyAuthAction(s, '.$planId.');            
+        </SCRIPT>';
+    return $tmpHtml;
 }
 
 function getCardInfoHtml() {
