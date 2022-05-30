@@ -40,6 +40,9 @@
             }
         }
 
+        /**
+         * The used in verify auth to know about type of Plan
+         */
         function getPlan_LIVE($planId){
             $url = self::getApiUrl('plan/status');
             $data = array(
@@ -50,9 +53,6 @@
             $postData = json_encode($data);
         
             $resultData = self::getData($url, $postData);
-            echo "<pre>";
-            var_dump($resultData);
-            echo "</pre>";
             return $resultData;
         }
 

@@ -77,6 +77,10 @@ function recurring_verifyAuth(){
     global $wpdb;
     $obj = new recurringFront();
 
+    /** get Cookie Info */
+    $cookieDataJson = $obj->getSubscriptionData();
+    $cookieDataObj = json_decode($cookieDataJson);
+
     /** To convert form data in a single Array */
     $singleArrayFormData = [];
     foreach ($_POST['formData'] as $formDataItem) {
@@ -84,27 +88,21 @@ function recurring_verifyAuth(){
     }
 
     $verifyAuthFormData = array(
-        "signature" => $obj->getSignature(),
+        "signature"      => $obj->getSignature(),
+        "subscriptionId" => $cookieDataObj->Subscription_Id,
+        "planId"         => $cookieDataObj->PlanId+0,
         "authenticationToken" => $obj->getAuthenticationToken(),
-        "ntpID" => $obj->getNTPID(),
-        "formData" => $singleArrayFormData,
-        "isTestMod" => $obj->isLive() ? "false" : "true" 
+        "ntpID"         => $obj->getNTPID(),
+        "formData"      => $singleArrayFormData,
+        "isTestMod"     => $obj->isLive() ? "false" : "true" 
     );
     
     $jsonResultData = $obj->setVerifyAuth($verifyAuthFormData);
 
     /**
-     *  Here Add data to DB, ...
+     *  Prepare data to be added in DB, ...
      */
-    
     $current_user = wp_get_current_user();
-    
-    /** get Cookie Info */
-    $cookieDataJson = $obj->getSubscriptionData();
-    $cookieDataObj = json_decode($cookieDataJson);
-
-    
-
     $memberInfos = $wpdb->get_results("SELECT *
                                     FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                     WHERE s.UserID = '".$current_user->user_login."' 
@@ -157,7 +155,6 @@ function recurring_verifyAuth(){
         $detail = "";
         $msg = !empty($customMsg) ? $customMsg : $jsonResultData['message'];
     } else {
-
         $customMsg = $obj->getFailedMessagePayment();
         $status = false;
         $detail = "";
