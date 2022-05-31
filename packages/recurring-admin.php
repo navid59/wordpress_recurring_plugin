@@ -344,6 +344,11 @@ function recurring_addPlan() {
                 // local response
                 $status = true;
                 $msg = $msg.__(' is ready to use.');
+                $msg = $msg.'
+                <hr>
+                <b>Plan short code : </b>
+                [NTP-Recurring planId='.$jsonResultData['data']['planId'].' button="Subscribe" title="'.$jsonResultData['data']['Title'].'"]
+                ';
             } else {
                  // local response
                  $status = false;

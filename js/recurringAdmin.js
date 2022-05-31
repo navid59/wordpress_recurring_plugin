@@ -364,7 +364,6 @@ function doUpdatePlan(e) {
 
 };
 
-
 function copyPlan(planId, planTitile) {
     var shortCode = '[NTP-Recurring planId='+ planId +' button="Subscribe" title="'+ planTitile +'"]';
     jQuery('#shortcode').html(shortCode);
