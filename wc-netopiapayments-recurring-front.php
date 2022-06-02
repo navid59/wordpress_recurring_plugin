@@ -143,6 +143,11 @@ function recurring_verifyAuth(){
         $Member['UpdatedAt'] = date("Y-m-d");
         $Member['StartDate'] = $cookieDataObj->StartDate;
 
+        /**
+         * @Navid
+         * Missing add to Arhiv 
+         */
+        
         // Add subscription to DB 
         $wpdb->insert( $wpdb->prefix . $obj->getDbSourceName('subscription'), $Member );
 
@@ -217,7 +222,6 @@ function recurring_addSubscription() {
     $obj3DS = json_decode(stripslashes($_POST['ThreeDS']));
     $arr3DS = (array)$obj3DS;
     
-
     $subscriptionData = array(
         "Member" => array (
             "UserID" => $Member['UserID'],
@@ -280,6 +284,12 @@ function recurring_addSubscription() {
                 'CreatedAt'       => date("Y-m-d"),
                 'UpdatedAt'       => date("Y-m-d")
             );
+        
+        /**
+         * IMPORTANT 
+         * @Navid Missing Add to History 
+         *  */    
+
         // Add subscription to DB 
         $wpdb->insert( $wpdb->prefix . $obj->getDbSourceName('subscription'), $arrSubscriptionData );
 

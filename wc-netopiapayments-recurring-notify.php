@@ -11,9 +11,6 @@ function ntp_add_query_vars($vars){
    $vars[] = "recurring_notify";
    $vars[] = "recurring_3DSAuthorize";
 
-//    echo "<pre>";
-//    var_dump($vars);
-//    echo "</pre>";
    return $vars;
 }
 
@@ -21,13 +18,14 @@ add_action('template_include', 'ntpRecurringNotifyValidation');
 function ntpRecurringNotifyValidation($template) {
     global $wp_query;
 
-    // If the 'recurring_notify' query var isn't appended to the URL,
-    // don't do anything and return default
-    if(!isset($wp_query->query['pagename']) || $wp_query->query['pagename'] !== 'recurring_notify') {
+    /**
+     * To manage Requests
+     * If the 'recurring_notify' query var isn't appended to the URL,
+     * return default template
+     */
+    if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_notify') {
         return $template;
     } else {
-        // Step #1 - Make sure request is come from NETOPIA Recurring API
-        // Step #2 - Make sure if request is for this Comerciant
         getHeaderRequest();
         die();
     }
@@ -38,7 +36,7 @@ function ntpRecurring3DSAuthorize($template) {
 
     // If the 'recurring_3DSAuthorize' query var isn't appended to the URL,
     // don't do anything and return default
-    if(!isset($wp_query->query['pagename']) || $wp_query->query['pagename'] !== 'recurring_3DSAuthorize') {
+    if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_3DSAuthorize') {
         return $template;
     } else {
         // Step #1 - Make sure request is come from NETOPIA Recurring API
@@ -56,36 +54,12 @@ function get3DSAuthorizeRedirect() {
     /** 3DSAuth log */
     file_put_contents($logFile, "[".$logDate."] 3DSAuth Hint \n", FILE_APPEND);
 
-    echo "<pre>";
-    var_dump($_REQUEST);
-    echo "</pre>";
-    // echo "You will be redirect to bank!!";
-    echo $strHtmlForm = stripslashes($_POST['html']);
-    file_put_contents($logFile, "[".$logDate."] ".print_r($_POST['html'], true)." \n", FILE_APPEND);
-    file_put_contents($logFile, "[".$logDate."] --------------------------------- \n", FILE_APPEND);
-    ?>
-    <form name="3DSAuthorizeForm" id="3DSAuthorizeForm" target="" action="https://secure.sandbox.netopia-payments.com/sandbox/authorize" method="POST">
-        <input type="text" name="paReq" value="oEcADE3fRoK8BCPBx90In7YGw7DfsKubchD0PyHmy7L42m5YfnKdnPYAAvk8B_OyKmMKdHo4KvxExTygaSkuMTQ=">
-        <input type="text" name="backUrl" value="https://navid.ro">
-        <button type="submit" class="btn btn-primary">Submit AAAAA</button>
-    </form>
+    $headers = apache_request_headers();
 
-    <script type="text/javascript">
-        window.onload=function(){
-            var auto = setTimeout(function(){ autoRefresh(); }, 100);
-
-            function submitform(){
-            alert('Temporar to see the Form value for TEST');
-            document.forms["3DSAuthorizeForm"].submit();
-            }
-
-            function autoRefresh(){
-            clearTimeout(auto);
-            auto = setTimeout(function(){ submitform(); autoRefresh(); }, 1000);
-            }
-        }
-    </script>
-   <?php
+    file_put_contents($logFile, "[".$logDate."] ".$header." \n", FILE_APPEND);
+    file_put_contents($logFile, "[".$logDate."] ----------------------------- \n", FILE_APPEND);
+    
+    
 }
 
 function getHeaderRequest() {
@@ -120,7 +94,7 @@ function getHeaderRequest() {
                     'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
                     'NotifyContent'  => $data,
                     'Comment'        => $arrDate['NotifyPayment']['Message'],
-                    'Status'         => $arrDate['NotifyPayment']['PaymetCode'],
+                    'Status'         => $arrDate['NotifyPayment']['Status'],
                     'CreatedAt'      => date("Y-m-d")
                 )
             );

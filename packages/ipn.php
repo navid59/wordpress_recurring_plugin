@@ -75,7 +75,12 @@ class IPN {
         $logDate = new DateTime();
         $logDate = $logDate->format("y:m:d h:i:s");
 
-        /** Public Key */
+        /**
+         *  Public Key
+         * IS HARD CODAT , CHANGE IT PLEASE NAVID
+         * @Navid , check the new public Key from Alex as well 
+         * 
+        */
         $publicKeyPath = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/certificates/sandbox.1PD2-FYKC-R27B-55BW-NVGN.public.cer';
                     
         /**
