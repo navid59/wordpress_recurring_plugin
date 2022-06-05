@@ -1357,59 +1357,46 @@ function getMemberInfoHtml() {
 }
 
 function generateVerifyAuthForm($postParams, $planId) {
-    $tmpHtml .= '
-        <SCRIPT LANGUAGE="Javascript" >
-            var verifyAuthDynamicForm = document.createElement("form");
-            verifyAuthDynamicForm.setAttribute("method", "post");
-            verifyAuthDynamicForm.setAttribute("id", "verifyAuthForm'.$planId.'");
-            verifyAuthDynamicForm.setAttribute("name", "verifyAuthForm'.$planId.'");
-            ';
+    $tmpHtml = "
+        <script language='Javascript' >
+            var verifyAuthDynamicForm = document.createElement('form');
+            verifyAuthDynamicForm.setAttribute('method', 'post');
+            verifyAuthDynamicForm.setAttribute('id', 'verifyAuthForm".$planId."');
+            verifyAuthDynamicForm.setAttribute('name', 'verifyAuthForm".$planId."');
+            ";
                 
         // create input elements for dynamic form
         foreach($postParams as $key => $val){
-            $tmpHtml .= '
-            var tmpVar'.$key.' = document.createElement("input");
-                tmpVar'.$key.'.setAttribute("type", "text");
-                tmpVar'.$key.'.setAttribute("name", "'.$key.'");
-                tmpVar'.$key.'.setAttribute("value","'.$val.'");
-                verifyAuthDynamicForm.appendChild(tmpVar'.$key.');
-                ';
+            $tmpHtml .= "
+            var tmpVar".$key." = document.createElement('input');
+                tmpVar".$key.".setAttribute('type', 'hidden');
+                tmpVar".$key.".setAttribute('name', '".$key."');
+                tmpVar".$key.".setAttribute('value','".$val."');
+                verifyAuthDynamicForm.appendChild(tmpVar".$key.");
+                ";
         }        
 
-        $tmpHtml .= '
+        $tmpHtml .= "
         // create a submit button
-            var s = document.createElement("input");
-                s.setAttribute("type", "button");
-                s.setAttribute("value", "Verify-Auth submit");
-                s.setAttribute("id", "VerifyAuthButton'.$planId.'");
-                s.setAttribute("name", "VerifyAuthSubmmit'.$planId.'");
-                s.setAttribute("class", "verify-action-botton");
+            var s = document.createElement('input');
+                s.setAttribute('type', 'button');
+                s.setAttribute('value', 'Verify-Auth submit');
+                s.setAttribute('id', 'VerifyAuthButton".$planId."');
+                s.setAttribute('name', 'VerifyAuthSubmmit".$planId."');
+                s.setAttribute('style', 'display : none');
+                s.setAttribute('class', 'verify-action-botton');
 
             // Append the form elements to the form
             verifyAuthDynamicForm.appendChild(s);
 
-            document.getElementsByTagName("body")[0].appendChild(verifyAuthDynamicForm);
+            document.getElementsByTagName('body')[0].appendChild(verifyAuthDynamicForm);
 
             /**
             * Redirect the authorizeForm to bank for Authorize
             */
-             VerifyAuthAction(s, '.$planId.');            
-        </SCRIPT>';
+             VerifyAuthAction(s, ".$planId.");            
+        </script>";
     return $tmpHtml;
-
-    /** Set as array  */
-     // create input elements for dynamic form
-    //  $arrFormData = [];
-    //  foreach($postParams as $key => $val){
-    //     $arrFormData[$key] = $val;
-    // }
-    // $tmpHtml = "
-    //         <SCRIPT>
-    //         var obj = ".json_encode($arrFormData).";
-    //         console.log(obj);
-    //         </SCRIPT>
-    //         ";
-    // return $tmpHtml;
 }
 
 function getCardInfoHtml() {
