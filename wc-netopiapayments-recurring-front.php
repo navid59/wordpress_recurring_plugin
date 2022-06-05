@@ -531,7 +531,7 @@ function recurring_getMyAccountDetails() {
                                                             </div>
                                                         </div>                        
                                                     </div>
-                                                    <hr class="mb-4">
+                                                    <hr class="mb-99000091842147684">
                                                     <button class="btn btn-primary btn-lg btn-block" type="button" id="" onclick="updateMyAccountDetails(); return false;" >'.__('Update', 'ntpRp').'</button>
                                                 </form>
                                             </div>    
@@ -1363,7 +1363,6 @@ function generateVerifyAuthForm($postParams, $planId) {
             verifyAuthDynamicForm.setAttribute("method", "post");
             verifyAuthDynamicForm.setAttribute("id", "verifyAuthForm'.$planId.'");
             verifyAuthDynamicForm.setAttribute("name", "verifyAuthForm'.$planId.'");
-            //verifyAuthDynamicForm.setAttribute("action", actionUrl);
             ';
                 
         // create input elements for dynamic form
@@ -1381,7 +1380,7 @@ function generateVerifyAuthForm($postParams, $planId) {
         // create a submit button
             var s = document.createElement("input");
                 s.setAttribute("type", "button");
-                s.setAttribute("value", "Navid do Verify-Auth - Should be auto submit");
+                s.setAttribute("value", "Verify-Auth submit");
                 s.setAttribute("id", "VerifyAuthButton'.$planId.'");
                 s.setAttribute("name", "VerifyAuthSubmmit'.$planId.'");
                 s.setAttribute("class", "verify-action-botton");
@@ -1394,11 +1393,23 @@ function generateVerifyAuthForm($postParams, $planId) {
             /**
             * Redirect the authorizeForm to bank for Authorize
             */
-            // verifyAuthDynamicForm.submit();
-            //document.getElementById("VerifyAuthButton'.$planId.'").click();
-            VerifyAuthAction(s, '.$planId.');            
+             VerifyAuthAction(s, '.$planId.');            
         </SCRIPT>';
     return $tmpHtml;
+
+    /** Set as array  */
+     // create input elements for dynamic form
+    //  $arrFormData = [];
+    //  foreach($postParams as $key => $val){
+    //     $arrFormData[$key] = $val;
+    // }
+    // $tmpHtml = "
+    //         <SCRIPT>
+    //         var obj = ".json_encode($arrFormData).";
+    //         console.log(obj);
+    //         </SCRIPT>
+    //         ";
+    // return $tmpHtml;
 }
 
 function getCardInfoHtml() {

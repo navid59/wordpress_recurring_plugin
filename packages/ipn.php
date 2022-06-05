@@ -79,6 +79,7 @@ class IPN {
          *  Public Key
          * IS HARD CODAT , CHANGE IT PLEASE NAVID
          * @Navid , check the new public Key from Alex as well 
+         * @Navid Fix it
          * 
         */
         $publicKeyPath = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/certificates/sandbox.1PD2-FYKC-R27B-55BW-NVGN.public.cer';

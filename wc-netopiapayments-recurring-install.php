@@ -124,7 +124,7 @@ function recurring_account_page() {
         // Create post object
         $ntpAccountPage = array(
             'post_title'    => $strPageTitle,
-            'post_content'  => '<!-- wp:shortcode -->[NTPRecurring-My-Account]<!-- /wp:shortcode -->',
+            'post_content'  => '<!-- wp:shortcode -->[NTP-Recurring-My-Account]<!-- /wp:shortcode -->',
             'post_status'   => 'publish',
             'post_author'   => 1,
             'post_type'     => 'page',
