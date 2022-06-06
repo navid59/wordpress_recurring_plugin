@@ -499,3 +499,14 @@ jQuery('#netopia_recurring_general_public_key').on('change', function () {
         });
     }
 });
+
+function CopyToClipboard(id)
+{
+    var id = 'planShortCode';
+    var r = document.createRange();
+    r.selectNode(document.getElementById(id));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+}

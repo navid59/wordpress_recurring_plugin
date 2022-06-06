@@ -347,8 +347,10 @@ function recurring_addPlan() {
                 $msg = $msg.'
                 <hr>
                 <b>Plan short code : </b>
+                <span id="planShortCode">
                 [NTP-Recurring planId='.$jsonResultData['data']['planId'].' button="Subscribe" title="'.$jsonResultData['data']['Title'].'"]
-                ';
+                </span>
+                <button class="btn" onclick="CopyToClipboard()" ><i class="fa fa-clipboard"></i> Copy shortcode</button>';
             } else {
                  // local response
                  $status = false;

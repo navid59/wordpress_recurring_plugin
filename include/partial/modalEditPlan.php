@@ -90,7 +90,7 @@
                                 <label for="editConditions"><?php echo __('Term & Conditions','ntpRp'); ?></label><br>
                                 <p>
                                     <input type="checkbox" class="form-control" id="editConditions" value="true" required>
-                                    <?php echo __('Accept to inform subscribers about deleting this plan.','ntpRp');?>
+                                    <?php echo __('Accept to inform subscribers about modify this plan.','ntpRp');?>
                                 </p>
                             </div>    
                             <div class="form-group col-md-4">
