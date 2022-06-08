@@ -134,29 +134,6 @@ jQuery(document).ready(function () {
     // jQuery('.verify-action-form').on('submit', VerifyAuthAction);
     jQuery('.verify-action-botton').on('click', VerifyAuthAction);
 
-    /**
-     * To Auto submit the "Verify Auth Submmit - Guest AUTO FORM"
-    */
-
-    // const queryString = window.location.search;
-    // const urlParams = new URLSearchParams(queryString);
-    // const urlPlanId = urlParams.get('planId')
-    // console.log('pppppppppppppppppppppppppppppp');
-    // if(urlPlanId != null){
-    //     var isVerifyAuthFormExist = document.getElementById("VerifyAuthSubmmit"+urlPlanId);
-    //     console.log(isVerifyAuthFormExist);
-    //     if(isVerifyAuthFormExist) {
-    //         document.getElementById("verifyAuthForm"+urlPlanId).submit();
-    //         console.log('aloooooo');
-    //         jQuery( "#VerifyAuthForm"+urlPlanId ).submit(function( event ) {
-    //             // alert( "Handler for .submit() called." );
-    //             event.preventDefault();
-    //           });
-    //     }
-    // } else {
-    //     // Do nothing
-    // }    
-
 });
 
 

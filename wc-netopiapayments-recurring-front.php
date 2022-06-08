@@ -11,7 +11,6 @@
  add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
  add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
 
- 
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
  add_action('wp_ajax_getMySubscriptions', 'recurring_account_getMySubscriptions');
@@ -94,7 +93,7 @@ function recurring_verifyAuth(){
         "authenticationToken" => $obj->getAuthenticationToken(),
         "ntpID"         => $obj->getNTPID(),
         "formData"      => $singleArrayFormData,
-        "isTestMod"     => $obj->isLive() ? "false" : "true" 
+        "isTestMod"     => !$obj->isLive()
     );
     
     $jsonResultData = $obj->setVerifyAuth($verifyAuthFormData);
@@ -138,7 +137,7 @@ function recurring_verifyAuth(){
         $Member['Subscription_Id'] = $cookieDataObj->Subscription_Id;
         $Member['PlanId'] = $cookieDataObj->PlanId;
         $Member['Status'] = 1;
-        $Member['NextPaymentDate'] = "2020-01-01"; // BAD BAD CHECK IT
+        $Member['NextPaymentDate'] = "";
         $Member['CreatedAt'] = date("Y-m-d");
         $Member['UpdatedAt'] = date("Y-m-d");
         $Member['StartDate'] = $cookieDataObj->StartDate;
@@ -259,10 +258,6 @@ function recurring_addSubscription() {
         )
       );   
      
-    // echo "<pre>";
-    // var_dump($subscriptionData);
-    // echo "</pre>";
-
     $jsonResultData = $obj->setSubscription($subscriptionData);
 
     // Add subscription to DB 
@@ -369,7 +364,7 @@ function recurring_unsubscription() {
     $subscriptionData = array(
             "Signature" => $obj->getSignature(),
             "SubscriptionId" => $_POST['SubscriptionId']+0,
-            "isTestMod" => $obj->isLive() ? "false" : "true" 
+            "isTestMod" => !$obj->isLive() 
       );   
      
     $jsonResultData = $obj->setUnsubscription($subscriptionData);

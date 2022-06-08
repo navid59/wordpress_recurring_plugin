@@ -12,81 +12,6 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
-    /**
-     * Get subscription list
-     * Use it at Datatable in admin
-     */
-    // function getSubscriptionList(){
-    //     die('Important!! Not Need, Will Delete');
-    //     global $wpdb;
-    //     // $subscriptions = $wpdb->get_results("SELECT * FROM  ".$wpdb->prefix . "ntp_subscriptions WHERE 1 ORDER BY `CreatedAt` DESC", "ARRAY_A");
-    //     $subscriptions = $wpdb->get_results("SELECT s.id,
-    //                                                 s.Subscription_Id,
-    //                                                 s.First_Name,
-    //                                                 s.Last_Name,
-    //                                                 s.Email,
-    //                                                 s.Tel,
-    //                                                 s.UserID,
-    //                                                 p.Title,
-    //                                                 p.Amount,
-    //                                                 s.StartDate,
-    //                                                 s.status
-    //                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-    //                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-    //                                             WHERE s.PlanId = p.PlanId 
-    //                                             GROUP BY s.UserID 
-    //                                             ORDER BY s.CreatedAt DESC", "ARRAY_A");
-    //     if(count($subscriptions)) {
-    //         $errorCode = "00";
-    //         $errorMsg = "";
-    //     } else {
-    //         $errorCode = "11";
-    //         $errorMsg = __('There is no any subscription, yet','ntpRp');
-    //     }
-    
-    //     $resultData = array(
-    //         "code" => $errorCode,
-    //         "message" => $errorMsg,
-    //         "members" => $subscriptions
-    //         );
-    //     return $resultData;
-    // }
-
-    // function getSubscriptionInfinite(){
-    //     die('Important!! Not Need, Will Delete');
-    //     global $wpdb;
-        
-    //     $subscriptions = $wpdb->get_results("SELECT s.id,
-    //                                                 s.Subscription_Id,
-    //                                                 s.First_Name,
-    //                                                 s.Last_Name,
-    //                                                 s.Email,
-    //                                                 s.Tel,
-    //                                                 s.UserID,
-    //                                                 p.Title,
-    //                                                 p.Amount,
-    //                                                 s.StartDate,
-    //                                                 s.status
-    //                                             FROM  ".$wpdb->prefix . "ntp_subscriptions  as s 
-    //                                             INNER JOIN ".$wpdb->prefix . "ntp_plans as p 
-    //                                             WHERE s.PlanId = p.PlanId 
-    //                                             GROUP BY s.UserID 
-    //                                             ORDER BY s.CreatedAt DESC", "ARRAY_A");
-    //     if(count($subscriptions)) {
-    //         $errorCode = "00";
-    //         $errorMsg = "";
-    //     } else {
-    //         $errorCode = "11";
-    //         $errorMsg = __('There is no any subscription, yet','ntpRp');
-    //     }
-    
-    //     $resultData = array(
-    //         "code" => $errorCode,
-    //         "message" => $errorMsg,
-    //         "members" => $subscriptions
-    //         );
-    //     return $resultData;
-    // }
 
     function getPlanListLive(){
         $url = self::getApiUrl('plan/list');
@@ -245,7 +170,8 @@ class recurringAdmin extends recurring {
         $url = self::getApiUrl('schedule/payment');
         $data = array(
             'Signature' => self::getSignature(),
-            "SubscriptionId" => $formData['SubscriptionId']
+            "SubscriptionId" => $formData['SubscriptionId'],
+            'IsTestMod' => !self::isLive()
         );
     
         $postData = json_encode($data);
