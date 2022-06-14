@@ -90,17 +90,32 @@ function getHeaderRequest() {
             // Add Log & Add History
             $data = file_get_contents('php://input');
             $arrDate = json_decode($data, true);
-            $wpdb->insert( 
-                $wpdb->prefix . $obj->getDbSourceName('history'), 
-                array( 
-                    'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
-                    'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
-                    'NotifyContent'  => $data,
-                    'Comment'        => $arrDate['NotifyPayment']['Message'],
-                    'Status'         => $arrDate['NotifyPayment']['Status'],
-                    'CreatedAt'      => date("Y-m-d")
-                )
-            );
+            if($arrDate['NotifySubscription']['Action'] == "Unsubscribe") {
+                $wpdb->insert( 
+                    $wpdb->prefix . $obj->getDbSourceName('history'), 
+                    array( 
+                        'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
+                        'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
+                        'NotifyContent'  => $data,
+                        'Comment'        => $arrDate['NotifyPayment']['Message'],
+                        'Status'         => 2,
+                        'CreatedAt'      => date("Y-m-d H:i:s")
+                    )
+                );
+            } else {
+                $wpdb->insert( 
+                    $wpdb->prefix . $obj->getDbSourceName('history'), 
+                    array( 
+                        'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
+                        'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
+                        'NotifyContent'  => $data,
+                        'Comment'        => $arrDate['NotifyPayment']['Message'],
+                        'Status'         => $arrDate['NotifyPayment']['Status'],
+                        'CreatedAt'      => date("Y-m-d H:i:s")
+                    )
+                ); 
+            }
+            
 
             /** Log IPN */
             file_put_contents($logFile, "[".$logDate."] IPN - Subscription ".$arrDate['NotifySubscription']['SubscriptionID']." added in DB \n", FILE_APPEND);

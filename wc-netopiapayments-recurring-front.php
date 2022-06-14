@@ -738,7 +738,7 @@ function recurring_account_getMyHistory() {
                                     <th>'. __('Title & Amount','ntpRp').'</th>
                                     <!-- <th>'. __('Transaction ID','ntpRp').'</th> -->
                                     <!-- <th>'. __('Comment','ntpRp').'</th> -->
-                                    <th>'. __('Status','ntpRp').'</th>
+                                    <th>'. __('Status','ntpRp').'</th> 
                                 </tr>
                                 </thead>
                                 <tbody id="mySubscriberPaymentHistoryList">
@@ -750,7 +750,7 @@ function recurring_account_getMyHistory() {
                                     <th>'. __('Title & Amount','ntpRp').'</th>
                                     <!-- <th>'. __('Transaction ID','ntpRp').'</th> -->
                                     <!-- <th>'. __('Comment','ntpRp').'</th> -->
-                                    <th>'. __('Status','ntpRp').'</th>
+                                    <th>'. __('Status','ntpRp').'</th> 
                                 </tr>
                                 </tfoot>
                             </table>

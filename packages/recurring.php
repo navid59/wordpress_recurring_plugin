@@ -133,10 +133,10 @@
                 case 'plan':
                     switch ($statusCode) {
                         case '1':
-                            $statusStr = __('Subscribed','ntpRp');
+                            $statusStr = __('Active Plan','ntpRp');
                             break;
                         case '2':
-                            $statusStr = __('Unsubscribed','ntpRp');
+                            $statusStr = __('Inactive Plan','ntpRp');
                             break;
                         default:
                             $statusStr = $statusCode;
@@ -146,6 +146,9 @@
                     switch ($statusCode) {
                         case '00':
                             $statusStr = 'Confirmed';
+                            break;
+                        case '2':
+                            $statusStr = 'Unsubscribed';
                             break;
                         case '3':
                             $statusStr = 'Paid';
