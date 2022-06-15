@@ -973,8 +973,9 @@ function ntpMyAccount() {
                         </div>
                     </div>';
     }
-    
-echo $strHTML;
+    ob_start();
+    echo $strHTML;
+    return ob_get_clean();
 }
 
 function recurringModal($planId , $button, $title) {

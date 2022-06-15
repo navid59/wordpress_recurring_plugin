@@ -157,7 +157,7 @@
                             $statusStr = 'Not paid';
                             break;
                         case '15':
-                            $statusStr = 'Authorizing';
+                            $statusStr = 'Authorized';
                             break;
                         default:
                             $statusStr = $statusCode;

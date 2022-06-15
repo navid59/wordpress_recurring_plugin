@@ -11,7 +11,7 @@
               <h4><?php echo __('Plan short code','ntpRp')?></h4>
               <span id="shortcode"></span>
               <hr>
-              <?php echo __('Just put the short code on your plan page / post','ntpRp');?>
+              <?php echo __('Just put the short code of your plan page / post','ntpRp');?>
               <?php echo __('and customize the title & button if is necessary! ','ntpRp');?>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
