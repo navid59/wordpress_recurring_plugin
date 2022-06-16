@@ -34,7 +34,7 @@ msgstr "Faceți click <a href=\"%s\" target=\"blank\">aici</a> dacă nu aveți u
 
 #: include\about_plugin.php:6
 msgid ""
-"Otherwise, is enghout to complete the setting in Recurring payment configuration <a href=\"?page=netopia_recurring&tab=display_setting\" >setting tab</a>"
+"Otherwise, is enghout to complete the setting in Recurring payment configuration <a href=\"?page=netopia_recurring&tab=display_setting\" >settings tab</a>"
 msgstr ""
 "În caz in care aveti deja count, este suficient să finalizați setarea pentru configurarea plăților recurente <a href=\"?"
 "page=netopia_recurring&tab=display_setting\" target=\"blank\">sectie de setari</a>"

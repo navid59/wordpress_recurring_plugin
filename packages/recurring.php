@@ -2,6 +2,14 @@
     class recurring {
         protected $slug = 'netopia_recurring';
 
+        
+        /**
+        *  get Public Key
+        */
+        function getPublicKey() {
+            return get_option($this->slug.'_general_public_key_file_name', array());
+        }
+
         function getSignature() {
             return get_option($this->slug.'_signature', array());
         }

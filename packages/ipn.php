@@ -71,6 +71,8 @@ class IPN {
      *  - a Json
      */
     public function verifyIPN() {
+        $obj = new recurring();
+
         /** Log Time */
         $logDate = new DateTime();
         $logDate = $logDate->format("y:m:d h:i:s");
@@ -82,7 +84,8 @@ class IPN {
          * @Navid Fix it
          * 
         */
-        $publicKeyPath = '/home/navidro/public_html/wp-content/plugins/netopia-recurring/certificates/sandbox.1PD2-FYKC-R27B-55BW-NVGN.public.cer';
+
+        $publicKeyPath = WP_PLUGIN_DIR . '/netopia-recurring/certificates/'.$obj->getPublicKey();
                     
         /**
         * Default IPN response, 
@@ -98,41 +101,44 @@ class IPN {
         *  Fetch all HTTP request headers
         */
         $aHeaders = $this->getApacheHeader();
+        file_put_contents($this->logFile, "--- HEADER PASSED --- \n", FILE_APPEND);
+        file_put_contents($this->logFile, print_r($aHeaders, true)." \n", FILE_APPEND);
         if(!$this->validHeader($aHeaders)) {
             /**
              * check if header has Apikey
              */
+            file_put_contents($this->logFile, "--- Does not have Verification-Token --- \n", FILE_APPEND);
             if(array_key_exists('Apikey', $aHeaders)) {
                $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
                $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
                $outputData['errorMessage']	= 'Need to Validate API Key';
 
                return $outputData;
-            } elseif( isset($_POST['paRes']) && !empty($_POST['paRes']) ) {
-                /** Log IPN */
-                file_put_contents($this->logFile, "[".$logDate."] Come from bank and has Pares \n", FILE_APPEND);
-                echo 'Come from bank and has Pares' . PHP_EOL;
-                exit;
-            }else {
+            } else {
                 /** Log IPN */
                 file_put_contents($this->logFile, "[".$logDate."] IPN__header is not an valid HTTP HEADER \n", FILE_APPEND);
                 echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
                 exit;
             }            
+        } else {
+            
         }
+        file_put_contents($this->logFile, "--- ----------------- ----------------- --- \n", FILE_APPEND);
 
         /**
         *  fetch Verification-token from HTTP header 
         */
         $verificationToken = $this->getVerificationToken($aHeaders);
-        if($verificationToken === null)
+        $apikey = $this->getApikey($aHeaders);
+        if($verificationToken === null && $apikey === null)
             {
             /** Log IPN */
             file_put_contents($this->logFile, "[".$logDate."] IPN__Verification-token is missing in HTTP HEADER \n", FILE_APPEND);
             echo 'IPN__Verification-token is missing in HTTP HEADER' . PHP_EOL;
             exit;
             }
-        
+
+        file_put_contents($this->logFile, "--- HAS verification Token --- \n", FILE_APPEND);
         /**
         * Analising verification token
         * Just to make sure if Type is JWT & Use right encoding/decoding algorithm 
@@ -165,6 +171,8 @@ class IPN {
             echo 'IPN__public key is not a valid public key' . PHP_EOL; 
             exit;
         }
+
+        
         
         /**
         * Get raw data
@@ -186,10 +194,6 @@ class IPN {
         
         try {
             JWT::$timestamp = time() * 1000; 
-        
-           /**
-            * Decode from JWT
-            */
             $objJwt = JWT::decode($verificationToken, $publicKey, array($jwtAlgorithm));
         
             if(strcmp($objJwt->iss, 'NETOPIA Payments') != 0)
@@ -325,6 +329,7 @@ class IPN {
         return $outputData;
     }
 
+
     /**
     *  Fetch all HTTP request headers
     */
@@ -361,6 +366,21 @@ class IPN {
                 {
                     $verificationToken = $headerValue;
                     return $verificationToken;
+                }
+            }
+        return null;
+    }
+
+    /**
+    *  fetch Apikey from HTTP header 
+    */
+    public function getApikey($httpHeader) {
+        foreach($httpHeader as $headerName=>$headerValue)
+            {
+                if(strcasecmp('Apikey', $headerName) == 0)
+                {
+                    $apikey = $headerValue;
+                    return $apikey;
                 }
             }
         return null;
