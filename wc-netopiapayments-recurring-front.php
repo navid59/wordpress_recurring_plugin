@@ -1460,7 +1460,7 @@ function getWarningFront() {
         return '';
     } else {
         return '<div class="alert alert-warning alert-dismissible fade show float-left" role="alert">
-                <strong>'.__('Warning!','ntpRp').'</strong> '.__('You are in test mode', 'ntpRp').'
+                <strong>'.__('Warning!','ntpRp').'</strong> '.__('You are in test mod', 'ntpRp').'
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

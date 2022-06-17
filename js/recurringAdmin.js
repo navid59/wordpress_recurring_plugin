@@ -1,6 +1,9 @@
 jQuery(document).ready(function () {
     // Without Scrolling , Subscription - TMP 
-    jQuery('#dtBasicExample').DataTable();
+    jQuery('#dtBasicExampleDeleted_REC').DataTable();
+    jQuery('#planDtBasic').DataTable();
+    jQuery('#reportDtBasic').DataTable();
+    jQuery('#subscriberInfoDtBasic').DataTable();
     jQuery('.dataTables_length').addClass('bs-select');
 
     // Infinit scrolling for Subscriptions 
@@ -31,12 +34,12 @@ jQuery(document).ready(function () {
                 } );
             });
         },
-        // paging : true,
+        paging : true,
 		columns: [
 			{ "data": "First_Name" },
 			{ "data": "Last_Name" },
-			{ "data": "Email" },
-			{ "data": "Tel" },
+			// { "data": "Email" },
+			// { "data": "Tel" },
 			{ "data": "UserID" },
 			{ "data": "PlanTitle" },
 			{ "data": "Status" },
@@ -187,7 +190,7 @@ function delPlan(planId) {
     return false;
 }
 
-//////////////////
+
 function doDeletePlan(e) {
     e.preventDefault(); // to stop Submit Event
     var planId = jQuery("#planId").val();
@@ -236,7 +239,7 @@ function doDeletePlan(e) {
         jQuery('#msgBlock').addClass('show');
     }
 }
-//////////////////
+
 
 function editPlan(planId) {  
     jQuery("#editPlanId").val(planId);
@@ -427,9 +430,6 @@ function addPlanInAction() {
 }
 
 jQuery("#recurring-plan-form").submit(function (e) {
-
-
-                /////////////////
                 subscriptionDetailData = {
                     action : 'verifyCredentialData'
                 }
@@ -450,11 +450,7 @@ jQuery("#recurring-plan-form").submit(function (e) {
                          */
                          toastr.error('Invalid credential data. Please first set the corect API key & Signature in Recurring v1->Setting section, and then try again!', 'Error!');
                     }
-                });
-                /////////////////
-
-                 
-
+                });                
     // important to Return
     return false;
 });

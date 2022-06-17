@@ -18,14 +18,16 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
     foreach($arrayData['report']  as $payArchive) {
         echo "<tr>";
             printf("<td>%1s</td>",$payArchive['id']);
-            printf("<td>%1s</td>",$payArchive['TransactionID']);
-            printf("<td>%1s</td>",$payArchive['Comment']);
             printf("<td>%1s</td>",$payArchive['UserId']);
             printf("<td>%1s</td>",$payArchive['Title']);
             printf("<td>%1s</td>",$payArchive['Amount']);
             printf("<td>%1s</td>",$obj->getStatusStr('report',$payArchive['Status']));
             $date = new DateTime($payArchive['CreatedAt']);
             printf("<td>%1s</td>",$date->format('Y-m-d'));
+            // printf("<td>%1s</td>",$payArchive['Comment']);            
+            // printf("<td>%1s</td>",$payArchive['TransactionID']);
+            
+            
         echo "</tr>";
     }
 }

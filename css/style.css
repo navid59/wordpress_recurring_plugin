@@ -13,3 +13,21 @@
     min-width:2em;
     font-weight:bold;
   }
+
+  table.dataTable tbody tr:hover {
+    background-color:#f0f0f1;
+    /* font-weight: bold; */
+  }
+  
+  table.dataTable tbody tr:hover > .sorting_1 {
+    background-color: #f0f0f1;
+    /* font-weight: bold; */
+  }
+  
+  table.dataTable thead:hover {
+    background-color: #f0f0f1;
+    /* font-weight: bold; */
+  }
+  
+table.dataTable tr.odd { background-color: #f6f7f7; }
+table.dataTable tr.even { background-color: white; }

@@ -419,10 +419,8 @@ class NetopiapaymentsRecurringPayment extends recurring
             <h2 class="nav-tab-wrapper">
                 <a href="?page=netopia_recurring&tab=display_about_plugin" class="nav-tab <?php echo $active_tab == 'display_about_plugin' ? 'nav-tab-active' : ''; ?>"><?php echo __('About plugin','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_setting" class="nav-tab <?php echo $active_tab == 'display_setting' ? 'nav-tab-active' : ''; ?>"><?php echo __('Setting','ntpRp')?></a>
-                <!-- <a href="?page=netopia_recurring&tab=display_notify_management" class="nav-tab <?php echo $active_tab == 'display_notify_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Notify management','ntpRp')?></a> -->
                 <a href="?page=netopia_recurring&tab=display_account_management" class="nav-tab <?php echo $active_tab == 'display_account_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Account page management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
-                <!-- <a href="?page=netopia_recurring&tab=display_sync_management" class="nav-tab <?php echo $active_tab == 'display_sync_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Sync Data','ntpRp')?></a> -->
             </h2>
             <form method="post" enctype="multipart/form-data" action="options.php">
                 <?php
@@ -443,15 +441,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                     settings_fields( 'message_management' );
                     do_settings_sections( 'message_management' );
                     submit_button();
-                } elseif($active_tab == 'display_sync_management') {
-                    // require_once ('include/sync_data.php');
-                } 
-                // elseif($active_tab == 'display_notify_management') {
-                //     settings_fields( 'notify_management' );
-                //     do_settings_sections( 'notify_management' );
-                //     submit_button();
-                // } 
-                else {
+                } else {
                     require_once ('include/welcomepage.php');
                 }
                 ?>
@@ -533,7 +523,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             return '
                 <div class="px-5">
                     <div class="alert alert alert-info alert-dismissible fade show" role="alert">
-                        <strong>'.__('Warning!!!','ntpRp').'</strong> '.__('You are in test mode', 'ntpRp').'
+                        <strong>'.__('Warning!!!','ntpRp').'</strong> '.__('You are in test mod', 'ntpRp').'
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

@@ -1,6 +1,6 @@
 <div class="">
     <div>
-      <table id="dtBasicExample" class="table" width="100%">
+      <table id="planDtBasic" class="table" width="100%">
         <thead>
           <tr>
             <th><?php echo __('Title','ntpRp');?></th>

@@ -1,16 +1,16 @@
 <div class="">
     <div>
-      <table id="dtBasicExample" class="table" width="100%">
+      <table id="reportDtBasic" class="table" width="100%">
         <thead>
           <tr>
             <th>Report ID</th>
-            <th>TransactionID</th>
-            <th>PaymentComment</th>
             <th>User</th>
             <th>Plan</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>CreatedAt</th>
+            <th>Date</th>
+            <!-- <th>PaymentComment</th> -->
+            <!--<th>TransactionID</th> -->
           </tr>
         </thead>
         <tbody>
@@ -19,13 +19,13 @@
         <tfoot>
           <tr>
             <th>Report ID</th>
-            <th>TransactionID</th>
-            <th>PaymentComment</th>
             <th>User</th>
             <th>Plan</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>CreatedAt</th>
+            <th>Date</th>
+            <!-- <th>PaymentComment</th> -->
+            <!--<th>TransactionID</th> -->
           </tr>
         </tfoot>
       </table>

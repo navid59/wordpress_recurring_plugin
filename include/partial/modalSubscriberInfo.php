@@ -23,7 +23,7 @@
                 <div class="card col" style="">
                     <div class="card-body">
                         <h3 class="card-title"><?php echo __('Subscription List','ntpRp');?></h3>
-                        <table id="dtBasicExample" class="table" width="100%">
+                        <table id="subscriberInfoDtBasic" class="table" width="100%">
                             <thead>
                             <tr>
                                 <th><?php echo __('Title','ntpRp');?></th>

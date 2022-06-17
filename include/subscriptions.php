@@ -1,6 +1,9 @@
-<div class="">
+<php
+die();
+?>
+<!-- <div class="">
     <div>
-      <table id="dtBasicExample" class="table" width="100%">
+      <table id="dtBasicExampleDeleted_REC" class="table" width="100%">
         <thead>
           <tr>
             <th><?php echo __('First Name','ntpRp');?></th>
@@ -15,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php include_once('subscriptionGetData.php')?>
+          <?php // include_once('subscriptionGetData.php')?>
         </tbody>
         <tfoot>
           <tr>
@@ -32,4 +35,4 @@
         </tfoot>
       </table>
     </div>
-</div>
+</div> -->
