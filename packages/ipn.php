@@ -17,7 +17,7 @@ class IPN {
     public $posSignatureSet;
     public $hashMethod;
     public $alg;
-    // public $publicKeyStr;
+    public $publicKeyStr;
 
     // Error code defination
     const E_VERIFICATION_FAILED_GENERAL			= 0x10000101;
@@ -77,15 +77,8 @@ class IPN {
         $logDate = new DateTime();
         $logDate = $logDate->format("y:m:d h:i:s");
 
-        /**
-         *  Public Key
-         * IS HARD CODAT , CHANGE IT PLEASE NAVID
-         * @Navid , check the new public Key from Alex as well 
-         * @Navid Fix it
-         * 
-        */
 
-        $publicKeyPath = WP_PLUGIN_DIR . '/netopia-recurring/certificates/'.$obj->getPublicKey();
+        // $publicKeyPath = WP_PLUGIN_DIR . '/netopia-recurring/certificates/'.$obj->getPublicKey();
                     
         /**
         * Default IPN response, 
@@ -149,6 +142,7 @@ class IPN {
         */
         $tks = \explode('.', $verificationToken);
         if (\count($tks) != 3) {
+            file_put_contents($this->logFile, "--- Choos,... --- \n", FILE_APPEND);
             throw new \Exception('Wrong_Verification_Token');
             exit;
         }
@@ -160,18 +154,22 @@ class IPN {
             exit; 
         }
 
+
         /**
         * check if publicKeyStr is defined
         */
-                
-        $publicKey = $this->encrypt($publicKeyPath);
-        if($publicKey === false) {
-            /** Log Temporar */
-            file_put_contents($this->logFile, 'IPN__public key is not a valid public key'."\n", FILE_APPEND);
-            echo 'IPN__public key is not a valid public key' . PHP_EOL; 
+        if(isset($this->publicKeyStr) && !is_null($this->publicKeyStr)){
+            $publicKey = openssl_pkey_get_public($this->publicKeyStr);
+            if($publicKey === false) {
+                file_put_contents($this->logFile, 'IPN__public key is not a valid public key'."\n", FILE_APPEND);
+                echo 'IPN__public key is not a valid public key' . PHP_EOL; 
+                exit;
+            }
+        } else {
+            file_put_contents($this->logFile, 'IPN__Public key missing'."\n", FILE_APPEND);
+            echo "IPN__Public key missing" . PHP_EOL; 
             exit;
         }
-
         
         
         /**
@@ -207,13 +205,13 @@ class IPN {
              * check active posSignature 
              * check if is in set of signature too
              */
-            if(empty($objJwt->aud) || $objJwt->aud != $this->activeKey){
+            if(empty($objJwt->aud) || $objJwt->aud[0] != $this->activeKey){
                 file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_SIGNATURE \n", FILE_APPEND);
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE');
                 exit;
             }
         
-            if(!in_array($objJwt->aud, $this->posSignatureSet,true)) {
+            if(!in_array($objJwt->aud[0], $this->posSignatureSet,true)) {
                 file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_SIGNATURE_SET \n", FILE_APPEND);
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE_SET');
                 exit;

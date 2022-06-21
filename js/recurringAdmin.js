@@ -94,7 +94,7 @@ function subscriptionHistory(userId) {
             const tr = jQuery('<tr></tr>');
             tr.append(jQuery('<td></td>').text(history.CreatedAt.split(' ')[0]));
             tr.append(jQuery('<td></td>').text(history.Title + ' - ' + history.Amount));
-            tr.append(jQuery('<td></td>').text(history.TransactionID));
+            // tr.append(jQuery('<td></td>').text(history.TransactionID));
             tr.append(jQuery('<td></td>').text(history.Comment));
             tr.append(jQuery('<td></td>').text(history.Status));
             return tr;
