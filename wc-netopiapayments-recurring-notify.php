@@ -26,10 +26,12 @@ function ntpRecurringNotifyValidation($template) {
     if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_notify') {
         return $template;
     } else {
+        status_header(200);
         getHeaderRequest();
         die();
     }
 }
+
 add_action('template_include', 'ntpRecurring3DSAuthorize');
 function ntpRecurring3DSAuthorize($template) {
     global $wp_query;
