@@ -375,7 +375,7 @@ class IPN {
     public function getApikey($httpHeader) {
         foreach($httpHeader as $headerName=>$headerValue)
             {
-                if(strcasecmp('Apikey', $headerName) == 0)
+                if(strcasecmp('X-Apikey', $headerName) == 0)
                 {
                     $apikey = $headerValue;
                     return $apikey;

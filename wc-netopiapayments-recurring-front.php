@@ -1164,6 +1164,7 @@ function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $ca
                                         </div>
                                         <div class="card-body">
                                             <h3 class="card-title pricing-card-title">'.$planData['Amount'].' '.$planData['Currency'].' <small class="text-muted">/ '.$planData['Frequency']['Value'].' '.$planData['Frequency']['Type'].'</small></h3>
+                                            <h5 class="card-title ">'.__("Grace period","ntpRp").' : '.$planData['GracePeriod'] . " " . $planData['Frequency']['Type'].'</h5>
                                             <input type="hidden" class="form-control" id="planID" name="planID" value="'.$planId.'">
                                         </div>
                                     </div>

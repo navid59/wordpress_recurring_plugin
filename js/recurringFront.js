@@ -130,10 +130,8 @@ jQuery(document).ready(function () {
 
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);
-    /** Navid Verify Auth */
-    // jQuery('.verify-action-form').on('submit', VerifyAuthAction);
+    /** Verify Auth */
     jQuery('.verify-action-botton').on('click', VerifyAuthAction);
-
 });
 
 
@@ -340,6 +338,7 @@ function addSubscription(e) {
                     jQuery('#'+formId).find('input[name=cc-expiration-year]').prop('readonly', true);
                     jQuery('#'+formId).find('input[name=cc-cvv]').prop('readonly', true);
     
+
                     // Refresh page after close Modal
                     jQuery('.recurringModal').on('hidden.bs.modal', function() {
                         window.location.reload();
@@ -438,6 +437,8 @@ function addSubscription(e) {
         });
     }
 }
+
+
 
 function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
     data = {
