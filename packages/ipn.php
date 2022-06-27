@@ -79,7 +79,7 @@ class IPN {
                     
         /**
         * Default IPN response, 
-        * will change if there is any problem
+        * will change if there is any problem$orderLog = 'payment was confirmed; deliver goods';
         */
         $outputData = array(
             'errorType'		=> self::ERROR_TYPE_NONE,
@@ -101,14 +101,12 @@ class IPN {
         * check if header has Apikey
         */
         if(!$this->validHeader($aHeaders) || empty($verificationToken)) {
-            
-            file_put_contents($this->logFile, "--- Does not have Verification-Token --- \n", FILE_APPEND);
             if($this->hasXapikeyHeader($aHeaders)) {
                $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
                $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
-               $outputData['errorMessage']	= 'Need to Validate API Key';
+               $outputData['errorMessage']	= 'Add as Arhive';
 
-               file_put_contents($this->logFile, "--- Has X-Apikey, then should be added in DB as arihive --- \n", FILE_APPEND);
+               file_put_contents($this->logFile, "--- Does not have Verification-Token or is EMPTY --- & --- Has X-Apikey --- then the arihive should be added in DB  --- \n", FILE_APPEND);
                file_put_contents($this->logFile, print_r($outputData, true)."\n", FILE_APPEND);
                file_put_contents($this->logFile, "--- --------------------------------------------- \n", FILE_APPEND);
 
@@ -121,13 +119,11 @@ class IPN {
             }            
         } 
         
-        file_put_contents($this->logFile, "--- ----------------- ----------------- --- \n", FILE_APPEND);
 
         /**
         *  fetch Verification-token from HTTP header 
         */
         $verificationToken = $this->getVerificationToken($aHeaders);
-        // $apikey = $this->getApikey($aHeaders);
         if($verificationToken === null)
             {
             /** Log IPN */
@@ -138,16 +134,12 @@ class IPN {
 
         file_put_contents($this->logFile, "--- HAS verification Token --- \n", FILE_APPEND);
         /**
-        * Analising verification token
-        * Just to make sure if Type is JWT & Use right encoding/decoding algorithm 
-        * Assign following var 
-        *  - $headb64, 
-        *  - $bodyb64,
-        *  - $cryptob64
+        * Analyzing verification token
+        * Verification token is JWT & should used right encoding/decoding algorithm 
         */
         $tks = \explode('.', $verificationToken);
         if (\count($tks) != 3) {
-            file_put_contents($this->logFile, "--- Choos,... --- \n", FILE_APPEND);
+            file_put_contents($this->logFile, "Has verification-token but is wrong JWT Token \n", FILE_APPEND);
             throw new \Exception('Wrong_Verification_Token');
             exit;
         }
@@ -155,10 +147,10 @@ class IPN {
         $jwtHeader = json_decode(base64_decode(\strtr($headb64, '-_', '+/')));
         
         if($jwtHeader->typ !== 'JWT') {
+            file_put_contents($this->logFile, "Has verification-token but does not have right JWT Token Type \n", FILE_APPEND);
             throw new \Exception('Wrong_Token_Type');
             exit; 
         }
-
 
         /**
         * check if publicKeyStr is defined
@@ -183,16 +175,15 @@ class IPN {
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
 
         /**
-        * The name of the alg defined in header of JWT
-        * Just in case we set the default algorithm
-        * Default alg is RS512
+        * Verify JWT algorithm
+        * Default alg is RS512$orderLog = 'payment was confirmed; deliver goods';
         */
         if(!isset($this->alg) || $this->alg==null){
             file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_JWT_ALG \n", FILE_APPEND);
             throw new \Exception('IDS_Service_IpnController__INVALID_JWT_ALG');
             exit;
         }
-        $jwtAlgorithm = !is_null($jwtHeader->alg) ? $jwtHeader->alg : $this->alg ; // ???? May need to Compare with Verification-token header // Ask Alex
+        $jwtAlgorithm = !is_null($jwtHeader->alg) ? $jwtHeader->alg : $this->alg ;
 
         
         try {
@@ -262,22 +253,78 @@ class IPN {
             switch($objIpn->payment->status)
                 {
                 case self::STATUS_NEW:
-                case self::STATUS_CHARGEBACK_INIT:                  // chargeback initiat
-                case self::STATUS_CHARGEBACK_ACCEPT:                // chargeback acceptat
-                case self::STATUS_SCHEDULED:
+                    /**
+                     * new purchase status
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'new purchase status';
+                break;
+                // case self::STATUS_CHARGEBACK_INIT:                  // chargeback initiat
+                // case self::STATUS_CHARGEBACK_ACCEPT:                // chargeback acceptat
+                // case self::STATUS_SCHEDULED:
                 case self::STATUS_3D_AUTH:
-                case self::STATUS_CHARGEBACK_REPRESENTMENT:
-                case self::STATUS_REVERSED:
+                    /**
+                     * Status Pending for any case
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= '3DS - Need Verufy Auth ';
+                break;
+                // case self::STATUS_CHARGEBACK_REPRESENTMENT:
+                // case self::STATUS_REVERSED:
                 case self::STATUS_PENDING_ANY:
-                case self::STATUS_PROGRAMMED_RECURRENT_PAYMENT:
-                case self::STATUS_CANCELED_PROGRAMMED_RECURRENT_PAYMENT:
-                case self::STATUS_TRIAL_PENDING:                    //specific to Model_Purchase_Sms_Online; wait for ACTON_TRIAL IPN to start trial period
-                case self::STATUS_TRIAL:                            //specific to Model_Purchase_Sms_Online; trial period has started
+                     /**
+                     * Status Pending for any case
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'Status Pending for any case';
+                break;
+                //case self::STATUS_PROGRAMMED_RECURRENT_PAYMENT:
+                //case self::STATUS_CANCELED_PROGRAMMED_RECURRENT_PAYMENT:
+                //case self::STATUS_TRIAL_PENDING:                    //specific to Model_Purchase_Sms_Online; wait for ACTON_TRIAL IPN to start trial period
+                //case self::STATUS_TRIAL:                            //specific to Model_Purchase_Sms_Online; trial period has started
                 case self::STATUS_EXPIRED:                          //cancel a not payed purchase 
+                     /**
+                     * Status Expired
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'cancel a not payed purchase';
+                break;
                 case self::STATUS_OPENED:                           // preauthorizate (card)
+                     /**
+                     * Status Opened
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'preauthorizate (card)';
+                break;
                 case self::STATUS_PENDING:
+                     /**
+                     * Status Pending
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'Status Pending';
+                break;
                 case self::STATUS_ERROR:                            // error
+                     /**
+                     * payment Error
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'payment general error';
+                break;
                 case self::STATUS_DECLINED:                         // declined
+                    /**
+                     * payment status is DECLINED
+                     */
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'payment is declined';
+                break;
                 case self::STATUS_FRAUD:                            // fraud
                     /**
                      * payment status is in fraud, reviw the payment
@@ -300,16 +347,17 @@ class IPN {
                     /**
                      * payment was confirmed; deliver goods
                      */
-                    $orderLog = 'payment was confirmed; deliver goods';
-                    // hear, can make Log for $orderLog
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'payment was confirmed; deliver goods';
                 break;
                 
                 case self::STATUS_CREDIT:                           // capturate si apoi refund
                     /**
                      * a previously confirmed payment eas refinded; cancel goods delivery
-                     */
-                    $orderLog = 'a previously confirmed payment eas refinded; cancel goods delivery';
-                    // hear, can make Log for $orderLog
+                     */                    
+                    $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
+                    $outputData['errorCode']	= null;
+                    $outputData['errorMessage']	= 'a previously confirmed payment eas refinded; cancel goods delivery';
                 break;
                 
                 case self::STATUS_CANCELED:                         // void
