@@ -93,18 +93,27 @@ class IPN {
         /**
         *  Fetch all HTTP request headers
         */
+        file_put_contents($this->logFile, "--- verifyIPN method --- \n", FILE_APPEND);
+
         $aHeaders = $this->getApacheHeader();
-        file_put_contents($this->logFile, "--- HEADER PASSED --- \n", FILE_APPEND);
         file_put_contents($this->logFile, print_r($aHeaders, true)." \n", FILE_APPEND);
-        if(!$this->validHeader($aHeaders)) {
-            /**
-             * check if header has Apikey
-             */
+
+        $verificationToken = $this->getVerificationToken($aHeaders);
+        
+        /**
+        * check if header has Apikey
+        */
+        if(!$this->validHeader($aHeaders) || is_null($verificationToken)) {
+            
             file_put_contents($this->logFile, "--- Does not have Verification-Token --- \n", FILE_APPEND);
-            if(array_key_exists('Apikey', $aHeaders)) {
+            if($this->hasXapikeyHeader($aHeaders)) {
                $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
                $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
                $outputData['errorMessage']	= 'Need to Validate API Key';
+
+               file_put_contents($this->logFile, "--- Has X-Apikey, then should be added in DB as arihive --- \n", FILE_APPEND);
+               file_put_contents($this->logFile, print_r($outputData, true)."\n", FILE_APPEND);
+               file_put_contents($this->logFile, "--- --------------------------------------------- \n", FILE_APPEND);
 
                return $outputData;
             } else {
@@ -113,17 +122,16 @@ class IPN {
                 echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
                 exit;
             }            
-        } else {
-            
-        }
+        } 
+        
         file_put_contents($this->logFile, "--- ----------------- ----------------- --- \n", FILE_APPEND);
 
         /**
         *  fetch Verification-token from HTTP header 
         */
         $verificationToken = $this->getVerificationToken($aHeaders);
-        $apikey = $this->getApikey($aHeaders);
-        if($verificationToken === null && $apikey === null)
+        // $apikey = $this->getApikey($aHeaders);
+        if($verificationToken === null)
             {
             /** Log IPN */
             file_put_contents($this->logFile, "[".$logDate."] IPN__Verification-token is missing in HTTP HEADER \n", FILE_APPEND);
@@ -346,7 +354,25 @@ class IPN {
             return false;
         } else {
             foreach($httpHeader as $key => $val) {
-                if($key == 'Verification-Token') {
+                if(strtolower($key) == strtolower('Verification-token')) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+    * if header exist in HTTP request
+    * and is a valid header
+    * @return bool 
+    */
+    public function hasXapikeyHeader($httpHeader) {
+        if(!is_array($httpHeader)){
+            return false;
+        } else {
+            foreach($httpHeader as $key => $val) {
+                if(strtolower($key) == strtolower('X-Apikey')) {
                     return true;
                 }
             }
@@ -369,20 +395,20 @@ class IPN {
         return null;
     }
 
-    /**
-    *  fetch Apikey from HTTP header 
-    */
-    public function getApikey($httpHeader) {
-        foreach($httpHeader as $headerName=>$headerValue)
-            {
-                if(strcasecmp('X-Apikey', $headerName) == 0)
-                {
-                    $apikey = $headerValue;
-                    return $apikey;
-                }
-            }
-        return null;
-    }
+    // /**
+    // *  fetch Apikey from HTTP header 
+    // */
+    // public function getApikey($httpHeader) {
+    //     foreach($httpHeader as $headerName=>$headerValue)
+    //         {
+    //             if(strcasecmp('X-Apikey', $headerName) == 0)
+    //             {
+    //                 $apikey = $headerValue;
+    //                 return $apikey;
+    //             }
+    //         }
+    //     return null;
+    // }
 
     public function encrypt($x509FilePath)
 	    {		

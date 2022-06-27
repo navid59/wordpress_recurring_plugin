@@ -86,16 +86,22 @@ function getHeaderRequest() {
 
 
     $ipnResponse = $ntpIpn->verifyIPN();
+
     /**
     * IPN Output
     */
-    echo json_encode($ipnResponse);
+    echo json_encode($ipnResponse);   
 
     if(($ipnResponse['errorType'] == IPN::ERROR_TYPE_TEMPORARY) && ($ipnResponse['errorCode'] == IPN::RECURRING_ERROR_CODE_NEED_VERIFY)) {
         // Verify API KEY
+        // Add Log - TMP
+    file_put_contents($logFile, "[".$logDate."] - wc-netopiapayments-recurring-notify -- AFter -verifyIPN()-- => 512 & 1----- \n", FILE_APPEND);
+
         $headers = apache_request_headers();
         if(hasToken($headers)) {
             // Add Log & Add History
+            file_put_contents($logFile, "[".$logDate."] - Has X-apikey and should add in History Table ---------------- \n", FILE_APPEND);
+            
             $data = file_get_contents('php://input');
             $arrDate = json_decode($data, true);
             if($arrDate['NotifySubscription']['Action'] == "Unsubscribe") {
@@ -111,7 +117,7 @@ function getHeaderRequest() {
                     )
                 );
             } else {
-                $wpdb->insert( 
+                $insertResult = $wpdb->insert( 
                     $wpdb->prefix . $obj->getDbSourceName('history'), 
                     array( 
                         'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
@@ -126,7 +132,7 @@ function getHeaderRequest() {
             
 
             /** Log IPN */
-            file_put_contents($logFile, "[".$logDate."] IPN - Subscription ".$arrDate['NotifySubscription']['SubscriptionID']." added in DB \n", FILE_APPEND);
+            file_put_contents($logFile, "[".$logDate."] IPN - Subscription ".$arrDate['NotifySubscription']['SubscriptionID']." added in History - DB -> TB \n", FILE_APPEND);
             file_put_contents($logFile, "[".$logDate."] - ---------------- STEP 1 is DONE ---------------- \n", FILE_APPEND);
         } else {
             /** Log IPN */
@@ -136,27 +142,54 @@ function getHeaderRequest() {
         //-------------
         /** Log Temporar */
         file_put_contents($logFile, print_r($ipnResponse, true)."\n", FILE_APPEND);
+        file_put_contents($logFile, "[".$logDate."] - - CHOOOOS----- \n", FILE_APPEND);
     }
 }
 
 
 function hasToken($header) {
-    if (array_key_exists('Apikey', $header)) {
-        if(isValidToken($header['Apikey'])) {
-            return true;
+    $ntpIpn = new IPN();
+    if($ntpIpn->hasXapikeyHeader($header)) {
+        $apikeyInHeader = getApiKeyFromHeader($header);
+        if($apikeyInHeader) {
+            if(isValidToken($apikeyInHeader)) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
-        }
+        }       
     } else {
         return false;
     }
 }
 
+function getApiKeyFromHeader($header) {
+    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', print_r('getApiKeyFromHeader Function', true)."\n", FILE_APPEND);
+    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', "----------------------------------------\n", FILE_APPEND);
+    foreach($header as $key => $value) {
+        if(strtolower($key) == strtolower('X-Apikey')) {
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', print_r($value, true)."\n", FILE_APPEND);
+            return $value;
+        }
+    }
+    return false;
+}
+
 function isValidToken($apiKey) {
     $obj = new recurring();
-    if($obj->getApiKey() === $apiKey) {
+
+    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', "********************************\n", FILE_APPEND);
+    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', print_r($obj->getApiKey(), true)."\n", FILE_APPEND);
+    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', print_r($apiKey, true)."\n", FILE_APPEND);
+
+
+    if(ltrim($obj->getApiKey()) == ltrim($apiKey)) {
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', "** YES **\n", FILE_APPEND);
         return true;
     } else {
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/tmp.log', "** NO **\n", FILE_APPEND);
         return false;
     }
 }
