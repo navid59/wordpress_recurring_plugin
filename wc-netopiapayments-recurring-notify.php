@@ -92,16 +92,13 @@ function getHeaderRequest() {
     */
     echo json_encode($ipnResponse);   
 
+    /**  
+    * IPN is checked 
+    * Base on IPN result the Archive will be add in DB , ...  
+    */
     if(($ipnResponse['errorType'] == IPN::ERROR_TYPE_TEMPORARY) && ($ipnResponse['errorCode'] == IPN::RECURRING_ERROR_CODE_NEED_VERIFY)) {
-        // Verify API KEY
-        // Add Log - TMP
-    file_put_contents($logFile, "[".$logDate."] - wc-netopiapayments-recurring-notify -- AFter -verifyIPN()-- => 512 & 1----- \n", FILE_APPEND);
-
         $headers = apache_request_headers();
-        if(hasToken($headers)) {
-            // Add Log & Add History
-            file_put_contents($logFile, "[".$logDate."] - Has X-apikey and should add in History Table ---------------- \n", FILE_APPEND);
-            
+        if(hasToken($headers)) {            
             $data = file_get_contents('php://input');
             $arrDate = json_decode($data, true);
             if($arrDate['NotifySubscription']['Action'] == "Unsubscribe") {
@@ -132,17 +129,19 @@ function getHeaderRequest() {
             
 
             /** Log IPN */
-            file_put_contents($logFile, "[".$logDate."] IPN - Subscription ".$arrDate['NotifySubscription']['SubscriptionID']." added in History - DB -> TB \n", FILE_APPEND);
-            file_put_contents($logFile, "[".$logDate."] - ---------------- STEP 1 is DONE ---------------- \n", FILE_APPEND);
+            file_put_contents($logFile, "[".$logDate."] IPN - Arhive Nr : ".$arrDate['NotifySubscription']['SubscriptionID']." is added in History TB - ".$arrDate['NotifySubscription']['Action']." \n", FILE_APPEND);
         } else {
             /** Log IPN */
             file_put_contents($logFile, "[".$logDate."] IPN - Request is not a valid request \n", FILE_APPEND);
         }        
-    } else {
-        //-------------
+    } elseif($ipnResponse['errorType'] == IPN::ERROR_TYPE_NONE) {
         /** Log Temporar */
         file_put_contents($logFile, print_r($ipnResponse, true)."\n", FILE_APPEND);
-        file_put_contents($logFile, "[".$logDate."] - - CHOOOOS----- \n", FILE_APPEND);
+        file_put_contents($logFile, "[".$logDate."] -- Payment respunse is ZERO - it mean is paid, ;-)   -- \n", FILE_APPEND);
+    } else {
+        /** Log Temporar */
+        file_put_contents($logFile, print_r($ipnResponse, true)."\n", FILE_APPEND);
+        file_put_contents($logFile, "[".$logDate."] --- Other type of response --- \n", FILE_APPEND);
     }
 }
 

@@ -76,9 +76,6 @@ class IPN {
         /** Log Time */
         $logDate = new DateTime();
         $logDate = $logDate->format("y:m:d h:i:s");
-
-
-        // $publicKeyPath = WP_PLUGIN_DIR . '/netopia-recurring/certificates/'.$obj->getPublicKey();
                     
         /**
         * Default IPN response, 
@@ -98,12 +95,12 @@ class IPN {
         $aHeaders = $this->getApacheHeader();
         file_put_contents($this->logFile, print_r($aHeaders, true)." \n", FILE_APPEND);
 
-        $verificationToken = $this->getVerificationToken($aHeaders);
+        $verificationToken = $this->getVerificationToken($aHeaders);        
         
         /**
         * check if header has Apikey
         */
-        if(!$this->validHeader($aHeaders) || is_null($verificationToken)) {
+        if(!$this->validHeader($aHeaders) || empty($verificationToken)) {
             
             file_put_contents($this->logFile, "--- Does not have Verification-Token --- \n", FILE_APPEND);
             if($this->hasXapikeyHeader($aHeaders)) {
