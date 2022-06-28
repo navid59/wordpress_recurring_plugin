@@ -36,17 +36,29 @@
         }
 
         function getNTPID() {
-            $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+            if ( ! session_id() ) {
+                session_start();
+            }
+            // $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+            $ntpRpNtpID = isset($_SESSION['ntpRp-session-NtpID']) ? $_SESSION['ntpRp-session-NtpID'] : "";
             return $ntpRpNtpID;
         }
 
         function getAuthenticationToken() {
-            $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+            if ( ! session_id() ) {
+                session_start();
+            }
+            // $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+            $ntpRpAuthenticationToken = isset($_SESSION['ntpRp-session-AuthenticationToken']) ? $_SESSION['ntpRp-session-AuthenticationToken'] : "";
             return $ntpRpAuthenticationToken;
         }
 
         function getSubscriptionData() {
-            $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
+            if ( ! session_id() ) {
+                session_start();
+            }
+            // $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
+            $ntpRpSubscriptionData = $_SESSION['ntpRp-session-json'];
             return (stripslashes($ntpRpSubscriptionData));
         }
 

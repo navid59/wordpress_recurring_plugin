@@ -8,8 +8,11 @@
  add_action('wp_ajax_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
  add_action('wp_ajax_nopriv_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
 
+ // Start session on init hook.
+ add_action( 'init', 'wpse16119876_init_session' );
+
  add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
- add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
+ add_action('wp_ajax_nopriv_doVerifyAuth', 'recurring_verifyAuth');
 
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
@@ -47,25 +50,40 @@ add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 
 add_action('wp_enqueue_scripts', 'frontResource');
 
+function wpse16119876_init_session() {
+    if ( ! session_id() ) {
+        session_start();
+    }
+}
+
 function recurring_cookieVerifyAuth() {
     global $wpdb;
     $obj = new recurringFront();
 
     $current_user = wp_get_current_user();
     
-    $ntpRpCookies = array(
+    // $ntpRpCookies = array(
+    //     'PlanID' => $_POST['PlanID'],
+    //     'AuthenticationToken' => $_POST['AuthenticationToken'],
+    //     'NtpID' => $_POST['NtpID']
+    // );
+    $ntpRpSessions = array(
         'PlanID' => $_POST['PlanID'],
         'AuthenticationToken' => $_POST['AuthenticationToken'],
         'NtpID' => $_POST['NtpID']
     );
 
-    setcookie('ntpRp-cookies-PlanID', $ntpRpCookies['PlanID'], time() + 600 , '/');
-    setcookie('ntpRp-cookies-AuthenticationToken', $ntpRpCookies['AuthenticationToken'], time() + 600 , '/');
-    setcookie('ntpRp-cookies-NtpID', $ntpRpCookies['NtpID'], time() + 600 , '/');
+    // setcookie('ntpRp-cookies-PlanID', $ntpRpCookies['PlanID'], time() + 600 , '/');
+    // setcookie('ntpRp-cookies-AuthenticationToken', $ntpRpCookies['AuthenticationToken'], time() + 600 , '/');
+    $_SESSION['ntpRp-session-AuthenticationToken'] = $ntpRpSessions['AuthenticationToken'];
+
+    // setcookie('ntpRp-cookies-NtpID', $ntpRpCookies['NtpID'], time() + 600 , '/');
+    $_SESSION['ntpRp-session-NtpID'] = $ntpRpSessions['NtpID'];
 
     $sesssionResult = array(
         'status'=> true,
-        'msg'=> "Happy Cookie",
+        // 'msg'=> "Happy Cookie",
+        'msg'=> "Happy Seesion",
     );
     echo json_encode($sesssionResult);
     wp_die();
@@ -315,7 +333,8 @@ function recurring_addSubscription() {
             $arrSubscriptionDataJson =  json_encode($arrSubscriptionData);
             
             /** Set Subscription info as cookie to be uesd at the and base on Payment result */
-            setcookie('ntpRp-cookies-json', $arrSubscriptionDataJson, time() + 600 , '/');
+            // setcookie('ntpRp-cookies-json', $arrSubscriptionDataJson, time() + 600 , '/');
+            $_SESSION['ntpRp-session-json'] = $arrSubscriptionDataJson;
     }
     
     if($jsonResultData['code'] === "00") {

@@ -455,13 +455,13 @@ function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID
         data: data,
         success: function( response ){
             if(response.status) {
-                console.log('cookies set for 3DS, success');
+                console.log('session set for 3DS, success');
             } else {
-                console.log('cookies set for 3DS, Failed!');
+                console.log('session set for 3DS, Failed!');
             }
         },
         error: function( error ){
-            console.log('call set cookies for 3DS, Failed!');
+            console.log('call set session for 3DS, Failed!');
         }
     });
 }
