@@ -174,6 +174,10 @@ function unsubscription(e) {
                 jQuery('#loading'+SubscriptionId).removeClass('show');
                 jQuery('#'+formId).hide();               
                 
+
+                // Close Modal Automaticly aftre 10 Secound
+                setTimeout(function() { jQuery('.unsubscriptionRecurringModal').modal('hide');}, 10000);
+
                 // Refresh page after close Modal
                 jQuery('.unsubscriptionRecurringModal').on('hidden.bs.modal', function() {
                     window.location.reload();
@@ -225,6 +229,9 @@ function unsubscriptionMyAccount() {
                 jQuery('#loading').removeClass('show');
                 jQuery('#unsubscription-form').hide();               
                 
+                // Close Modal Automaticly aftre 10 Secound
+                setTimeout(function() { jQuery('#unsubscriptionMyAccountModal').modal('hide');}, 10000);
+
                 // Refresh page after close Modal
                 jQuery('#unsubscriptionMyAccountModal').on('hidden.bs.modal', function() {
                     window.location.reload();
@@ -345,6 +352,8 @@ function addSubscription(e) {
                     jQuery('#'+formId).find('input[name=cc-expiration-year]').prop('readonly', true);
                     jQuery('#'+formId).find('input[name=cc-cvv]').prop('readonly', true);
     
+                    // Close Modal Automaticly aftre 10 Secound
+                    setTimeout(function() { jQuery('.recurringModal').modal('hide');}, 10000);
 
                     // Refresh page after close Modal
                     jQuery('.recurringModal').on('hidden.bs.modal', function() {
