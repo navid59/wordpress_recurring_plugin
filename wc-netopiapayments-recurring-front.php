@@ -52,7 +52,9 @@ add_action('wp_enqueue_scripts', 'frontResource');
 
 function wpse16119876_init_session() {
     if ( ! session_id() ) {
+        $lifetime=600;
         session_start();
+        setcookie(session_name(),session_id(),time()+$lifetime);
     }
 }
 
