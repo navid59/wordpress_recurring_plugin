@@ -128,6 +128,12 @@ jQuery(document).ready(function () {
         });
     });
 
+    // Ltrim  Card Number
+    jQuery('input[name=cc-number]').change(function() {
+        const str = this.value;
+        this.value = str.trim();
+    });
+    
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);
     /** Verify Auth */
@@ -262,6 +268,7 @@ function addSubscription(e) {
     var PlanId = PlanID;//jQuery("#PlanId").val();
     var StartDate =  jQuery('#'+formId).find('input[name=StartDate]').val();
     var EndDate = jQuery('#'+formId).find('input[name=EndDate]').val();
+
 
     var Account = jQuery('#'+formId).find('input[name=cc-number]').val();
     var ExpMonth = jQuery('#'+formId).find('input[name=cc-expiration-month]').val();
