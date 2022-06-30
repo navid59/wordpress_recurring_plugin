@@ -203,8 +203,13 @@ class NetopiapaymentsRecurringPayment extends recurring
     public function recurring_setup_section() {
         add_settings_section( 'general', 'General section ', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'mood', 'Plugin work mood', array( $this, 'section_callback' ), 'netopia_recurring' );
-        add_settings_section( 'certificate', 'Certificate keys', array( $this, 'section_callback' ), 'netopia_recurring' );
-    }
+
+        /**
+         * Temporary deactive the Uploaded certificate ,...
+         * Public key is Unique for all, currently
+         */
+        // add_settings_section( 'certificate', 'Certificate keys', array( $this, 'section_callback' ), 'netopia_recurring' );
+        }
 
     
     public function recurring_setup_fields() {
@@ -451,6 +456,7 @@ class NetopiapaymentsRecurringPayment extends recurring
     }
 
     public function subscription_UI_Ajax() {
+        @$active_tab = $_GET[ 'tab' ] ? $_GET[ 'tab' ] : null;
         ?>
         <div class="wrap">
             <div class="row">
@@ -459,14 +465,20 @@ class NetopiapaymentsRecurringPayment extends recurring
                 <?php echo $this->getWarningAdmin();?>
             </div>
             <h2 class="nav-tab-wrapper">
-                <a href="#" class="nav-tab nav-tab-active"><?php echo __('Subscription list','ntpRp')?></a>
+                <a href="?page=recurring_subscription_ajax&tab=subscription_list" class="nav-tab <?php echo $active_tab == 'subscription_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Subscription list','ntpRp')?></a>
+                <a href="?page=recurring_subscription_ajax&tab=subscription_search" class="nav-tab <?php echo $active_tab == 'subscription_search' ? 'nav-tab-active' : ''; ?>"><?php echo __('Search','ntpRp')?></a>
             </h2>
             
             <?php 
-            include_once('include/subscriptionsInfinite.php');
-            include_once('include/partial/modalSubscriberInfo.php');
-            include_once('include/partial/modalNextPayment.php');
-            include_once('include/partial/modalSubscriberHistory.php');
+            if($active_tab == 'subscription_search') {
+                include_once('include/subscriptionSearchForm.php');
+            }else {
+                include_once('include/subscriptionsInfinite.php');
+                include_once('include/partial/modalSubscriberInfo.php');
+                include_once('include/partial/modalNextPayment.php');
+                include_once('include/partial/modalSubscriberHistory.php');
+            }
+            
             ?>
         <div>    
         <?php
