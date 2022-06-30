@@ -36,34 +36,35 @@
         }
 
         function getNTPID() {
-            if ( ! session_id() ) {
-                $lifetime=600;
-                session_start();
-                setcookie(session_name(),session_id(),time()+$lifetime);
-            }
-            // $ntpRpNtpID = isset($_COOKIE['ntpRp-cookies-NtpID']) ? $_COOKIE['ntpRp-cookies-NtpID'] : "";
+            // if ( ! session_id() ) {
+            //     $lifetime=600;
+            //     session_start();
+            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
+            // }
+            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
             $ntpRpNtpID = isset($_SESSION['ntpRp-session-NtpID']) ? $_SESSION['ntpRp-session-NtpID'] : "";
             return $ntpRpNtpID;
         }
 
         function getAuthenticationToken() {
-            if ( ! session_id() ) {
-                $lifetime=600;
-                session_start();
-                setcookie(session_name(),session_id(),time()+$lifetime);
-            }
-            // $ntpRpAuthenticationToken = isset($_COOKIE['ntpRp-cookies-AuthenticationToken']) ? $_COOKIE['ntpRp-cookies-AuthenticationToken'] : "";
+            // if ( ! session_id() ) {
+            //     $lifetime=600;
+            //     session_start();
+            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
+            // }
+            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+            
             $ntpRpAuthenticationToken = isset($_SESSION['ntpRp-session-AuthenticationToken']) ? $_SESSION['ntpRp-session-AuthenticationToken'] : "";
             return $ntpRpAuthenticationToken;
         }
 
         function getSubscriptionData() {
-            if ( ! session_id() ) {
-                $lifetime=600;
-                session_start();
-                setcookie(session_name(),session_id(),time()+$lifetime);
-            }
-            // $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
+            // if ( ! session_id() ) {
+            //     $lifetime=600;
+            //     session_start();
+            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
+            // }
+            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
             $ntpRpSubscriptionData = $_SESSION['ntpRp-session-json'];
             return (stripslashes($ntpRpSubscriptionData));
         }

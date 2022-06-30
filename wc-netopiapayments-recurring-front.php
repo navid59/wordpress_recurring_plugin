@@ -51,42 +51,34 @@ add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 add_action('wp_enqueue_scripts', 'frontResource');
 
 function wpse16119876_init_session() {
-    if ( ! session_id() ) {
-        $lifetime=600;
-        session_start();
-        setcookie(session_name(),session_id(),time()+$lifetime);
-    }
+    // if ( ! session_id() ) {
+    //     $lifetime=600;
+    //     session_start();
+    //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
+    // }
+    if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 }
 
 function recurring_cookieVerifyAuth() {
+    // if ( ! session_id() ) {
+    //     $lifetime=600;
+    //     session_start();
+    //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
+    // }
+    if(session_status() !== PHP_SESSION_ACTIVE) session_start();
     global $wpdb;
     $obj = new recurringFront();
 
     $current_user = wp_get_current_user();
-    
-    // $ntpRpCookies = array(
-    //     'PlanID' => $_POST['PlanID'],
-    //     'AuthenticationToken' => $_POST['AuthenticationToken'],
-    //     'NtpID' => $_POST['NtpID']
-    // );
     $ntpRpSessions = array(
         'PlanID' => $_POST['PlanID'],
         'AuthenticationToken' => $_POST['AuthenticationToken'],
         'NtpID' => $_POST['NtpID']
     );
 
-    // setcookie('ntpRp-cookies-PlanID', $ntpRpCookies['PlanID'], time() + 600 , '/');
-    // setcookie('ntpRp-cookies-AuthenticationToken', $ntpRpCookies['AuthenticationToken'], time() + 600 , '/');
     $_SESSION['ntpRp-session-AuthenticationToken'] = $ntpRpSessions['AuthenticationToken'];
-
-    // setcookie('ntpRp-cookies-NtpID', $ntpRpCookies['NtpID'], time() + 600 , '/');
     $_SESSION['ntpRp-session-NtpID'] = $ntpRpSessions['NtpID'];
 
-    $sesssionResult = array(
-        'status'=> true,
-        // 'msg'=> "Happy Cookie",
-        'msg'=> "Happy Seesion",
-    );
     echo json_encode($sesssionResult);
     wp_die();
 }
