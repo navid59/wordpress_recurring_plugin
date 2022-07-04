@@ -486,18 +486,25 @@ function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID
 
 function VerifyAuthAction(buttonAct, planId) {
     var buttonAct = buttonAct;
-    console.log(buttonAct);
     var form = buttonAct.closest("form");
-    console.log(form);
     var formId = form.id;
-    console.log(form);
     var formData =jQuery(form).serializeArray();
-   // console.log(formData);
-
+    
+    /*
+    Get posted sess from URL
+    Send session id as a parameter to "doVerifyAuth"
+    */
+    var str = window.location.href;
+    var url = new URL(str);
+    var search_params = new URLSearchParams(url.search); 
+    if(search_params.has('sess')) {
+    var sessId = search_params.get('sess');
+    }
 
     data = {
         action : 'doVerifyAuth',
         formData : formData,
+        ntpSessionId : sessId,
     };
 
     jQuery.ajax({

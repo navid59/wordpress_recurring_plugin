@@ -36,36 +36,65 @@
         }
 
         function getNTPID() {
-            // if ( ! session_id() ) {
-            //     $lifetime=600;
-            //     session_start();
-            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
-            // }
-            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-            $ntpRpNtpID = isset($_SESSION['ntpRp-session-NtpID']) ? $_SESSION['ntpRp-session-NtpID'] : "";
+            if (array_key_exists("ntpSessionId",$_REQUEST))
+                {
+                    $sessionDir = session_save_path();
+                    $file = $sessionDir.'/sess_'.$_REQUEST['ntpSessionId'];
+                    $contents = file_get_contents($file);
+                    if (session_status() === PHP_SESSION_NONE) {
+                        $lifetime=600;
+                        session_start();
+                        setcookie(session_name(),session_id(),time()+$lifetime);
+                    }
+                    session_decode($contents);
+                    $ntpRpNtpID = isset($_SESSION['ntpRp-session-NtpID']) ? $_SESSION['ntpRp-session-NtpID'] : "";
+                }
+
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 4-0 } ---------- getNTPID ------------'."\n", FILE_APPEND);
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'ntpRp-session-NtpID -> '.print_r($ntpRpNtpID, true)."\n", FILE_APPEND);
+
             return $ntpRpNtpID;
         }
 
         function getAuthenticationToken() {
-            // if ( ! session_id() ) {
-            //     $lifetime=600;
-            //     session_start();
-            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
-            // }
-            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+            if (array_key_exists("ntpSessionId",$_REQUEST))
+                {
+                    $sessionDir = session_save_path();
+                    $file = $sessionDir.'/sess_'.$_REQUEST['ntpSessionId'];
+                    $contents = file_get_contents($file);
+                    if (session_status() === PHP_SESSION_NONE) {
+                        $lifetime=600;
+                        session_start();
+                        setcookie(session_name(),session_id(),time()+$lifetime);
+                    }
+                    session_decode($contents);
+                    $ntpRpAuthenticationToken = isset($_SESSION['ntpRp-session-AuthenticationToken']) ? $_SESSION['ntpRp-session-AuthenticationToken'] : "";
+                }
             
-            $ntpRpAuthenticationToken = isset($_SESSION['ntpRp-session-AuthenticationToken']) ? $_SESSION['ntpRp-session-AuthenticationToken'] : "";
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 3-0 } --------getAuthenticationToken--------------'."\n", FILE_APPEND);
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'ntpRp-session-AuthenticationToken -> '.print_r($ntpRpAuthenticationToken, true)."\n", FILE_APPEND);
+
             return $ntpRpAuthenticationToken;
         }
 
         function getSubscriptionData() {
-            // if ( ! session_id() ) {
-            //     $lifetime=600;
-            //     session_start();
-            //     setcookie(session_name('ntp_session'),session_id(),time()+$lifetime);
-            // }
-            if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-            $ntpRpSubscriptionData = $_SESSION['ntpRp-session-json'];
+            if (array_key_exists("ntpSessionId",$_REQUEST))
+                {
+                    $sessionDir = session_save_path();
+                    $file = $sessionDir.'/sess_'.$_REQUEST['ntpSessionId'];
+                    $contents = file_get_contents($file);
+                    if (session_status() === PHP_SESSION_NONE) {
+                        $lifetime=600;
+                        session_start();
+                        setcookie(session_name(),session_id(),time()+$lifetime);
+                    }
+                    session_decode($contents);
+                    $ntpRpSubscriptionData = $_SESSION['ntpRp-session-json'];
+                }
+            
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 2-0 } ----------------------'."\n", FILE_APPEND);
+            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'ntpRp-session-json -> '.print_r($ntpRpSubscriptionData, true)."\n", FILE_APPEND);
+
             return (stripslashes($ntpRpSubscriptionData));
         }
 
@@ -79,14 +108,19 @@
         }
 
         function getNotifyUrl() {
-            // return get_site_url()."/".get_option($this->slug.'_notify_url', array()); 
             return get_site_url()."/recurring_notify"; 
         }
 
         function getBackUrl($planId) {
+
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-0 } ---- Have Session Id in Modal ------'."\n", FILE_APPEND);
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('getBackUrl', true)."\n", FILE_APPEND);
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
+        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
+
+            $sessId = session_id();
             $parts = parse_url( home_url() );
-            $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg( 'planId', $planId );
-            // $current_uri = basename($_SERVER['REQUEST_URI']) . add_query_arg( 'planId', $planId );
+            $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg(array('planId' => $planId, 'sess' => $sessId));
             $backUrl = $current_uri;
             return $backUrl;
         }
