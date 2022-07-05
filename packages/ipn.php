@@ -440,21 +440,6 @@ class IPN {
         return null;
     }
 
-    // /**
-    // *  fetch Apikey from HTTP header 
-    // */
-    // public function getApikey($httpHeader) {
-    //     foreach($httpHeader as $headerName=>$headerValue)
-    //         {
-    //             if(strcasecmp('X-Apikey', $headerName) == 0)
-    //             {
-    //                 $apikey = $headerValue;
-    //                 return $apikey;
-    //             }
-    //         }
-    //     return null;
-    // }
-
     public function encrypt($x509FilePath)
 	    {		
 		$publicKey = openssl_pkey_get_public("file://{$x509FilePath}");

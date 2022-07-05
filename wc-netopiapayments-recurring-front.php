@@ -8,15 +8,8 @@
  add_action('wp_ajax_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
  add_action('wp_ajax_nopriv_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
 
- file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 00-GET } -- ------- ROOT -------------'."\n", FILE_APPEND);
- file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'GET PARAMS -> '.print_r($_GET, true)."\n", FILE_APPEND);
-
-
  add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
  add_action('wp_ajax_nopriv_doVerifyAuth', 'recurring_verifyAuth');
-
- // Start session on init hook.
- add_action( 'init', 'wpse16119876_init_session' );
 
  add_action('wp_ajax_updateSubscriberAccountDetails', 'recurring_updateSubscriberAccountDetails');
  add_action('wp_ajax_unsubscription', 'recurring_unsubscription');
@@ -30,24 +23,59 @@
 add_shortcode('NTP-Recurring', 'assignToRecurring');
 add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 
+ // Start session on init hook.
+ add_action( 'init', 'wpse16119876_init_session' );
+
 function wpse16119876_init_session() {
-    if (session_status() === PHP_SESSION_NONE) {
-        $lifetime=600;
-        session_start();
-        setcookie(session_name(),session_id(),time()+$lifetime);
+    /** Log Time & Path*/
+    $logDate = new DateTime();
+    $logDate = $logDate->format("y:m:d h:i:s");
+    $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
 
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { A-A } ---- ------'."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('wpse16119876_init_session', true)."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
-
+    file_put_contents($logPath, '['.$logDate.']-- called -- wpse16119876_init_session()'."\n", FILE_APPEND);
+    if (!array_key_exists("ntpSessionId",$_REQUEST)) {
+        if (session_status() === PHP_SESSION_NONE) {  
+            file_put_contents($logPath, '['.$logDate.']-- session -- Status NONE --- so session_start() '."\n", FILE_APPEND);
+            
+            /** Session Start */
+            session_name('ntpRpSession');
+            session_start();
+        } else {
+            file_put_contents($logPath, '['.$logDate.']-- session Status is : '.session_status()."\n", FILE_APPEND);
+        }
     }
-
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { A-B } ---- ------'."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('wpse16119876_init_session', true)."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
 }
+
+// function ntpSessionStart() {
+//     if (session_status() === PHP_SESSION_NONE) {
+//         session_start();
+//         // Do not allow to use too old session ID
+//         if (!empty($_SESSION['deleted_time']) && $_SESSION['deleted_time'] < time() - 180) {
+//             session_destroy();
+//             session_start();
+//         }
+//     }
+// }
+
+// function ntpSessionRegenerateId() {
+//     // Call session_create_id() while session is active to 
+//     // make sure collision free.
+//     if (session_status() != PHP_SESSION_ACTIVE) {
+//         session_start();
+//     }
+//     $newid = session_create_id('ntp');
+//     // Set deleted timestamp. Session data must not be deleted immediately for reasons.
+//     $_SESSION['deleted_time'] = time();
+//     // Finish session
+//     session_commit();
+//     // Make sure to accept user defined session ID
+//     // Enable use_strict_mode for normal operations.
+//     ini_set('session.use_strict_mode', 0);
+//     // Set new custom session ID
+//     session_id($newid);
+//     // Start with custom session ID
+//     session_start();
+// }
 
  function ntp_recurring_enqueue_scripts() {
     wp_enqueue_style( 'ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
@@ -74,15 +102,18 @@ function wpse16119876_init_session() {
 add_action('wp_enqueue_scripts', 'frontResource');
 
 function recurring_cookieVerifyAuth() {
+    /** Log Time & Path*/
+    $logDate = new DateTime();
+    $logDate = $logDate->format("y:m:d h:i:s");
+    $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
+        
+    file_put_contents($logPath, '['.$logDate.']-- called -- recurring_cookieVerifyAuth()'."\n", FILE_APPEND);
+
     if (session_status() === PHP_SESSION_NONE) {
-        $lifetime=600;
         session_start();
-        setcookie(session_name(),session_id(),time()+$lifetime);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 1-1 } ---- Session created ------'."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('recurring_cookieVerifyAuth', true)."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
-        file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
     }
+    
+    file_put_contents($logPath, '['.$logDate.']-- Session id : '.print_r(session_id(), true)."\n", FILE_APPEND);
     
     global $wpdb;
     $obj = new recurringFront();
@@ -94,15 +125,10 @@ function recurring_cookieVerifyAuth() {
         'NtpID' => $_POST['NtpID']
     );
 
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 1-2 } ----Posted Data ------'."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($ntpRpSessions, true)."\n", FILE_APPEND);
-    
-
     $_SESSION['ntpRp-session-AuthenticationToken'] = $ntpRpSessions['AuthenticationToken'];
     $_SESSION['ntpRp-session-NtpID'] = $ntpRpSessions['NtpID'];
 
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 1-3 } ----Session should be already set ------'."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($_SESSION, true)."\n", FILE_APPEND);
+    file_put_contents($logPath, "Session Content : ".print_r($_SESSION, true)." --- Verifici -- \n", FILE_APPEND);
 
     wp_die();
 }
@@ -110,17 +136,32 @@ function recurring_cookieVerifyAuth() {
 
 function recurring_verifyAuth(){
 
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { X-REQUEST-GET } ------ recurring_verifyAuth ---PT---doVerifyAuth----------'."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'REQUEST PARAMS -> '.print_r($_REQUEST, true)."\n", FILE_APPEND);
-    file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', 'GET Request PARAMS -> '.print_r($_REQUEST, true)."\n", FILE_APPEND);
+    /** Log Time & Path*/
+    $logDate = new DateTime();
+    $logDate = $logDate->format("y:m:d h:i:s");
+    $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
 
-
+    file_put_contents($logPath, '['.$logDate.'] { B-A } -- call--recurring_verifyAuth() --- for doVerifyAuth() ------'."\n", FILE_APPEND);
+    file_put_contents($logPath, '['.$logDate.'] REQUEST PARAMS is : '.print_r($_REQUEST, true)."\n", FILE_APPEND);
+    file_put_contents($logPath, '['.$logDate.'] Session Id : '.print_r(session_id(), true)."\n", FILE_APPEND);
+    
     global $wpdb;
     $obj = new recurringFront();
 
-    /** get Cookie Info */
-    $cookieDataJson = $obj->getSubscriptionData();
-    $cookieDataObj = json_decode($cookieDataJson);
+    if (array_key_exists("ntpSessionId",$_REQUEST)) {
+        $ntpSessionId = $_REQUEST['ntpSessionId'];
+    } else {
+        $verifyAuthResult = array(
+            'status'=> false,
+            'msg'=> "Missing Data for Verify Auth",
+            'data' =>  $_REQUEST
+            );
+        echo json_encode($verifyAuthResult);
+        die();
+    }
+    /** get subscription Info from session */
+    $sessionDataJson = $obj->getSubscriptionData($ntpSessionId);
+    $subscriptionDataObj = json_decode($sessionDataJson);
 
     /** To convert form data in a single Array */
     $singleArrayFormData = [];
@@ -130,10 +171,10 @@ function recurring_verifyAuth(){
 
     $verifyAuthFormData = array(
         "signature"      => $obj->getSignature(),
-        "subscriptionId" => $cookieDataObj->Subscription_Id,
-        "planId"         => $cookieDataObj->PlanId+0,
-        "authenticationToken" => $obj->getAuthenticationToken(),
-        "ntpID"         => $obj->getNTPID(),
+        "subscriptionId" => $subscriptionDataObj->Subscription_Id,
+        "planId"         => $subscriptionDataObj->PlanId+0,
+        "authenticationToken" => $obj->getAuthenticationToken($ntpSessionId),
+        "ntpID"         => $obj->getNTPID($ntpSessionId),
         "formData"      => $singleArrayFormData,
         "isTestMod"     => !$obj->isLive()
     );
@@ -163,26 +204,25 @@ function recurring_verifyAuth(){
         );        
     } else {
         $Member = array (
-            "First_Name" => $cookieDataObj->First_Name,
-            "Last_Name"  => $cookieDataObj->Last_Name,
-            "UserID"     => $cookieDataObj->UserID,
-            "Email"      => $cookieDataObj->Email,
-            "Address"    => $cookieDataObj->Address,
-            "City"       => $cookieDataObj->City,
-            "Tel"        => strval($cookieDataObj->Tel)
+            "First_Name" => $subscriptionDataObj->First_Name,
+            "Last_Name"  => $subscriptionDataObj->Last_Name,
+            "UserID"     => $subscriptionDataObj->UserID,
+            "Email"      => $subscriptionDataObj->Email,
+            "Address"    => $subscriptionDataObj->Address,
+            "City"       => $subscriptionDataObj->City,
+            "Tel"        => strval($subscriptionDataObj->Tel)
         );
     }
     
     /** Base on verify Auth "00" / "19",...  Data will be Add in DB */
     if($jsonResultData['code']== "00") {
-
-        $Member['Subscription_Id'] = $cookieDataObj->Subscription_Id;
-        $Member['PlanId'] = $cookieDataObj->PlanId;
+        $Member['Subscription_Id'] = $subscriptionDataObj->Subscription_Id;
+        $Member['PlanId'] = $subscriptionDataObj->PlanId;
         $Member['Status'] = 1;
         $Member['NextPaymentDate'] = "";
         $Member['CreatedAt'] = date("Y-m-d");
         $Member['UpdatedAt'] = date("Y-m-d");
-        $Member['StartDate'] = $cookieDataObj->StartDate;
+        $Member['StartDate'] = $subscriptionDataObj->StartDate;
 
         /**
          * @Navid
@@ -214,6 +254,9 @@ function recurring_verifyAuth(){
             'data' =>  $jsonResultData
             );
     echo json_encode($verifyAuthResult);
+
+    file_put_contents($logPath, '['.$logDate.'] { C-A-3 } -- Happy End - Session ID : '.session_id().' -!!!-- '."\n", FILE_APPEND);
+
     die();
 }
 
@@ -359,22 +402,22 @@ function recurring_addSubscription() {
             /** Set Subscription info as session to be uesd at in countinu base on Payment result */
             // setcookie('ntpRp-cookies-json', $arrSubscriptionDataJson, time() + 600 , '/');
             if (session_status() === PHP_SESSION_NONE) {
-                $lifetime=600;
-                session_start();
-                setcookie(session_name(),session_id(),time()+$lifetime);
-                file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-1 } ----------------------'."\n", FILE_APPEND);
-                file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('recurring_addSubscription', true)."\n", FILE_APPEND);
-                file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
-                file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
+                // $lifetime=600;
+                // session_start();
+                // setcookie(session_name(),session_id(),time()+$lifetime);
+                // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-1 } ----------------------'."\n", FILE_APPEND);
+                // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r('recurring_addSubscription', true)."\n", FILE_APPEND);
+                // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_name(), true)."\n", FILE_APPEND);
+                // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r(session_id(), true)."\n", FILE_APPEND);
             }
 
-            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-2 } ---- Arr Subscribe data is :  ------'."\n", FILE_APPEND);
-            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($arrSubscriptionDataJson, true)."\n", FILE_APPEND);
+            // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-2 } ---- Arr Subscribe data is :  ------'."\n", FILE_APPEND);
+            // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($arrSubscriptionDataJson, true)."\n", FILE_APPEND);
 
             $_SESSION['ntpRp-session-json'] = $arrSubscriptionDataJson;
 
-            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-3 } ---- ntpRp-session-json SESSION :  ------'."\n", FILE_APPEND);
-            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($_SESSION['ntpRp-session-json'], true)."\n", FILE_APPEND);
+            // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { 0-3 } ---- ntpRp-session-json SESSION :  ------'."\n", FILE_APPEND);
+            // file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', print_r($_SESSION['ntpRp-session-json'], true)."\n", FILE_APPEND);
     }
     
     if($jsonResultData['code'] === "00") {
@@ -608,7 +651,6 @@ function recurring_getMyAccountDetails() {
     echo json_encode($mySimulatedResult);
     wp_die();
 }
-
 
 function recurring_updateSubscriberAccountDetails() {
     global $wpdb;
@@ -967,9 +1009,8 @@ function recurring_account_getMySubscriptions() {
     wp_die();
 }
 
-
-function assignToRecurring ($data) {    
-        $obj = new recurringFront();
+function assignToRecurring ($data) { 
+            $obj = new recurringFront();
             $title  = isset($data['title']) && $data['title'] !== null ? $data['title'] : null;
             $button = isset($data['button']) && $data['button'] !== null ? $data['button'] : null;
             $planId = isset($data['planid']) && $data['planid'] !== null ? $data['planid'] : null;
@@ -981,7 +1022,6 @@ function assignToRecurring ($data) {
             } 
     return $str;
 }
-
 
 function ntpMyAccount() {
     $obj = new recurringFront();
@@ -1299,6 +1339,7 @@ function getAuthFromHtml($isLoggedIn) {
         ';
         }
 }
+
 function getMemberInfoHtml() {
     global $wpdb;
     $obj = new recurringFront();
@@ -1500,6 +1541,7 @@ function getCardInfoHtml() {
         </div>
     </div>';
 }
+
 function get3DsFormHtml($planId) {
     $obj = new recurringFront();
     $backUrl = $obj->getBackUrl($planId);
@@ -1508,8 +1550,6 @@ function get3DsFormHtml($planId) {
         <input type="hidden" class="form-control" id="backUrl'.$planId.'" name="backUrl" value="'.$backUrl.'" title="independent element" readonly >
     ';
 }
-
-
 
 function getWarningFront() {
     $obj = new recurringFront();
@@ -1638,7 +1678,6 @@ function authenticateUser($userInfo) {
         }
     }
 }
-
 
 function createUser($userInfo) {
     if(email_exists($userInfo['Email']) || username_exists($userInfo['UserID'])) {
