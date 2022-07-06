@@ -40,15 +40,10 @@
             $logDate = new DateTime();
             $logDate = $logDate->format("y:m:d h:i:s");
             $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
-
-            if(session_status() !== PHP_SESSION_ACTIVE) {
-                session_id($ntpSessionId);
-                session_start();
-            }
             
-            $ntpRpNtpID = $_SESSION['ntpRp-session-NtpID'];
+            $ntpRpNtpID = $_COOKIE['ntpRp-NtpID'];
             
-            file_put_contents($logPath, '['.$logDate.'] { B-A-2-4 } -- Final Value ntpRp-session-NtpID is : '.print_r($ntpRpNtpID, true)."\n", FILE_APPEND);
+            file_put_contents($logPath, '['.$logDate.'] { Call -- getNTPID() } -- Final Value ntpRp-NtpID is : '.print_r($ntpRpNtpID, true)."\n", FILE_APPEND);
             return $ntpRpNtpID;
         }
 
@@ -57,15 +52,10 @@
             $logDate = new DateTime();
             $logDate = $logDate->format("y:m:d h:i:s");
             $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
-
-            if(session_status() !== PHP_SESSION_ACTIVE) {
-                session_id($ntpSessionId);
-                session_start();
-            }
             
-            $ntpRpAuthenticationToken = $_SESSION['ntpRp-session-AuthenticationToken'];
+            $ntpRpAuthenticationToken = $_COOKIE['ntpRp-AuthenticationToken'];
             
-            file_put_contents($logPath, '['.$logDate.'] { B-A-1-3 } -- Final Value ntpRp-session-AuthenticationToken is :'.print_r($ntpRpAuthenticationToken, true)."\n", FILE_APPEND);
+            file_put_contents($logPath, '['.$logDate.'] { Call -- getAuthenticationToken() } -- Final Value ntpRp-AuthenticationToken is :'.print_r($ntpRpAuthenticationToken, true)."\n", FILE_APPEND);
             return $ntpRpAuthenticationToken;
         }
 
@@ -75,11 +65,9 @@
             $logDate = $logDate->format("y:m:d h:i:s");
             $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
 
-            session_id($ntpSessionId);
-            session_start();
-            $ntpRpSubscriptionData = $_SESSION['ntpRp-session-json'];
+            $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
             
-            file_put_contents($logPath, '['.$logDate.'] { B-A-0-3 } Final Value ntpRp-session-json is : '.print_r($ntpRpSubscriptionData, true)."\n", FILE_APPEND);
+            file_put_contents($logPath, '['.$logDate.'] { Call -- getSubscriptionData() } Final Value ntpRp-json is : '.print_r($ntpRpSubscriptionData, true)."\n", FILE_APPEND);
             return (stripslashes($ntpRpSubscriptionData));
         }
 
