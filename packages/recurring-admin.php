@@ -220,6 +220,8 @@ class recurringAdmin extends recurring {
     }
 }
 
+/** Add Plan */
+add_action('wp_ajax_addPlan', 'recurring_addPlan');
 function recurring_addPlan() {
     global $wpdb;
 
@@ -295,12 +297,12 @@ function recurring_addPlan() {
             'status'=> $status,
             'msg'=> $msg,
             );
-    echo json_encode($addPlanResult);
-    die();
+    wp_send_json(json_encode($addPlanResult));
 }
-add_action('wp_ajax_addPlan', 'recurring_addPlan');
 
 
+/** Delete Plan */
+add_action('wp_ajax_delPlan', 'recurring_delPlan');
 function recurring_delPlan() {
     global $wpdb;
     $obj = new recurringAdmin();
@@ -325,15 +327,16 @@ function recurring_delPlan() {
         );
     }
 
-    $mySimulatedResult = array(
+    $delPlanResult = array(
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],
             );
-    echo json_encode($mySimulatedResult);
-    die();
+    wp_send_json(json_encode($delPlanResult));
 }
-add_action('wp_ajax_delPlan', 'recurring_delPlan');
 
+
+/** Edit Plan */
+add_action('wp_ajax_editPlan', 'recurring_editPlan');
 function recurring_editPlan() {
     global $wpdb;
 
@@ -396,16 +399,16 @@ function recurring_editPlan() {
         }
     }
     
-    $mySimulatedResult = array(
+    $editPlanResult = array(
             'status'=> $status,
             'msg'=> $msg,
             'data'=> $planData,
             );
-    echo json_encode($mySimulatedResult);
-    die();
+    wp_send_json(json_encode($editPlanResult));
 }
-add_action('wp_ajax_editPlan', 'recurring_editPlan');
 
+/** Get plan details */
+add_action('wp_ajax_getPlanInfo', 'getPlanInfo');
 function getPlanInfo() {
     $planId = $_POST['planIdentity'];
 
@@ -434,15 +437,20 @@ function getPlanInfo() {
         );
     }
 
-    echo json_encode(array(
-        'status' => $status,
-        'data'  => $planData
-    ));
-    die();
+    wp_send_json(
+        json_encode(
+            array(
+            'status' => $status,
+            'data'  => $planData
+            )
+        )
+    );
 }
 
-add_action('wp_ajax_getPlanInfo', 'getPlanInfo');
 
+
+/** get Infinit Subscribtion list*/
+add_action('wp_ajax_getInfinitSubscribtion', 'getInfinitSubscribtion');
 function getInfinitSubscribtion() {
     $obj = new recurringAdmin();
     $start = $_POST['start']; 
@@ -526,11 +534,12 @@ function getInfinitSubscribtion() {
         'data' => $subscriptions
       );
 
-    echo json_encode($resultData);
-    die();
+    wp_send_json(json_encode($resultData));
 }
-add_action('wp_ajax_getInfinitSubscribtion', 'getInfinitSubscribtion');
 
+
+/** Get Next Payment */
+add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
 function recurring_getNextPayment() {
     
     $a = new recurringAdmin();
@@ -540,19 +549,19 @@ function recurring_getNextPayment() {
 
     $jsonResultData = $a->getNextPayment($nextPaymentData);
     
-    $mySimulatedResult = array(
+    $nextPaymentResult = array(
             'status'=> isset($jsonResultData['code']) && $jsonResultData['code']!== "00" ? false : true,
             'msg'=> isset($jsonResultData['message']) ? $jsonResultData['message'] : '',
             'data' =>  $jsonResultData
             );
-    echo json_encode($mySimulatedResult);
-    die();
+    wp_send_json(json_encode($nextPaymentResult));
 }
-add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
+
 
 /** 
  * Get sunscriber info
  */
+add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
 function recurring_getSubscriptionDetail(){
     global $wpdb;
     $subscriptionInternUserId = $_POST['userId'];
@@ -614,11 +623,11 @@ function recurring_getSubscriptionDetail(){
         "data" => $subscription,
         "plans" => $planList
         );
-    echo json_encode($resultData);
-    die();
+    wp_send_json(json_encode($resultData));
 }
-add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
 
+/** get Subscription History */
+add_action('wp_ajax_getSubscriptionHistory', 'recurring_getSubscriptionHistory');
 function recurring_getSubscriptionHistory() {
     global $wpdb;
     $userId = $_POST['userId'];
@@ -650,21 +659,25 @@ function recurring_getSubscriptionHistory() {
         "message" => "",
         "histories" => $userPaymentHistory
         );
-    echo json_encode($resultData);
-    die();
+    wp_send_json(json_encode($resultData));
 }
 
-add_action('wp_ajax_getSubscriptionHistory', 'recurring_getSubscriptionHistory');
 
-function recurring_uploadKey() {
-   
-    $objCertificate = new certificate();
-    $uploadeResult = $objCertificate->cerValidation();
+/** For Uploade keys 
+ *  Currently not use it
+*/
+// add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
+// function recurring_uploadKey() {
+//     $objCertificate = new certificate();
+//     $uploadeResult = $objCertificate->cerValidation();
 
-    echo json_encode($uploadeResult);
-}
-add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
+//     wp_send_json(json_encode($uploadeResult));
+// }
 
+/** To verify Credential Data
+ * Currently not use it
+ */
+add_action('wp_ajax_verifyCredentialData', 'recurring_verifyCredentialData');
 function recurring_verifyCredentialData() {
     $obj = new recurringAdmin();
     $apiKey = $obj->getApiKey();
@@ -677,9 +690,8 @@ function recurring_verifyCredentialData() {
         'code'=> $jsonResultData['code'],
         'msg'=> $jsonResultData['message'],
         );
-    echo json_encode($validateCredentialResult);
-    die();
+    wp_send_json(json_encode($validateCredentialResult));
 }
-add_action('wp_ajax_verifyCredentialData', 'recurring_verifyCredentialData');
+
 
 ?>

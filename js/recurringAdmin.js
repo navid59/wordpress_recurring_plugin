@@ -250,7 +250,7 @@ function editPlan(planId) {
     }
     jQuery.post(ajaxurl, getPlanData, function(response){
         jsonResponse = JSON.parse(response);
-        console.log(jsonResponse);
+        // console.log(jsonResponse);
         if(jsonResponse.status) {
             jQuery("#editPlanTitile").val(jsonResponse.data.Title);
             jQuery("#editPlanDescription").val(jsonResponse.data.Description);

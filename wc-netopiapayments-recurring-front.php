@@ -407,21 +407,22 @@ function recurring_unsubscription() {
         'status'=> $status,
         'msg'=> $msg,
         );
-    echo json_encode($unsubscribeResult);
-    wp_die();
+    
+    wp_send_json($unsubscribeResult);
+    // echo json_encode($unsubscribeResult);
+    // wp_die();
 }
 
 function recurring_logoutAccount() {
     wp_logout();
     
-    $mySimulatedResult = array(
+    $logoutArr = array(
         'status'=> true,
         'msg'=> __('Logout with success','ntpRp'),
         'redirectUrl'=> get_home_url().'/subscription-account',
     );
     
-    echo json_encode($mySimulatedResult);
-    wp_die();
+    wp_send_json($logoutArr);
 }
 
 function recurring_getMyAccountDetails() {
@@ -438,7 +439,7 @@ function recurring_getMyAccountDetails() {
                                     FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                     WHERE s.UserID = '".$current_user->user_login."'", "ARRAY_A");
 
-    $mySimulatedResult = array(
+    $subscriberPersonalData = array(
                                 'status' => true,
                                 'msg'    => '',
                                 'data'   => '<div class="row" id="myAccountForm">
@@ -552,8 +553,7 @@ function recurring_getMyAccountDetails() {
                                             </div>',
                                 );
 
-    echo json_encode($mySimulatedResult);
-    wp_die();
+    wp_send_json($subscriberPersonalData);
 }
 
 function recurring_updateSubscriberAccountDetails() {
@@ -587,8 +587,9 @@ function recurring_updateSubscriberAccountDetails() {
             'status'=> false,
             'msg'=> __('You are not allowded to change Username','ntpRp'),
         );
-        echo json_encode($validateAuthResult);
-        wp_die();
+        wp_send_json(json_encode($validateAuthResult));
+        // echo json_encode($validateAuthResult);
+        // wp_die();
     }
 
     if(!is_email($subscriptionAccountDetails['Email'])) {
@@ -596,8 +597,9 @@ function recurring_updateSubscriberAccountDetails() {
             'status'=> false,
             'msg'=> __('The email address is not correct!', 'ntpRp'),
         );
-        echo json_encode($validateEmailFormat);
-        wp_die();
+        wp_send_json(json_encode($validateEmailFormat));
+        // echo json_encode($validateEmailFormat);
+        // wp_die();
     }
 
     $validateChosenEmail = email_exists( $subscriptionAccountDetails['Email']);
@@ -606,8 +608,9 @@ function recurring_updateSubscriberAccountDetails() {
             'status'=> false,
             'msg'=> __('The email is already exist', 'ntpRp'),
         );
-        echo json_encode($validateEmailResult);
-        wp_die();
+        wp_send_json(json_encode($validateEmailResult));
+        // echo json_encode($validateEmailResult);
+        // wp_die();
     }
 
     if($subscriptionAccountDetails['Pass'] != "") {
@@ -616,8 +619,9 @@ function recurring_updateSubscriberAccountDetails() {
                 'status'=> false,
                 'msg'=> __('The password is not a suitable password!','ntpRp'),
             );
-            echo json_encode($validatePassLenght);
-            wp_die();
+            wp_send_json(json_encode($validatePassLenght));
+            // echo json_encode($validatePassLenght);
+            // wp_die();
         } else {
             /*
             * ChangePassword
@@ -690,13 +694,12 @@ function recurring_updateSubscriberAccountDetails() {
         
     }
 
-    $mySimulatedResult = array(
+    $updateSubscriberAccountResult = array(
         'status'=> true,
         'msg'=> $msg
     );
     
-    echo json_encode($mySimulatedResult);
-    wp_die();
+    wp_send_json($updateSubscriberAccountResult);
 }
 
 function recurring_account_getMyHistory() {
@@ -763,8 +766,9 @@ function recurring_account_getMyHistory() {
         'histories'   => $userPaymentHistory,
         );
 
-    echo json_encode($myHistoryResult);
-    wp_die();
+    wp_send_json($myHistoryResult);
+    // echo json_encode($myHistoryResult);
+    // wp_die();
 }
 
 function recurring_account_getMySubscriptions() {
@@ -895,7 +899,7 @@ function recurring_account_getMySubscriptions() {
 
     $frontModalAddSubscriptionHtml = '';
                                         
-    $mySimulatedResult = array(
+    $mySubscriptionsResult = array(
         'status' => true,
         'msg'    => '',
         'data'   => '<div class="row">
@@ -909,8 +913,7 @@ function recurring_account_getMySubscriptions() {
         );
 
 
-    echo json_encode($mySimulatedResult);
-    wp_die();
+    wp_send_json($mySubscriptionsResult);
 }
 
 function assignToRecurring ($data) { 
@@ -1568,8 +1571,9 @@ function authenticateUser($userInfo) {
                 'status'=> false,
                 'msg'=> __('Email is not correct!', 'ntpRp'),
                 );
-            echo json_encode($authenticateResult);
-            wp_die();
+            wp_send_json(json_encode($authenticateResult));
+            // echo json_encode($authenticateResult);
+            // wp_die();
         }        
     } else {
         if($userInfo['UserID'] != $current_user->user_login || $userInfo['Email'] != $current_user->user_email ) {
@@ -1577,8 +1581,9 @@ function authenticateUser($userInfo) {
                 'status'=> false,
                 'msg'=> __('Username or Email is not correct! | You already have an account.', 'ntpRp'),
                 );
-            echo json_encode($authenticateResult);
-            wp_die();
+            wp_send_json(json_encode($authenticateResult));
+            // echo json_encode($authenticateResult);
+            // wp_die();
         }
     }
 }
@@ -1591,8 +1596,9 @@ function createUser($userInfo) {
             'status'=> false,
             'msg'=> email_exists($userInfo['Email']) && username_exists($userInfo['UserID']) ? __('This user is already exist! Please Signin first.','ntpRp').'<a href="'.$loginUrlLink.'">'.__('Sign In here', 'ntpRp').'</a>' : __('The user or email are already exist!.', 'ntpRp'),
             );
-        echo json_encode($userExist);
-        wp_die();
+        wp_send_json(json_encode($userExist));
+        // echo json_encode($userExist);
+        // wp_die();
     } else {
         $createdUserID = wp_create_user( $userInfo['UserID'], $userInfo['Pass'], $userInfo['Email'] );
         if($createdUserID) {
