@@ -35,11 +35,11 @@
             }  
         }
 
-        function getNTPID($ntpSessionId) {
+        function getNTPID() {
             /** Log Time & Path*/
             $logDate = new DateTime();
             $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
+            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
             
             $ntpRpNtpID = $_COOKIE['ntpRp-NtpID'];
             
@@ -47,11 +47,11 @@
             return $ntpRpNtpID;
         }
 
-        function getAuthenticationToken($ntpSessionId) {
+        function getAuthenticationToken() {
             /** Log Time & Path*/
             $logDate = new DateTime();
             $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
+            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
             
             $ntpRpAuthenticationToken = $_COOKIE['ntpRp-AuthenticationToken'];
             
@@ -59,11 +59,11 @@
             return $ntpRpAuthenticationToken;
         }
 
-        function getSubscriptionData($ntpSessionId) {
+        function getSubscriptionData() {
             /** Log Time & Path*/
             $logDate = new DateTime();
             $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
+            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
 
             $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
             
@@ -85,9 +85,8 @@
         }
 
         function getBackUrl($planId) {
-            $sessId = session_id();
             $parts = parse_url( home_url() );
-            $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg(array('planId' => $planId, 'sess' => $sessId));
+            $current_uri = "{$parts['scheme']}://{$parts['host']}" . add_query_arg(array('planId' => $planId ));
             $backUrl = $current_uri;
             return $backUrl;
         }

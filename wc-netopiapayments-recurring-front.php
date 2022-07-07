@@ -5,9 +5,6 @@
  add_action('wp_ajax_addNewSubscription', 'recurring_addSubscription');
  add_action('wp_ajax_nopriv_addNewSubscription', 'recurring_addSubscription');
 
- add_action('wp_ajax_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
- add_action('wp_ajax_nopriv_cookieVerifyAuth', 'recurring_cookieVerifyAuth');
-
  add_action('wp_ajax_doVerifyAuth', 'recurring_verifyAuth');
  add_action('wp_ajax_nopriv_doVerifyAuth', 'recurring_verifyAuth');
 
@@ -23,74 +20,43 @@
 add_shortcode('NTP-Recurring', 'assignToRecurring');
 add_shortcode('NTP-Recurring-My-Account', 'ntpMyAccount');
 
- function ntp_recurring_enqueue_scripts() {
-    wp_enqueue_style( 'ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
-
-    wp_register_script( 'ntp_recurring_front_script_datatables', plugin_dir_url( __FILE__ ) . 'js/addons/datatables.min.js', array(), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_admin_script_datatables' );
+/** Assign FrontJs , ajax_url */
+add_action('wp_enqueue_scripts', 'frontResource');
+function frontResource() {
+   wp_enqueue_script('my-jquery',plugin_dir_url( __FILE__ ).'js/recurringFront.js', array('jquery'));
+   wp_localize_script( 'my-jquery', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
 }
 
- function enqueue_and_register_ntp_recurring_js_scripts(){
-    wp_enqueue_style( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
+/** Assign CSS, JS for datatable */
+function ntp_recurring_enqueue_scripts() {
+    wp_enqueue_style  ('ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
+    wp_register_script('ntp_recurring_front_script_datatables', plugin_dir_url( __FILE__ ) . 'js/addons/datatables.min.js', array(), '1.0.0', true );
+    wp_enqueue_script ('ntp_recurring_admin_script_datatables' );
+}
+
+/** Assign Bootstrap CSS, JS & 3DS */
+function enqueue_and_register_ntp_recurring_js_scripts(){
+    wp_enqueue_style  ( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
     
     wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.1.0', true );
-    wp_enqueue_script( 'ntp_recurring_script' ); 
+    wp_enqueue_script ( 'ntp_recurring_script' );
 
     wp_register_script( 'ntp_recurring_3ds', plugin_dir_url( __FILE__ ) . 'js/3DS.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script( 'ntp_recurring_3ds' ); 
+    wp_enqueue_script ( 'ntp_recurring_3ds' ); 
  }
 
- function frontResource() {
-    wp_enqueue_script('my-jquery',plugin_dir_url( __FILE__ ).'js/recurringFront.js', array('jquery'));
-    wp_localize_script( 'my-jquery', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
-    }
 
-add_action('wp_enqueue_scripts', 'frontResource');
-
-function recurring_cookieVerifyAuth() {
-    /** Log Time & Path*/
-    $logDate = new DateTime();
-    $logDate = $logDate->format("y:m:d h:i:s");
-    $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';  
-    
-    global $wpdb;
-    $obj = new recurringFront();
-
-    $current_user = wp_get_current_user();
-    $ntpRpSessions = array(
-        'PlanID' => $_POST['PlanID'],
-        'AuthenticationToken' => $_POST['AuthenticationToken'],
-        'NtpID' => $_POST['NtpID']
-    );
-
-    setcookie('ntpRp-AuthenticationToken', $ntpRpSessions['AuthenticationToken'], time() + 600 , '/');
-    setcookie('ntpRp-NtpID', $ntpRpSessions['NtpID'], time() + 600 , '/');
-
-    file_put_contents($logPath, '['.$logDate.']-- called -- recurring_cookieVerifyAuth()'."\n", FILE_APPEND);  
-    file_put_contents($logPath, "[".$logDate."] Cooke Content ntpRp-AuthenticationToken : ".print_r($_COOKIE['ntpRp-AuthenticationToken'], true)." --- Verifici -- \n", FILE_APPEND);
-    file_put_contents($logPath, "[".$logDate."] Cooke Content ntpRp-NtpID : ".print_r($_COOKIE['ntpRp-NtpID'], true)." --- Verifici -- \n", FILE_APPEND);
-
-    wp_die();
-}
 
 
 function recurring_verifyAuth(){
-
-    /** Log Time & Path*/
-    $logDate = new DateTime();
-    $logDate = $logDate->format("y:m:d h:i:s");
-    $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/session.log';
-
-    file_put_contents($logPath, '['.$logDate.'] { B-A } -- call--recurring_verifyAuth() --- for doVerifyAuth() ------'."\n", FILE_APPEND);
-    file_put_contents($logPath, '['.$logDate.'] REQUEST PARAMS is : '.print_r($_REQUEST, true)."\n", FILE_APPEND);
-    file_put_contents($logPath, '['.$logDate.'] Session Id : '.print_r(session_id(), true)."\n", FILE_APPEND);
     
+    /** Log */
+    write_log('-- call--recurring_verifyAuth() --- for doVerifyAuth() ------');
+
     global $wpdb;
     $obj = new recurringFront();
 
-    if (array_key_exists("ntpSessionId",$_REQUEST)) {
-        $ntpSessionId = $_REQUEST['ntpSessionId'];
-    } else {
+    if (!isset($_COOKIE['ntpRp-AuthenticationToken']) || !isset($_COOKIE['ntpRp-NtpID'])) {
         $verifyAuthResult = array(
             'status'=> false,
             'msg'=> "Missing Data for Verify Auth",
@@ -99,9 +65,10 @@ function recurring_verifyAuth(){
         echo json_encode($verifyAuthResult);
         die();
     }
-    /** get subscription Info from session */
-    $sessionDataJson = $obj->getSubscriptionData($ntpSessionId);
-    $subscriptionDataObj = json_decode($sessionDataJson);
+
+    /** get subscription Info from cookie */
+    $subscriptionDataJson = $obj->getSubscriptionData();
+    $subscriptionDataObj = json_decode($subscriptionDataJson);
 
     /** To convert form data in a single Array */
     $singleArrayFormData = [];
@@ -113,8 +80,8 @@ function recurring_verifyAuth(){
         "signature"      => $obj->getSignature(),
         "subscriptionId" => $subscriptionDataObj->Subscription_Id,
         "planId"         => $subscriptionDataObj->PlanId+0,
-        "authenticationToken" => $obj->getAuthenticationToken($ntpSessionId),
-        "ntpID"         => $obj->getNTPID($ntpSessionId),
+        "authenticationToken" => $obj->getAuthenticationToken(),
+        "ntpID"         => $obj->getNTPID(),
         "formData"      => $singleArrayFormData,
         "isTestMod"     => !$obj->isLive()
     );
@@ -175,7 +142,7 @@ function recurring_verifyAuth(){
         // Sned mail
         $obj->informMember(__('New subscription','ntpRp'), __('Congratulation you successfully subscribed','ntpRp'));
 
-        // Response 
+        // Response ntpRpVerifyAuthData
         $customMsg = $obj->getSuccessMessagePayment();
         $status = true;
         $detail = "";
@@ -195,7 +162,8 @@ function recurring_verifyAuth(){
             );
     echo json_encode($verifyAuthResult);
 
-    file_put_contents($logPath, '['.$logDate.'] { C-A-3 } -- Happy End - Session ID : '.session_id().' -!!!-- '."\n", FILE_APPEND);
+    /** Log */
+    write_log('--{ C-A-3 } -- Happy End - recurring_verifyAuth() -!!!-- ');
 
     die();
 }
@@ -285,8 +253,16 @@ function recurring_addSubscription() {
      
     $jsonResultData = $obj->setSubscription($subscriptionData);
 
+
+
     // Add subscription to DB 
     if($jsonResultData['code'] === "00") {
+
+        //////////
+
+        
+
+        //////////
         $arrSubscriptionData = array( 
                 'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
                 'First_Name'      => $Member['Name'],
@@ -339,8 +315,12 @@ function recurring_addSubscription() {
 
             $arrSubscriptionDataJson =  json_encode($arrSubscriptionData);
             
-            /** Set Subscription info as session to be uesd at in countinu base on Payment result */
+           
+            
+            /** Set Subscription info from cooke to be uesd it in countinu base on Payment result */
             setcookie('ntpRp-cookies-json', $arrSubscriptionDataJson, time() + 600 , '/');
+            setcookie('ntpRp-AuthenticationToken', $jsonResultData['data']['details']['PaymentDetails']['AuthenticationToken'], time() + 600 , '/');
+            setcookie('ntpRp-NtpID', $jsonResultData['data']['details']['PaymentDetails']['NtpID'], time() + 600 , '/');
     }
     
     if($jsonResultData['code'] === "00") {
@@ -360,8 +340,9 @@ function recurring_addSubscription() {
         'msg'=> $msg,
         'detail'=> $detail,
         );
-    echo json_encode($addSubscriptionResult);
-    wp_die();
+        wp_send_json($addSubscriptionResult) ;
+    // echo json_encode($addSubscriptionResult);
+    // wp_die();
 }
 
 function recurring_getMyNextPayment() {
@@ -1627,7 +1608,8 @@ function createUser($userInfo) {
             $user = get_user_by('id', $createdUserID);
             update_user_caches($user);
         } else {
-            file_put_contents(WP_PLUGIN_DIR . '/netopia-recurring/log/session.log', '--- { Create User is FAILED!!!!  } ----------'."\n", FILE_APPEND);
+            /** Log */
+            write_log('-- { Create User is FAILED!!!!  } ----------');
         }
     }
 }

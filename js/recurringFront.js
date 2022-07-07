@@ -420,9 +420,6 @@ function addSubscription(e) {
                         jQuery('#msgContent'+PlanID).html(response.msg);
                         jQuery('#msgBlock'+PlanID).addClass('show')
                         jQuery('#msgContent'+PlanID).append('You will redirect to your bank. Please not close the page');
-                                              
-                        /** Call set cookies */
-                        setCookieVerifyAuthOnNewSubscription(PlanID, authenticationToken, ntpID);
                         
                         jQuery('#loading'+PlanID).removeClass('show');
                         jQuery('#spinner'+PlanID).removeClass('d-none');
@@ -454,57 +451,16 @@ function addSubscription(e) {
     }
 }
 
-
-
-function setCookieVerifyAuthOnNewSubscription(PlanID, AuthenticationToken, NtpID) {
-    data = {
-        action : 'cookieVerifyAuth',
-        PlanID : PlanID,
-        AuthenticationToken : AuthenticationToken,
-        NtpID : NtpID,                          
-    };
-
-    jQuery.ajax({
-        url: frontAjax.ajax_url,
-        type: 'POST',
-        dataType: 'json',
-        data: data,
-        success: function( response ){
-            if(response.status) {
-                console.log('session set for 3DS, success');
-            } else {
-                console.log('session set for 3DS, Failed!');
-            }
-        },
-        error: function( error ){
-            console.log('call set session for 3DS, Failed!');
-        }
-    });
-}
-
-
-
 function VerifyAuthAction(buttonAct, planId) {
     var buttonAct = buttonAct;
     var form = buttonAct.closest("form");
     var formId = form.id;
     var formData =jQuery(form).serializeArray();
     
-    /*
-    Get posted sess from URL
-    Send session id as a parameter to "doVerifyAuth"
-    */
-    var str = window.location.href;
-    var url = new URL(str);
-    var search_params = new URLSearchParams(url.search); 
-    if(search_params.has('sess')) {
-    var sessId = search_params.get('sess');
-    }
 
     data = {
         action : 'doVerifyAuth',
         formData : formData,
-        ntpSessionId : sessId,
     };
 
     jQuery.ajax({
@@ -520,14 +476,12 @@ function VerifyAuthAction(buttonAct, planId) {
                 jQuery('#loading-'+formId).removeClass('show');
                 jQuery('#msgBlock-'+formId).addClass('show');
                 jQuery('#'+planId).addClass('d-none'); // Remove Subscribe button
-                // jQuery('#msgContent-'+formId).append('Verify Auth - progress is complited.');
             } else {
                 jQuery('#msgBlock-'+formId).addClass('alert-warning');
                 jQuery('#alertTitle-'+formId).html('Warning!');
                 jQuery('#msgContent-'+formId).html(response.msg);
                 jQuery('#loading-'+formId).removeClass('show');
                 jQuery('#msgBlock-'+formId).addClass('show');
-                // jQuery('#msgContent-'+formId).append('Verify Auth is failed!. Please try again');
             }
         },
         error: function( error ){
