@@ -90,11 +90,7 @@ class IPN {
         /**
         *  Fetch all HTTP request headers
         */
-        file_put_contents($this->logFile, "--- verifyIPN method --- \n", FILE_APPEND);
-
         $aHeaders = $this->getApacheHeader();
-        file_put_contents($this->logFile, print_r($aHeaders, true)." \n", FILE_APPEND);
-
         $verificationToken = $this->getVerificationToken($aHeaders);        
         
         /**
@@ -105,15 +101,10 @@ class IPN {
                $outputData['errorType']	= self::ERROR_TYPE_TEMPORARY;
                $outputData['errorCode']	= self::RECURRING_ERROR_CODE_NEED_VERIFY;
                $outputData['errorMessage']	= 'Add as Arhive';
-
-               file_put_contents($this->logFile, "--- Does not have Verification-Token or is EMPTY --- & --- Has X-Apikey --- then the arihive should be added in DB  --- \n", FILE_APPEND);
-               file_put_contents($this->logFile, print_r($outputData, true)."\n", FILE_APPEND);
-               file_put_contents($this->logFile, "--- --------------------------------------------- \n", FILE_APPEND);
-
                return $outputData;
             } else {
                 /** Log IPN */
-                file_put_contents($this->logFile, "[".$logDate."] IPN__header is not an valid HTTP HEADER \n", FILE_APPEND);
+                write_log("IPN__header is not an valid HTTP HEADER");
                 echo 'IPN__header is not an valid HTTP HEADER' . PHP_EOL;
                 exit;
             }            
@@ -127,19 +118,18 @@ class IPN {
         if($verificationToken === null)
             {
             /** Log IPN */
-            file_put_contents($this->logFile, "[".$logDate."] IPN__Verification-token is missing in HTTP HEADER \n", FILE_APPEND);
+            write_log("IPN__Verification-token is missing in HTTP HEADER");
             echo 'IPN__Verification-token is missing in HTTP HEADER' . PHP_EOL;
             exit;
             }
 
-        file_put_contents($this->logFile, "--- HAS verification Token --- \n", FILE_APPEND);
         /**
         * Analyzing verification token
         * Verification token is JWT & should used right encoding/decoding algorithm 
         */
         $tks = \explode('.', $verificationToken);
         if (\count($tks) != 3) {
-            file_put_contents($this->logFile, "Has verification-token but is wrong JWT Token \n", FILE_APPEND);
+            write_log("Has verification-token but is wrong JWT Token");
             throw new \Exception('Wrong_Verification_Token');
             exit;
         }
@@ -147,7 +137,7 @@ class IPN {
         $jwtHeader = json_decode(base64_decode(\strtr($headb64, '-_', '+/')));
         
         if($jwtHeader->typ !== 'JWT') {
-            file_put_contents($this->logFile, "Has verification-token but does not have right JWT Token Type \n", FILE_APPEND);
+            write_log("Has verification-token but does not have right JWT Token Type");
             throw new \Exception('Wrong_Token_Type');
             exit; 
         }
@@ -158,12 +148,12 @@ class IPN {
         if(isset($this->publicKeyStr) && !is_null($this->publicKeyStr)){
             $publicKey = openssl_pkey_get_public($this->publicKeyStr);
             if($publicKey === false) {
-                file_put_contents($this->logFile, 'IPN__public key is not a valid public key'."\n", FILE_APPEND);
+                write_log("IPN__public key is not a valid public key");
                 echo 'IPN__public key is not a valid public key' . PHP_EOL; 
                 exit;
             }
         } else {
-            file_put_contents($this->logFile, 'IPN__Public key missing'."\n", FILE_APPEND);
+            write_log("IPN__Public key missing");
             echo "IPN__Public key missing" . PHP_EOL; 
             exit;
         }
@@ -179,7 +169,7 @@ class IPN {
         * Default alg is RS512$orderLog = 'payment was confirmed; deliver goods';
         */
         if(!isset($this->alg) || $this->alg==null){
-            file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_JWT_ALG \n", FILE_APPEND);
+            write_log("IDS_Service_IpnController__INVALID_JWT_ALG");
             throw new \Exception('IDS_Service_IpnController__INVALID_JWT_ALG');
             exit;
         }
@@ -192,7 +182,7 @@ class IPN {
         
             if(strcmp($objJwt->iss, 'NETOPIA Payments') != 0)
                 {
-                file_put_contents($this->logFile, "IDS_Service_IpnController__E_VERIFICATION_FAILED_GENERAL \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__E_VERIFICATION_FAILED_GENERAL");
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_GENERAL');
                 exit;
                 }
@@ -202,19 +192,19 @@ class IPN {
              * check if is in set of signature too
              */
             if(empty($objJwt->aud) || $objJwt->aud[0] != $this->activeKey){
-                file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_SIGNATURE \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__INVALID_SIGNATURE");
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE');
                 exit;
             }
         
             if(!in_array($objJwt->aud[0], $this->posSignatureSet,true)) {
-                file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_SIGNATURE_SET \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__INVALID_SIGNATURE_SET");
                 throw new \Exception('IDS_Service_IpnController__INVALID_SIGNATURE_SET');
                 exit;
             }
             
             if(!isset($this->hashMethod) || $this->hashMethod==null){
-                file_put_contents($this->logFile, "IDS_Service_IpnController__INVALID_HASH_METHOD \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__INVALID_HASH_METHOD");
                 throw new \Exception('IDS_Service_IpnController__INVALID_HASH_METHOD');
                 exit;
             }
@@ -234,7 +224,7 @@ class IPN {
         
             if(strcmp($payloadHash, $objJwt->sub) != 0)
                 {
-                file_put_contents($this->logFile, "IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD");
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_TAINTED_PAYLOAD', E_VERIFICATION_FAILED_TAINTED_PAYLOAD);
                 exit;
                 }
@@ -242,11 +232,10 @@ class IPN {
             try
                 {
                 $objIpn = json_decode($payload, false);
-                file_put_contents($this->logFile, "IPN Object : ".print_r($objIpn, true)." \n", FILE_APPEND);
                 }
             catch(\Exception $e)
                 {
-                file_put_contents($this->logFile, "IDS_Service_IpnController__E_VERIFICATION_FAILED_PAYLOAD_FORMAT \n", FILE_APPEND);
+                write_log("IDS_Service_IpnController__E_VERIFICATION_FAILED_PAYLOAD_FORMAT");
                 throw new \Exception('IDS_Service_IpnController__E_VERIFICATION_FAILED_PAYLOAD_FORMAT', E_VERIFICATION_FAILED_PAYLOAD_FORMAT);
                 }
             
@@ -440,19 +429,19 @@ class IPN {
         return null;
     }
 
-    public function encrypt($x509FilePath)
-	    {		
-		$publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
-		if($publicKey === false)
-		{
-            file_put_contents($this->logFile, "Error while loading X509 public key certificate! \n", FILE_APPEND);
-			$errorMessage = "Error while loading X509 public key certificate! Reason:";
-			while(($errorString = openssl_error_string()))
-			{
-				$errorMessage .= $errorString . "\n";
-			}
-			throw new Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
-		}
-		return $publicKey;
-	}
+    // public function encrypt($x509FilePath)
+	//     {		
+	// 	$publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
+	// 	if($publicKey === false)
+	// 	{
+    //         file_put_contents($this->logFile, "Error while loading X509 public key certificate! \n", FILE_APPEND);
+	// 		$errorMessage = "Error while loading X509 public key certificate! Reason:";
+	// 		while(($errorString = openssl_error_string()))
+	// 		{
+	// 			$errorMessage .= $errorString . "\n";
+	// 		}
+	// 		throw new Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
+	// 	}
+	// 	return $publicKey;
+	// }
 }

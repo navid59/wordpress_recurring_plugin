@@ -10,7 +10,7 @@ include_once( 'packages/debugging.php' );
 add_filter( 'query_vars', 'ntp_add_query_vars');
 function ntp_add_query_vars($vars){
    $vars[] = "recurring_notify";
-   $vars[] = "recurring_3DSAuthorize";
+//    $vars[] = "recurring_3DSAuthorize";
 
    return $vars;
 }
@@ -33,37 +33,37 @@ function ntpRecurringNotifyValidation($template) {
     }
 }
 
-add_action('template_include', 'ntpRecurring3DSAuthorize');
-function ntpRecurring3DSAuthorize($template) {
-    global $wp_query;
+// add_action('template_include', 'ntpRecurring3DSAuthorize');
+// function ntpRecurring3DSAuthorize($template) {
+//     global $wp_query;
 
-    // If the 'recurring_3DSAuthorize' query var isn't appended to the URL,
-    // don't do anything and return default
-    if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_3DSAuthorize') {
-        return $template;
-    } else {
-        // Step #1 - Make sure request is come from NETOPIA Recurring API
-        // Step #2 - Make sure if request is for this Comerciant
-        get3DSAuthorizeRedirect();
-        die();
-    }
-}
+//     // If the 'recurring_3DSAuthorize' query var isn't appended to the URL,
+//     // don't do anything and return default
+//     if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_3DSAuthorize') {
+//         return $template;
+//     } else {
+//         // Step #1 - Make sure request is come from NETOPIA Recurring API
+//         // Step #2 - Make sure if request is for this Comerciant
+//         get3DSAuthorizeRedirect();
+//         die();
+//     }
+// }
 
-function get3DSAuthorizeRedirect() {
-    /** Log Time & Path*/
-    $logDate = new DateTime();
-    $logDate = $logDate->format("y:m:d h:i:s");
-    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/3DSAuth_'.date("j.n.Y").'.log';
-    /** 3DSAuth log */
-    file_put_contents($logFile, "[".$logDate."] 3DSAuth Hint \n", FILE_APPEND);
+// function get3DSAuthorizeRedirect() {
+//     /** Log Time & Path*/
+//     $logDate = new DateTime();
+//     $logDate = $logDate->format("y:m:d h:i:s");
+//     $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/3DSAuth_'.date("j.n.Y").'.log';
+//     /** 3DSAuth log */
+//     file_put_contents($logFile, "[".$logDate."] 3DSAuth Hint \n", FILE_APPEND);
 
-    $headers = apache_request_headers();
+//     $headers = apache_request_headers();
 
-    file_put_contents($logFile, "[".$logDate."] ".$header." \n", FILE_APPEND);
-    file_put_contents($logFile, "[".$logDate."] ----------------------------- \n", FILE_APPEND);
+//     file_put_contents($logFile, "[".$logDate."] ".$header." \n", FILE_APPEND);
+//     file_put_contents($logFile, "[".$logDate."] ----------------------------- \n", FILE_APPEND);
     
     
-}
+// }
 
 function getHeaderRequest() {
     global $wpdb;

@@ -164,7 +164,7 @@ function recurring_verifyAuth(){
 
     /** Log */
     write_log('--{ C-A-3 } -- Happy End - recurring_verifyAuth() -!!!-- ');
-
+    // wp_send_json();
     die();
 }
 
@@ -257,12 +257,6 @@ function recurring_addSubscription() {
 
     // Add subscription to DB 
     if($jsonResultData['code'] === "00") {
-
-        //////////
-
-        
-
-        //////////
         $arrSubscriptionData = array( 
                 'Subscription_Id' => $jsonResultData['data']['subscriptionId'],
                 'First_Name'      => $Member['Name'],

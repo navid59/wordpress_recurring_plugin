@@ -62,7 +62,8 @@ class recurringAdmin extends recurring {
             "Amount"=> $formData['Amount']+0, // Is added to ZERO to have result as FLOAT
             "Currency"=> $formData['Currency'],
             "InitialPayment" => $formData['InitialPayment'],
-            "Taxable"=> false 
+            "Taxable"=> false ,
+            "isTestMod" => $formData['isTestMod']
         );
 
         $postData = json_encode($planData);
@@ -131,7 +132,8 @@ class recurringAdmin extends recurring {
         $planData = array(
             "PlanId" => $formData['PlanId']+0,
             "Signature" => self::getSignature(),
-            "Unsubscribe" => $formData['Unsubscribe']
+            "Unsubscribe" => $formData['Unsubscribe'],
+            "isTestMod"   => $formData['isTestMod']
         );
     
         $postData = json_encode($planData);
@@ -157,7 +159,8 @@ class recurringAdmin extends recurring {
             "Currency"=> $formData['Currency'],
             "InitialPayment" => $formData['InitialPayment'],
             "Taxable"=> false ,
-            "TermAndConditionAccepted" => $formData['TermAndConditionAccepted']
+            "TermAndConditionAccepted" => $formData['TermAndConditionAccepted'],
+            "isTestMod" => $formData['isTestMod']
         );
 
         $postData = json_encode($planData);
@@ -210,7 +213,7 @@ class recurringAdmin extends recurring {
         $data = array(
             "ApiKey" => $apiKey,
             'Signature' => $signature,
-            'IsTestMod' => $isTestMod ? "true" : "false"
+            'IsTestMod' => $isTestMod ? true : false
         );
     
         $postData = json_encode($data);
@@ -238,7 +241,8 @@ function recurring_addPlan() {
             "GracePeriod" => $_POST['GracePeriod'],
             "Amount" => $_POST['Amount'] ,
             "Currency" => $_POST['Currency'],
-            "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false
+            "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false,
+            "isTestMod" => !$obj->isLive()
         );
     
         $jsonResultData = $obj->setPlan($planData);
@@ -308,7 +312,8 @@ function recurring_delPlan() {
     $obj = new recurringAdmin();
     $planData = array(
             "PlanId" => $_POST['planId']+0,
-            "Unsubscribe" => $_POST['unsubscribe'] === 'true' ? true : false
+            "Unsubscribe" => $_POST['unsubscribe'] === 'true' ? true : false,
+            "isTestMod" => !$obj->isLive()
     );
 
     $jsonResultData = $obj->delPlan($planData);
@@ -354,7 +359,8 @@ function recurring_editPlan() {
             "Amount" => $_POST['Amount']+0 ,
             "Currency" => $_POST['Currency'],
             "InitialPayment" => $_POST['InitialPayment'] === 'true' ? true : false,
-            "TermAndConditionAccepted" => $_POST['TermAndConditionAccepted'] === 'true' ? true : false
+            "TermAndConditionAccepted" => $_POST['TermAndConditionAccepted'] === 'true' ? true : false,
+            "isTestMod" => !$obj->isLive()
     );
 
     $jsonResultData = $obj->editPlan($planData);

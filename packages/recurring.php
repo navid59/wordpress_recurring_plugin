@@ -35,39 +35,34 @@
             }  
         }
 
-        function getNTPID() {
-            /** Log Time & Path*/
-            $logDate = new DateTime();
-            $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
-            
+        function getNTPID() {            
             $ntpRpNtpID = $_COOKIE['ntpRp-NtpID'];
             
-            file_put_contents($logPath, '['.$logDate.'] { Call -- getNTPID() } -- Final Value ntpRp-NtpID is : '.print_r($ntpRpNtpID, true)."\n", FILE_APPEND);
+            /** Log */
+            if(empty($ntpRpNtpID) || is_null($ntpRpNtpID)) {
+                write_log('cookie ntpRp-NtpID is empty!');
+            }
             return $ntpRpNtpID;
         }
 
-        function getAuthenticationToken() {
-            /** Log Time & Path*/
-            $logDate = new DateTime();
-            $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
-            
+        function getAuthenticationToken() {            
             $ntpRpAuthenticationToken = $_COOKIE['ntpRp-AuthenticationToken'];
             
-            file_put_contents($logPath, '['.$logDate.'] { Call -- getAuthenticationToken() } -- Final Value ntpRp-AuthenticationToken is :'.print_r($ntpRpAuthenticationToken, true)."\n", FILE_APPEND);
+            /** Log */
+            if(empty($ntpRpAuthenticationToken) || is_null($ntpRpAuthenticationToken)) {
+                write_log('cookie ntpRp-AuthenticationToken is empty!');
+            }
             return $ntpRpAuthenticationToken;
         }
 
         function getSubscriptionData() {
-            /** Log Time & Path*/
-            $logDate = new DateTime();
-            $logDate = $logDate->format("y:m:d h:i:s");
-            $logPath = WP_PLUGIN_DIR . '/netopia-recurring/log/cookieTmp.log';
-
             $ntpRpSubscriptionData = $_COOKIE['ntpRp-cookies-json'];
             
-            file_put_contents($logPath, '['.$logDate.'] { Call -- getSubscriptionData() } Final Value ntpRp-json is : '.print_r($ntpRpSubscriptionData, true)."\n", FILE_APPEND);
+            /** Log */
+            if(empty($ntpRpSubscriptionData) || is_null($ntpRpSubscriptionData)) {
+                write_log('cookie ntpRp-cookies-json is empty!');
+            }
+
             return (stripslashes($ntpRpSubscriptionData));
         }
 
@@ -194,53 +189,53 @@
             return $statusStr;
          }
 
-        public function encrypt($x509FilePath)
-            {
-             $this->_prepare();
+        // public function encrypt($x509FilePath)
+        //     {
+        //      $this->_prepare();
              
-             $publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
-             if($publicKey === false)
-             {
-                 $this->outEncData	= null;
-                 $this->outEnvKey	= null;
-                 $errorMessage = "Error while loading X509 public key certificate! Reason:";
-                 while(($errorString = openssl_error_string()))
-                 {
-                     $errorMessage .= $errorString . "\n";
-                 }
-                 throw new \Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
-             }
-             $srcData = $this->_xmlDoc->saveXML();
-             $publicKeys	= array($publicKey);
-             $encData 	= null;
-             $envKeys 	= null;
-             $cipher_algo = 'RC4';
-             $result 	= openssl_seal($srcData, $encData, $envKeys, $publicKeys, $cipher_algo);
-             if($result === false)
-             {
-                 $this->outEncData	= null;
-                 $this->outEnvKey	= null;
-                 $errorMessage = "Error while encrypting data! Reason:";
-                 while(($errorString = openssl_error_string()))
-                 {
-                     $errorMessage .= $errorString . "\n";
-                 }
-                 throw new \Exception($errorMessage, self::ERROR_ENCRYPT_DATA);
-             }
+        //      $publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
+        //      if($publicKey === false)
+        //      {
+        //          $this->outEncData	= null;
+        //          $this->outEnvKey	= null;
+        //          $errorMessage = "Error while loading X509 public key certificate! Reason:";
+        //          while(($errorString = openssl_error_string()))
+        //          {
+        //              $errorMessage .= $errorString . "\n";
+        //          }
+        //          throw new \Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
+        //      }
+        //      $srcData = $this->_xmlDoc->saveXML();
+        //      $publicKeys	= array($publicKey);
+        //      $encData 	= null;
+        //      $envKeys 	= null;
+        //      $cipher_algo = 'RC4';
+        //      $result 	= openssl_seal($srcData, $encData, $envKeys, $publicKeys, $cipher_algo);
+        //      if($result === false)
+        //      {
+        //          $this->outEncData	= null;
+        //          $this->outEnvKey	= null;
+        //          $errorMessage = "Error while encrypting data! Reason:";
+        //          while(($errorString = openssl_error_string()))
+        //          {
+        //              $errorMessage .= $errorString . "\n";
+        //          }
+        //          throw new \Exception($errorMessage, self::ERROR_ENCRYPT_DATA);
+        //      }
              
-             $this->outEncData 	= base64_encode($encData);
-             $this->outEnvKey 	= base64_encode($envKeys[0]);
-            }
+        //      $this->outEncData 	= base64_encode($encData);
+        //      $this->outEnvKey 	= base64_encode($envKeys[0]);
+        //     }
      
-        public function getEnvKey()
-         {
-             return $this->outEnvKey;
-         }
+        // public function getEnvKey()
+        //  {
+        //      return $this->outEnvKey;
+        //  }
      
-        public function getEncData()
-         {
-             return $this->outEncData;
-         }
+        // public function getEncData()
+        //  {
+        //      return $this->outEncData;
+        //  }
 
         public function informMember($subject, $message) {
             if (empty($subject) || empty($message))
