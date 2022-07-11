@@ -268,7 +268,7 @@ function addSubscription(e) {
     var LastName = jQuery('#'+formId).find('input[name=lastName]').val();
     var Email = jQuery('#'+formId).find('input[name=email]').val();
     var Address  = jQuery('#'+formId).find('input[name=address]').val();
-    var City = jQuery('#'+formId).find('input[name=state]').val();
+    var City = jQuery('#'+formId).find('select[name=state]').val();
     var Tel = jQuery('#'+formId).find('input[name=tel]').val();
     
 
@@ -288,6 +288,7 @@ function addSubscription(e) {
     
     jQuery('#loading'+PlanID).addClass('show');
     jQuery('#addSubscriptionButton'+PlanID).hide();
+
 
     if(!luhn_validate(Account)) {
         jQuery('#msgBlock'+PlanID).addClass('alert-warning');
@@ -318,7 +319,6 @@ function addSubscription(e) {
             ThreeDS : ThreeDS,
             BackUrl : BackUrl,
         };
-    
         
         jQuery.ajax({
             url: frontAjax.ajax_url,

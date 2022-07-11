@@ -201,6 +201,12 @@ function recurring_addSubscription() {
             "City" => !isset($MemberDetails[0]['City']) ? NULL : $MemberDetails[0]['City'],
             "Tel" => !isset($MemberDetails[0]['Tel']) ? NULL : $MemberDetails[0]['Tel']
         );
+
+        if(empty($MemberDetails[0]['Address']) || empty($MemberDetails[0]['City']) || empty($MemberDetails[0]['Tel'])) {
+            $Member['Address'] = $_POST['Address'];
+            $Member['City'] = $_POST['City'];
+            $Member['Tel'] = strval($_POST['Tel']);
+        }
     }
     
 
@@ -1249,12 +1255,28 @@ function getMemberInfoHtml() {
     $current_user = wp_get_current_user();
     $isLoggedIn = $current_user->ID != 0 ? true : false;
 
+    /** Warrning for un complited info */
+    $htmlCompletPersonalData = '
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                '.__('Dear', 'ntpRp').' <strong>'.$current_user->user_login.'!</strong> '.__('You should complete your personal data from', 'ntpRp').'  <a href="subscription-account">'.__('Account details', 'ntpRp').'</a> '.__('before subscribe', 'ntpRp').'.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                ';
 
     /** Get Current user Info */
     if($isLoggedIn) {
         $subscriptionInfo = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `UserID` LIKE '".$current_user->user_login."'");
         if(count($subscriptionInfo)) {
             $subscriptionInfo = $subscriptionInfo[0];
+            if(empty($subscriptionInfo->Address) || empty($subscriptionInfo->City) || empty($subscriptionInfo->Tel)) {
+                // subscriptioin pesonal Data is not complited, So must completed the data first
+                echo ($htmlCompletPersonalData);
+            } 
+        } else {
+            // subscriptioin pesonal Data Not found , So must be added subscripber info first
+            // Becuse there is no any record , can not update the record
         }
     }
 
@@ -1339,13 +1361,59 @@ function getMemberInfoHtml() {
                                 </div>                        
                             </div>';
 
+        /** Missing Personal Item HTML form */
+        $memberMissingInfoHtmlForm = '
+        <hr class="mb-4">
+        <h4 class="mb-3">'.__('Personal information').'</h4>
+        
+        
+        <div class="row">
+            <div class="col">
+                <label for="address">'.__('Address','ntpRp').'</label>
+                <input type="text" class="form-control" id="address" name="address" pattern=".{10,}" title="'.__('please, fill out with full address (10 characters minimum)','ntpRp').' placeholder="'.__('Subscription address, Ex. Main street, Floor, Nr,... ','ntpRp').'" value="'.$userAddress.'" required>
+                <div class="invalid-feedback">
+                    '.__('Please enter your shipping address.','ntpRp').'
+                </div>
+            </div>
+        </div>    
+        
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label for="tel">'.__('Tel','ntpRp').'</label>
+                <input type="text" class="form-control" id="tel" name="tel" placeholder="" pattern="[0-9]{5,14}" title="'.__('please, fill out with correct phone number! (only digit)','ntpRp').'" value="'.$userTel.'" required>
+                <div class="invalid-feedback">
+                    '.__('Phone required.','ntpRp').'
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="country">'.__('Country','ntpRp').'</label>
+                <select class="custom-select d-block w-100" id="country" required>
+                <option value="">Choose...</option>
+                <option value="642" selected>Romania</option>
+                </select>
+                <div class="invalid-feedback">
+                    '.__('Please select a valid country.','ntpRp').'
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="state">'.__('State','ntpRp').'</label>
+                <select class="custom-select d-block w-100" id="state" name="state" required>'
+                .getJudete().
+                '</select>
+                <div class="invalid-feedback">
+                    '.__('Please provide a valid state.','ntpRp').'
+                </div>
+            </div>                        
+        </div>';
+
     if($isLoggedIn) {
         if(empty($subscriptionInfo->Address) || empty($subscriptionInfo->City) || empty($subscriptionInfo->Tel)) {
-            //return $memberInfoHtmlForm;
-            return null;
+            // subscriptioin pesonal Data is not complited, 
+            // Should be display form &  completed the data Durring subscription
+            return $memberMissingInfoHtmlForm;
         } else {
             return null;
-        }
+        }       
     } else {
         return $memberInfoHtmlForm;
     }
