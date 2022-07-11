@@ -133,6 +133,40 @@ jQuery(document).ready(function () {
         const str = this.value;
         this.value = str.trim();
     });
+
+    /**
+     * To get card expire Date
+     * Find month and year of Exp Date
+     */
+
+     var liveValidateDetails = function() {      
+        var live_expiry = jQuery('.cc-exp__example').payment('cardExpiryVal');
+        var live_validateExpiry = jQuery.payment.validateCardExpiry(live_expiry["month"], live_expiry["year"]);
+      
+        if (live_validateExpiry) {
+            jQuery('#cc-expiration-month').val(live_expiry["month"]);
+            jQuery('#cc-expiration-year').val(live_expiry["year"]);
+
+            jQuery('.ntpRecurringCheckout').prop('disabled', false);
+
+          jQuery('.cc-exp__example').addClass('identified');
+          jQuery('.cc-exp__ouputValid').text('Yes');
+        } else {
+            // To clear Month & Year
+            jQuery('#cc-expiration-month').val("");
+            jQuery('#cc-expiration-year').val("");
+
+            jQuery('.ntpRecurringCheckout').prop('disabled', true);
+
+          jQuery('.cc-exp__example').removeClass('identified');
+          jQuery('.cc-exp__ouputValid').text('No');
+        }
+      }
+
+     jQuery('.cc-exp').payment('formatCardExpiry');
+     jQuery('.cc-exp__example').bind('change exp keyup', function() {
+        liveValidateDetails();
+      });
     
     jQuery('.add-subscription-form').on('submit', addSubscription);
     jQuery('.unsubscription-form').on('submit', unsubscription);

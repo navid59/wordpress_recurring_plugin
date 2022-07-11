@@ -27,6 +27,13 @@ function frontResource() {
    wp_localize_script( 'my-jquery', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
 }
 
+/** Assign stripe js payment */
+add_action('wp_enqueue_scripts', 'stripePaymentJS');
+function stripePaymentJS() {
+   wp_enqueue_script('stripejQueryPayment',plugin_dir_url( __FILE__ ).'js/jquery.payment.js', array('jquery'));
+   wp_localize_script( 'stripejQueryPayment', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
+}
+
 /** Assign CSS, JS for datatable */
 function ntp_recurring_enqueue_scripts() {
     wp_enqueue_style  ('ntp_recurring_front_css_datatables', plugin_dir_url( __FILE__ ) . 'css/addons/datatables.min.css',array(),'2.0' ,false);
@@ -1183,7 +1190,7 @@ function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $ca
                             $cardInfo
                             .'
                             <hr class="mb-4">
-                            <button id="addSubscriptionButton'.$planId.'" class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                            <button id="addSubscriptionButton'.$planId.'" class="btn btn-primary btn-lg btn-block ntpRecurringCheckout" type="submit">Continue to checkout</button>
                         </form>
                         </div>
                     </div>
@@ -1467,7 +1474,7 @@ function getCardInfoHtml() {
     $maxYear = date('Y', strtotime('+10 year'));
     return '<h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
     <div class="row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
             <label for="cc-name">Name on card</label>
             <input type="text" class="form-control" id="cc-name" name="cc-name" pattern=".{3,}" title="'.__('please, fill out with full name!','ntpRp').' placeholder="" required>
             <small class="text-muted">Full name as displayed on card</small>
@@ -1475,38 +1482,25 @@ function getCardInfoHtml() {
                 Name on card is required
             </div>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
             <label for="cc-number">Credit card number</label>
             <input type="text" class="form-control" id="cc-number" name="cc-number" pattern="[0-9]{16}" placeholder="" title="'.__('Card number must contain 16 number (Only number)','ntpRp').'" required>
             <div class="invalid-feedback">
                 Credit card number is required
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label for="cc-expiration-month">'.__('Expiration Month','ntpRp').'</label>
-            <input type="number" min="1" max="12" class="form-control" id="cc-expiration-month" name="cc-expiration-month" placeholder=""  title="'.__('Month moust be a number between 1 and 12','ntpRp').'" required>
-            <div class="invalid-feedback">
-                Expiration date required
-            </div>
+        <div class="col-md-2 mb-2">
+            <label for="cc-expiration-month">'.__('Exp Date','ntpRp').'</label>
+            <input id="cc-exp" type="tel" class="cc-exp cc-exp__example form-control" placeholder="MM / YY" autocompletetype="cc-exp" required="required">
+            <input type="hidden" min="1" max="12" class="form-control" id="cc-expiration-month" name="cc-expiration-month" placeholder=""  title="'.__('Month moust be a number between 1 and 12','ntpRp').'" required>
+            <input type="hidden" min="'.$minYear.'" max="'.$maxYear.'" class="form-control" id="cc-expiration-year" name="cc-expiration-year" pattern="[0-9]{4}" placeholder="" title="'.__('Expire year must contain 4 number','ntpRp').'" required>
         </div>
-        <div class="col-md-3 mb-3">
-            <label for="cc-expiration-year">'.__('Expiration Year','ntpRp').'</label>
-            <input type="number" min="'.$minYear.'" max="'.$maxYear.'" class="form-control" id="cc-expiration-year" name="cc-expiration-year" pattern="[0-9]{4}" placeholder="" title="'.__('Expire year must contain 4 number','ntpRp').'" required>
-            <div class="invalid-feedback">
-                Expiration date required
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
+        <div class="col-md-2 mb-2">
             <label for="cc-expiration">CVV</label>
             <input type="text" maxlength="4"  class="form-control" id="cc-cvv" name="cc-cvv" pattern="[0-9]{3,4}" placeholder="" title="'.__('CVV must number and contain min 3 digit','ntpRp').'" required>
             <div class="invalid-feedback">
                 Security code required
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            &nbsp;
         </div>
     </div>';
 }
