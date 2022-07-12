@@ -113,10 +113,8 @@
         }
 
         function getLoginUrl() {
-            global $wpdb;
-            $loginUrl =  get_option($this->slug.'_login_url', array());
             $baseURL = get_site_url();
-            return $loginUrl !== "" ? $baseURL.'/'.$loginUrl : $baseURL.'/login';
+            return $baseURL.'/subscription-account';
         }
 
         function getData($url, $requestData) {
