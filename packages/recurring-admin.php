@@ -489,13 +489,13 @@ function getInfinitSubscribtion() {
                                                     s.StartDate,
                                                     s.Subscription_Id,
                                                     COUNT(*) as planCounter,
-                                                    JSON_ARRAYAGG(
+                                                    concat('[', group_concat(
                                                         json_object(
                                                             'name', p.Title,
                                                             'amount', p.Amount,
                                                             'currency', p.Currency
                                                         )
-                                                    ) as PlanList
+                                                    ), ']') as PlanList
                                                 FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                                 INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                                 WHERE s.PlanId = p.PlanId 
