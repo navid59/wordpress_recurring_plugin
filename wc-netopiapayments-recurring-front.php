@@ -1627,9 +1627,9 @@ function authenticateUser($userInfo) {
                 'status'=> false,
                 'msg'=> __('Email is not correct!', 'ntpRp'),
                 );
-            wp_send_json(json_encode($authenticateResult));
-            // echo json_encode($authenticateResult);
-            // wp_die();
+            // Can't use wp_send_json must be die
+            echo json_encode($authenticateResult);
+            wp_die();
         }        
     } else {
         if($userInfo['UserID'] != $current_user->user_login || $userInfo['Email'] != $current_user->user_email ) {
@@ -1637,9 +1637,9 @@ function authenticateUser($userInfo) {
                 'status'=> false,
                 'msg'=> __('Username or Email is not correct! | You already have an account.', 'ntpRp'),
                 );
-            wp_send_json(json_encode($authenticateResult));
-            // echo json_encode($authenticateResult);
-            // wp_die();
+            // Can't use wp_send_json must be die
+            echo json_encode($authenticateResult);
+            wp_die();
         }
     }
 }
@@ -1652,9 +1652,10 @@ function createUser($userInfo) {
             'status'=> false,
             'msg'=> email_exists($userInfo['Email']) && username_exists($userInfo['UserID']) ? __('This user is already exist! Please Signin first.','ntpRp').'<a href="'.$loginUrlLink.'">'.__('Sign In here', 'ntpRp').'</a>' : __('The user or email are already exist!.', 'ntpRp'),
             );
-        wp_send_json(json_encode($userExist));
-        // echo json_encode($userExist);
-        // wp_die();
+
+        // Can't use wp_send_json must be die
+        echo json_encode($userExist);
+        wp_die();
     } else {
         $createdUserID = wp_create_user( $userInfo['UserID'], $userInfo['Pass'], $userInfo['Email'] );
         if($createdUserID) {

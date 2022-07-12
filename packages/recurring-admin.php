@@ -107,7 +107,7 @@ class recurringAdmin extends recurring {
                                     ON h.Subscription_Id = s.Subscription_Id 
                                     INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p
                                     ON s.PlanId = p.PlanId
-                                    ORDER BY `CreatedAt` DESC", "ARRAY_A");
+                                    ORDER BY h.CreatedAt DESC", "ARRAY_A");
         if(count($plans)) {
             $errorCode = "00";
             $errorMsg = "";

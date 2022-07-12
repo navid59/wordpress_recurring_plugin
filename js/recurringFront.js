@@ -396,6 +396,22 @@ function addSubscription(e) {
                 } else {
                     console.log(response);
                     /**
+                     * If response.detail is not exist
+                     * perhapse an error happend, as example could be existan user , ...
+                     * So me have status & msg
+                     */
+
+                     if (typeof response.detail === 'undefined') {
+                        jQuery('#msgBlock'+PlanID).addClass('alert-warning');
+                        jQuery('#alertTitle'+PlanID).html('Error!');
+                        jQuery('#msgContent'+PlanID).html(response.msg);
+                        jQuery('#msgBlock'+PlanID).addClass('show');
+                        jQuery('#addSubscriptionButton'+PlanID).show();
+                        jQuery('#loading'+PlanID).removeClass('show');
+                        return false;
+                    }
+
+                    /**
                      * If has some unexpected Error
                      * And stop / return  
                      */
