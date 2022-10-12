@@ -50,34 +50,6 @@ jQuery(document).ready(function () {
  
     // Hide Normal pagination 
     jQuery('#dtInfiniteScrollingExample_paginate').hide();
-
-    // Validate Credential
-    // jQuery('#netopia_recurring_is_valid_verify').click(function (e){
-    //     var apikey = jQuery('#netopia_recurring_api_key').val();
-    //     var signature = jQuery('#netopia_recurring_signature').val();
-    //     // console.log(apikey);
-    //     // console.log(signature);
-
-    //     subscriptionDetailData = {
-    //         action : 'verifyCredentialData',
-    //         apikey : apikey,
-    //         signature : signature
-    //     }
-
-    //     jQuery.post(ajaxurl, subscriptionDetailData, function(response){
-    //         jsonResponse = JSON.parse(response);
-    //         console.log(jsonResponse);
-    //         if(jsonResponse.code == "00") {
-    //             jQuery("#netopia_recurring_is_valid").val('true');
-    //             toastr.success('Credential data are verified. Save the data', 'success!');
-    //             return true;
-    //         } else {
-    //             toastr.error('Invalid credential data', 'Error!');
-    //             jQuery("#netopia_recurring_is_valid").val('false');
-    //             return false;
-    //         }
-    //     });
-    // });
 });
 
 
@@ -128,7 +100,8 @@ function subscriptionDetails(userId) {
                 tr.append(jQuery('<td></td>').text(plan.Amount));
                 tr.append(jQuery('<td></td>').text(plan.StartDate.split(' ')[0]));
                 tr.append(jQuery('<td></td>').text(plan.Status));
-                tr.append(jQuery('<td></td>').text(plan.LastPayment));
+                // tr.append(jQuery('<td></td>').text(plan.LastPayment));
+                tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-danger " title="Unsubscribe,..." onclick="unsubscriptionAdminModal('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-sliders"></i></button>'));
                 tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-info" title="Next payment" onclick="subscriptionNextPayment('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-credit-card"></i></button>'));                
                 return tr;
             });
@@ -143,6 +116,85 @@ function subscriptionDetails(userId) {
 
     jQuery('#subscriberInfotModal').modal('toggle');
     jQuery('#subscriberInfotModal').modal('show');
+}
+
+
+function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
+    jQuery('#unSubscriberName').html(subscriberName);
+    jQuery('#unSubscriberPlanTitle').html(planTitle);
+
+    jQuery('#textAlreadyUnsubscribed').hide();
+    jQuery('#textContinueUnsubscribe').hide();
+    jQuery('#unsubscriptionByAdminButton').hide();
+    jQuery('#unsubscriptionByAdminActionLoading').hide();
+    jQuery('#unsubscribeAdminMsgBlock').removeClass('show');
+    jQuery('#subscriberDetails').hide();
+    jQuery("#unsubscriptionByAdminLoading").show();
+
+    getNextPaymentData = {
+        action : 'getNextPayment',
+        subscriptionId: subscriptionId,
+    }
+    
+    jQuery.post(ajaxurl, getNextPaymentData, function(response){
+        jsonResponse = JSON.parse(response);
+        console.log(jsonResponse);
+        jQuery("#unsubscriptionByAdminLoading").hide();
+        if(jsonResponse.status) {
+            if(jsonResponse.data.isValid) {
+                jQuery("#userCurrentStatus").html('Active');
+                jQuery('#textContinueUnsubscribe').show();
+                jQuery('#unsubscriptionByAdminButton').show();
+            } else {
+                jQuery("#userCurrentStatus").html('Inactive');
+                jQuery('#textAlreadyUnsubscribed').show();
+                
+            }
+            jQuery("#userPaymentDate").html(jsonResponse.data.nextPayment);
+            jQuery('#subscriberDetails').show();
+
+            jQuery('#unsubscriptionByAdminButton').click(function (e){
+                jQuery('#unsubscriptionByAdminActionLoading').show();
+                jQuery('#unsubscriptionByAdminButton').hide();
+
+                unsubscribeData = {
+                    action : 'adminUnsubscription',
+                    SubscriptionId : getNextPaymentData.subscriptionId,
+                }
+
+                jQuery.post(ajaxurl, unsubscribeData, function(response){
+                    jsonResponse = JSON.parse(response);
+                    console.log(jsonResponse);
+                    if(jsonResponse.status) {
+                        jQuery('#unsubscriptionByAdminActionLoading').hide();
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('alert-success');
+                        jQuery('#unsubscribeAdminAlertTitle').html('Success!');
+                        jQuery('#unsubscribeAdminMsgContent').html(jsonResponse.msg);
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('show');
+                    } else {
+                        jQuery('#unsubscriptionByAdminActionLoading').hide();
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('alert-warning');
+                        jQuery('#unsubscribeAdminAlertTitle').html('Error!');
+                        jQuery('#unsubscribeAdminMsgContent').html(jsonResponse.msg);
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('show');
+                    }
+                });
+            });
+        } else {
+            jQuery('#msgBlock').addClass('alert-warning');
+            jQuery('#alertTitle').html('Error!');
+            jQuery('#msgContent').html(jsonResponse.msg);
+            jQuery('#msgBlock').addClass('show');
+        }
+    });
+
+    // Refresh page after close Unsubscribe Modal
+    jQuery('#unsubscribeModal').on('hidden.bs.modal', function() {
+        window.location.reload();
+    });
+
+    jQuery('#unsubscribeModal').modal('toggle');
+    jQuery('#unsubscribeModal').modal('show');
 }
 
 

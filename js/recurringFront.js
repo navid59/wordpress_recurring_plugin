@@ -609,6 +609,7 @@ jQuery(document).on("click", ".unsubscriptionMyAccounButton", function () {
 
 
 function updateMyAccountDetails() {
+    // alert('Need changes - Id need to replaced by name');
     var SubscriptionId = jQuery("#SubscriptionId").val();
     var UserID = jQuery("#username").val();
     var Pass = jQuery("#password").val();

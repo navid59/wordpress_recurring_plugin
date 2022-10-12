@@ -348,8 +348,6 @@ function recurring_addSubscription() {
         'detail'=> $detail,
         );
         wp_send_json($addSubscriptionResult) ;
-    // echo json_encode($addSubscriptionResult);
-    // wp_die();
 }
 
 function recurring_getMyNextPayment() {
@@ -416,8 +414,6 @@ function recurring_unsubscription() {
         );
     
     wp_send_json($unsubscribeResult);
-    // echo json_encode($unsubscribeResult);
-    // wp_die();
 }
 
 function recurring_logoutAccount() {
@@ -595,8 +591,6 @@ function recurring_updateSubscriberAccountDetails() {
             'msg'=> __('You are not allowded to change Username','ntpRp'),
         );
         wp_send_json(json_encode($validateAuthResult));
-        // echo json_encode($validateAuthResult);
-        // wp_die();
     }
 
     if(!is_email($subscriptionAccountDetails['Email'])) {
@@ -605,8 +599,6 @@ function recurring_updateSubscriberAccountDetails() {
             'msg'=> __('The email address is not correct!', 'ntpRp'),
         );
         wp_send_json(json_encode($validateEmailFormat));
-        // echo json_encode($validateEmailFormat);
-        // wp_die();
     }
 
     $validateChosenEmail = email_exists( $subscriptionAccountDetails['Email']);
@@ -616,8 +608,6 @@ function recurring_updateSubscriberAccountDetails() {
             'msg'=> __('The email is already exist', 'ntpRp'),
         );
         wp_send_json(json_encode($validateEmailResult));
-        // echo json_encode($validateEmailResult);
-        // wp_die();
     }
 
     if($subscriptionAccountDetails['Pass'] != "") {
@@ -627,8 +617,6 @@ function recurring_updateSubscriberAccountDetails() {
                 'msg'=> __('The password is not a suitable password!','ntpRp'),
             );
             wp_send_json(json_encode($validatePassLenght));
-            // echo json_encode($validatePassLenght);
-            // wp_die();
         } else {
             /*
             * ChangePassword
@@ -772,10 +760,7 @@ function recurring_account_getMyHistory() {
                         </div>',
         'histories'   => $userPaymentHistory,
         );
-
     wp_send_json($myHistoryResult);
-    // echo json_encode($myHistoryResult);
-    // wp_die();
 }
 
 function recurring_account_getMySubscriptions() {

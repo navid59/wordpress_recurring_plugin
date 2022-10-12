@@ -28,9 +28,9 @@
                             <tr>
                                 <th><?php echo __('Title','ntpRp');?></th>
                                 <th><?php echo __('Amount','ntpRp');?></th>
-                                <th><?php echo __('Start date','ntpRp');?></th>
+                                <th><?php echo __('Date','ntpRp');?></th>
                                 <th><?php echo __('Status','ntpRp');?></th>
-                                <th><?php echo __('Last payment','ntpRp');?></th>
+                                <th><?php echo __('Action','ntpRp');?></th>
                                 <th><?php echo __('Next payment','ntpRp');?></th>
                             </tr>
                             </thead>
@@ -41,9 +41,9 @@
                             <tr>
                                 <th><?php echo __('Title','ntpRp');?></th>
                                 <th><?php echo __('Amount','ntpRp');?></th>
-                                <th><?php echo __('Start date','ntpRp');?></th>
+                                <th><?php echo __('Date','ntpRp');?></th>
                                 <th><?php echo __('Status','ntpRp');?></th>
-                                <th><?php echo __('Last payment','ntpRp');?></th>
+                                <th><?php echo __('Action','ntpRp');?></th>
                                 <th><?php echo __('Next payment','ntpRp');?></th>
                             </tr>
                             </tfoot>

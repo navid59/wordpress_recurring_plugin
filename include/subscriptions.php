@@ -18,7 +18,7 @@ die();
           </tr>
         </thead>
         <tbody>
-          <?php // include_once('subscriptionGetData.php')?>
+          
         </tbody>
         <tfoot>
           <tr>

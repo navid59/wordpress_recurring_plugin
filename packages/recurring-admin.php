@@ -72,6 +72,7 @@ class recurringAdmin extends recurring {
         return $resultData;
     }
 
+    
     /**
      * Get data Direct From API - Server
      */
@@ -217,6 +218,17 @@ class recurringAdmin extends recurring {
         );
     
         $postData = json_encode($data);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
+
+    /**
+    * Unsubscribe user
+    */
+    function setUnsubscription($formData){
+        $url = self::getApiUrl('subscription/cancel'); 
+        $postData = json_encode($formData);
     
         $resultData = self::getData($url, $postData);
         return $resultData;
@@ -565,7 +577,7 @@ function recurring_getNextPayment() {
 
 
 /** 
- * Get sunscriber info
+ * Get subscriber info
  */
 add_action('wp_ajax_getSubscriptionDetail', 'recurring_getSubscriptionDetail');
 function recurring_getSubscriptionDetail(){
@@ -612,7 +624,7 @@ function recurring_getSubscriptionDetail(){
 
         // $obj = new recurringAdmin();
         for($i = 0; $i < count($planList); $i++) {
-            $planList[$i]['Status'] = $obj->getStatusStr('plan', $planList[$i]['Status']);
+            $planList[$i]['Status'] = $obj->getStatusStr('subscription', $planList[$i]['Status']);
             $planList[$i]['LastPayment'] = $obj->getLastPayment($planList[$i]['Subscription_Id']);
         }
 
@@ -697,6 +709,51 @@ function recurring_verifyCredentialData() {
         'msg'=> $jsonResultData['message'],
         );
     wp_send_json(json_encode($validateCredentialResult));
+}
+
+add_action('wp_ajax_adminUnsubscription', 'recurring_adminUnsubscription');
+function recurring_adminUnsubscription() {
+    global $wpdb;
+    $obj = new recurringAdmin();
+
+    $subscriptionData = array(
+            "Signature" => $obj->getSignature(),
+            "SubscriptionId" => $_POST['SubscriptionId']+0,
+            "isTestMod" => !$obj->isLive() 
+      );   
+
+    $jsonResultData = $obj->setUnsubscription($subscriptionData); 
+
+    // Update subscription to DB 
+    if($jsonResultData['code'] === "00") {
+        $status = true; 
+        $msg = $jsonResultData['message'];
+
+        $wpdb->update( 
+            $wpdb->prefix . $obj->getDbSourceName('subscription'), 
+            array( 
+                'Status'          => 2,
+                'UpdatedAt'       => date("Y-m-d")
+            ),
+            array(
+                'Subscription_Id' => $_POST['SubscriptionId']
+            )
+        );
+
+        // Sned mail
+        $obj->informMember(__('Unsubscription','ntpRp'), __('Your subscription is canceled by Administrator','ntpRp'));
+    } else {
+        $status = false;
+        $msg = $jsonResultData['message'];
+    }
+
+
+    $unsubscribeResult = array(
+        'status'=> $status,
+        'msg'=> $msg,
+        );
+    
+    wp_send_json(json_encode($unsubscribeResult));
 }
 
 
