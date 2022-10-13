@@ -1,37 +1,39 @@
 # Recurring Payments
 ### Wordpress Recurring Payments
 
-## Introduction
-
-The Recurring payments is a plugin for wordpress easy to use & manage your subscriptions for your products / Services and easy manage the recurring payment for them.
-
-For more details, please do not hesitate to contact us - your_email@yourdomain.com
-
 ## Compatibility
 PHP 7.4.x
+Wordpress 6.0
 
-## Installation 
+## Instalare 
+- instalarea pluginului se face din WordPress>Plugins>Add new
+- Add plugins (top left)- Upload Plugin
 
-You can install the plugin via wordpress marketplace or download it from GIT and upload to your worpress plugin section
+## Setari
 
-```
-    The URL of GITHUB
-```
+dupa finalizarea instalarii pluginului accesati setari plugin sau 
+Accesati meniul din WordPress> Recurring v1> Settings 
+Pentru descarcarea Api key-ului este necesar sa va logati in https://admin.netopia-payments.com/> profil (omulet top right)>Securitate> la Cheie API denumiti cheia si apasati Genereaza Cheie.
+Cheia generata o copiati (click pe fisierle verzi din stanga cheii for fast copy) si o inserati in WordPress>Recurring v1>Settings> Live Api Key
+Din adminul NETOPIA mergeti la Puncte de vanzare>Vezi lista punctelor de vanzare iar din Punctul de vanzare pe care il folositi apasati> Setari tehnice si copiati semnatura Punctului de vanzare.
 
-## Configuration
-From Wordpress admin panel, set the configurations/var/www/html/wordpress-ntp-recurring/wp-content/plugins/netopia-recurring/readme.me
-* following fields are **mandatory**
-    * in Setting Tab
-        * API-key
-        * Signiture
-        * Public & Private keys
-    * in Notify management Tab
-        * Subscription notify url
+Pentru a obtine Sandbox Api key urmati urmatorii pasi:
+Din https://admin.netopia-payments.com/ - mergeti la Puncte de vanzare>Vezi lista punctelor de vanzare iar din Punctul de vanzare pe care il folositi apasati>Card>selectati platforma (WordPress)>Mediu de TEST> introduceti datele de autentificare (cele pe care le folositi la autentificarea in platforma NETOPIA)
+Accesati profil (omulet top right)>Securitate> la Cheie API denumiti cheia si apasati Genereaza Cheie.
 
-* Following field are not mandatory
+Cheia generata o copiati (click pe fisierle verzi din stanga cheii for fast copy) si o inserati in WordPress>Recurring v1>Settings> Sandbox API Key si setam pluginul in mediul in care dorim sa ruleze Live Mod> Mediul de productie sau Sandbox mod>Mediu testare
 
-## Plugin work mood 
-* Defulte is on **SANDBOX** 
+Definiti planul/planurile pentru care doriti subscriptie din Meniul pluginului de subscriptii accesati Plans>Add/Edit Plan
+Dupa definirea planului accesati Submmit 
+Se genereaza shortcode-ul planului pe care trebuie sa il inserati in pagina produsului pentru care doriti recurenta.
 
-## Requirements
-* HTTPS
+Plan Title- Numele planului
+Plan Description - Descrierea planului
+Frequency Type - Tipul frecventei (zi/luna/an)
+Frequncy Value - Valoarea frecventei (exemplu: daca Frequncy Type= Monthly iar Frequncy Value= 3 inseamna ca recurenta va rula o data la 3 luni, etc)
+Amount (doar RON) = Valoarea planului
+Grace Period= Perioada de gratie( depinde in functie de Frequency Type. ATENTIE daca Frequncy Type = Monthly saur Yearly iar la Grace period =3 inseamna ca perioada de gratie este de 3luni/ani!!!) este comerciantul
+Initial Payment= daca se pune aceasta bifa, clientul va trebui sa achite valoarea subscriptiei in momentul abonarii.
+
+## contact 
+- suport@netopia-system.com
