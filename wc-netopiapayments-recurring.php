@@ -275,8 +275,8 @@ class NetopiapaymentsRecurringPayment extends recurring
                 'section' => 'mood',
                 'type' => 'radio',
                 'options' => array(
-                    'live' => __('Live Mod. By set as Live you define the plugin to work in production environment.'),
-                    'sandbox' => __('Sandbox Mod. By set as sandbox give you opurtunety to test the plugin in TEST MOD, without actual payment.'),
+                    'live' => __('Live Mode. By setting it as Live, you define the plugin to work in the production environment.'),
+                    'sandbox' => __('Sandbox Mode. Setting as sandbox allows you to test the plugin in TEST MODE, without actual payment.'),
                 ),
                 'helper' => '',
                 'supplemental' => '',
@@ -304,9 +304,9 @@ class NetopiapaymentsRecurringPayment extends recurring
     {
         switch( $arguments['id'] ){
             case 'general':
-                echo __('<b>Api key</b> is an authorization key to sign your request.','ntpRp');
+                echo __('The <b>Api key</b> is an authorization key to sign your request.','ntpRp');
                 echo __('Keys are available in your NETOPIA account under Profile - Security.','ntpRp');
-                echo __('<br><b>Signature ID </b>is the merchant POS identifier, available in your NETOPIA account.','ntpRp');
+                echo __('<br>The <b>signature ID</b> is the merchant POS identifier, available in your NETOPIA account.','ntpRp');
                 break;
             case 'mood':
                 echo '';
@@ -315,7 +315,7 @@ class NetopiapaymentsRecurringPayment extends recurring
                 echo 'Uploade the Certificate files';
                 break;
             case 'message':
-                echo __('To customize communication message with your client during subscription and subscription , ...', 'ntpRp');
+                echo __('To customize communication messages with your client during subscription and subscription, ...', 'ntpRp');
                 break;
             case 'account':
                 echo '';
@@ -423,7 +423,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="?page=netopia_recurring&tab=display_about_plugin" class="nav-tab <?php echo $active_tab == 'display_about_plugin' ? 'nav-tab-active' : ''; ?>"><?php echo __('About plugin','ntpRp')?></a>
-                <a href="?page=netopia_recurring&tab=display_setting" class="nav-tab <?php echo $active_tab == 'display_setting' ? 'nav-tab-active' : ''; ?>"><?php echo __('Setting','ntpRp')?></a>
+                <a href="?page=netopia_recurring&tab=display_setting" class="nav-tab <?php echo $active_tab == 'display_setting' ? 'nav-tab-active' : ''; ?>"><?php echo __('Settings','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_account_management" class="nav-tab <?php echo $active_tab == 'display_account_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Account page management','ntpRp')?></a>
                 <a href="?page=netopia_recurring&tab=display_message_management" class="nav-tab <?php echo $active_tab == 'display_message_management' ? 'nav-tab-active' : ''; ?>"><?php echo __('Message management','ntpRp')?></a>
             </h2>
@@ -471,7 +471,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             
             <?php 
             if($active_tab == 'subscription_search') {
-                include_once('include/subscriptionSearchForm.php');
+                // include_once('include/subscriptionSearchForm.php');
             }else {
                 include_once('include/subscriptionsInfinite.php');
                 include_once('include/partial/modalSubscriberInfo.php');

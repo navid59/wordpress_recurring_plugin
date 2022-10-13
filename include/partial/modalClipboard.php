@@ -2,16 +2,16 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-              <h2 class="modal-title" id="recurringModalLabel"><?php echo __('Copy short code','ntpRp');?></h2>
+              <h2 class="modal-title" id="recurringModalLabel"><?php echo __('Copy shortcode','ntpRp');?></h2>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-              <h4><?php echo __('Plan short code','ntpRp')?></h4>
+              <h4><?php echo __('Plan shortcode','ntpRp')?></h4>
               <span id="shortcode"></span>
               <hr>
-              <?php echo __('Just put the short code of your plan page / post','ntpRp');?>
+              <?php echo __('Just put the shortcode of your plan page / post','ntpRp');?>
               <?php echo __('and customize the title & button if is necessary! ','ntpRp');?>
               <div class="modal-footer">
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

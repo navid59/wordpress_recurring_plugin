@@ -22,13 +22,16 @@ function ntpRecurringNotifyValidation($template) {
      * If the 'recurring_notify' query var isn't appended to the URL,
      * return default template
      */
-    // if(!isset($wp_query->query['name']) || $wp_query->query['name'] !== 'recurring_notify') {
-    if(!isset($wp_query->query['pagename']) || $wp_query->query['pagename'] !== 'recurring_notify') {
-        return $template;
-    } else {
+    if(isset($wp_query->query['name']) && $wp_query->query['name'] === 'recurring_notify') {
         status_header(200);
         getHeaderRequest();
         die();
+    } elseif(isset($wp_query->query['pagename']) && $wp_query->query['pagename'] === 'recurring_notify') {
+        status_header(200);
+        getHeaderRequest();
+        die();
+    } else {
+        return $template;
     }
 }
 

@@ -47,10 +47,10 @@
                 <div class="invalid-feedback"><?php echo __('Please fill out plan grace period.','ntpRp'); ?></div>
             </div>
             <div class="form-group col-md-4">
-                <label for="InitialPayment"><?php echo __('InitialPayment','ntpRp'); ?></label><br>
+                <label for="InitialPayment"><?php echo __('Initial Payment','ntpRp'); ?></label><br>
                 <p>
                     <input type="checkbox" class="form-control" id="InitialPayment" value="true">
-                    <?php echo __('check if payment at subscription time, is mandatory.','ntpRp');?>
+                    <?php echo __('check this box if payment is mandatory at subscription time','ntpRp');?>
                 </p>
             </div>
         </div>
@@ -58,6 +58,9 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <button type="submit" id="addPlan" class="btn btn-primary"><?php echo __('Submmit', 'ntpRp');?></button>
+                <div id="addPlanLoading" class="spinner-border" role="status" style="display: none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
         </div>
     </form>

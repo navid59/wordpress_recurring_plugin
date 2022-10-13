@@ -36,7 +36,7 @@ class recurringAdmin extends recurring {
             $errorMsg = "";
         } else {
             $errorCode = "11";
-            $errorMsg = __('There is no any Plan, yet','ntpRp');
+            $errorMsg = __('There is no Plan, yet!','ntpRp');
         }
     
         $resultData = array(
@@ -290,7 +290,7 @@ function recurring_addPlan() {
                 $msg = $msg.__(' is ready to use.');
                 $msg = $msg.'
                 <hr>
-                <b>Plan short code : </b>
+                <b>Plan shortcode : </b>
                 <span id="planShortCode">
                 [NTP-Recurring planId='.$jsonResultData['data']['planId'].' button="Subscribe" title="'.$jsonResultData['data']['Title'].'"]
                 </span>
