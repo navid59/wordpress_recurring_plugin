@@ -76,7 +76,7 @@
         }
 
         function getNotifyUrl() {
-            return get_site_url()."/recurring_notify"; 
+            return get_site_url()."/index.php/wp-json/ntp-recurring/v1/notify";
         }
 
         function getBackUrl($planId) {
@@ -146,6 +146,9 @@
                         case '2':
                             $statusStr = 'Unsubscribed';
                             break;
+                        case '3':
+                            $statusStr = 'Suspend';
+                            break;
                         default:
                             $statusStr = $statusCode;
                     }
@@ -170,6 +173,9 @@
                         case '2':
                             $statusStr = 'Unsubscribed';
                             break;
+                        case '30':
+                            $statusStr = 'Suspend';
+                            break;
                         case '3':
                             $statusStr = 'Paid';
                             break;
@@ -178,6 +184,9 @@
                             break;
                         case '15':
                             $statusStr = 'Authorized';
+                            break;
+                        case null:
+                            $statusStr = '-';
                             break;
                         default:
                             $statusStr = $statusCode;

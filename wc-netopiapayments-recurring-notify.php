@@ -4,36 +4,78 @@ include_once( 'packages/ipn.php' );
 include_once( 'packages/debugging.php' );
 
 /**
-* Add the 'recurring_notify' query variable to WP
-* so WordPress won't remove it.
-*/
-add_filter( 'query_vars', 'ntp_add_query_vars');
-function ntp_add_query_vars($vars){
-   $vars[] = "recurring_notify";
-   return $vars;
+ * *****************************
+ * *****************************
+ * New Solution for Notify URL *
+ * *****************************
+ * *****************************
+ */
+function notAllowed() {
+    status_header(200);
+    return "Not allowed request!";
+}
+function notify() {
+    status_header(200);
+    return getHeaderRequest();
 }
 
-add_action('template_include', 'ntpRecurringNotifyValidation');
-function ntpRecurringNotifyValidation($template) {
-    global $wp_query;
+// function showSlug2($slug) {
+//     return $slug['slug'];
+// }
 
-    /**
-     * To manage Requests
-     * If the 'recurring_notify' query var isn't appended to the URL,
-     * return default template
-     */
-    if(isset($wp_query->query['name']) && $wp_query->query['name'] === 'recurring_notify') {
-        status_header(200);
-        getHeaderRequest();
-        die();
-    } elseif(isset($wp_query->query['pagename']) && $wp_query->query['pagename'] === 'recurring_notify') {
-        status_header(200);
-        getHeaderRequest();
-        die();
-    } else {
-        return $template;
-    }
-}
+add_action('rest_api_init', function() {
+    register_rest_route('ntp-recurring/v1', 'notify', [
+        'methods' => 'GET',
+        'callback' => 'notAllowed',
+    ]);
+    
+    register_rest_route('ntp-recurring/v1', 'notify', [
+        'methods' => 'POST',
+        'callback' => 'notify',
+    ]);
+    
+    // register_rest_route('ntp/v1', 'posts/(?P<slug>[a-zA-Z0-9-]+)', [
+    //     'methods' => 'GET',
+    //     'callback' => 'showSlug2',
+    // ]);
+});
+
+/**
+ * *****************************
+ * *****************************
+ */
+
+// /**
+// * Add the 'recurring_notify' query variable to WP
+// * so WordPress won't remove it.
+// */
+// add_filter( 'query_vars', 'ntp_add_query_vars');
+// function ntp_add_query_vars($vars){
+//    $vars[] = "recurring_notify";
+//    return $vars;
+// }
+
+// add_action('template_include', 'ntpRecurringNotifyValidation');
+// function ntpRecurringNotifyValidation($template) {
+//     global $wp_query;
+
+//     /**
+//      * To manage Requests
+//      * If the 'recurring_notify' query var isn't appended to the URL,
+//      * return default template
+//      */
+//     if(isset($wp_query->query['name']) && $wp_query->query['name'] === 'recurring_notify') {
+//         status_header(200);
+//         getHeaderRequest();
+//         die();
+//     } elseif(isset($wp_query->query['pagename']) && $wp_query->query['pagename'] === 'recurring_notify') {
+//         status_header(200);
+//         getHeaderRequest();
+//         die();
+//     } else {
+//         return $template;
+//     }
+// }
 
 function getHeaderRequest() {
     global $wpdb;
@@ -41,7 +83,7 @@ function getHeaderRequest() {
     
     /** Log Durring Implimentare*/
     $dumpHTTPRequestToFile = new DumpHTTPRequestToFile();
-    $dumpHTTPRequestToFile->execute(WP_PLUGIN_DIR . '/netopia-recurring/log/notifyUrl.txt');
+    $dumpHTTPRequestToFile->execute(WP_PLUGIN_DIR . '/netopia-recurring/log/notifyUrl-'.date("yy-mm-dd").'.log');
     
     /** Log Time & Path*/
     $logDate = new DateTime();
@@ -51,7 +93,7 @@ function getHeaderRequest() {
     $ntpIpn = new IPN();
     $ntpIpn->logFile           = $logFile;
     $ntpIpn->activeKey         = $obj->getSignature(); // activeKey or posSignature
-    $ntpIpn->posSignatureSet[] = $ntpIpn->activeKey; // Another posSignature, base on DemoV2. Idea Alex - if exist!!!
+    $ntpIpn->posSignatureSet[] = $ntpIpn->activeKey; // Array of another posSignature, if exist
     
     $ntpIpn->hashMethod        = 'SHA512';
     $ntpIpn->alg               = 'RS512';
@@ -98,6 +140,31 @@ function getHeaderRequest() {
                         'CreatedAt'      => date("Y-m-d H:i:s")
                     )
                 ); 
+            }
+
+            /** To add suspended in history */
+            if($arrDate['NotifySubscription']['Status'] == 3) {
+                $wpdb->insert( 
+                    $wpdb->prefix . $obj->getDbSourceName('history'), 
+                    array( 
+                        'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
+                        'TransactionID'  => ' - ',
+                        'NotifyContent'  => $data,
+                        'Comment'        => __('Suspended subscription', 'ntpRp'),
+                        'Status'         => 30,
+                        'CreatedAt'      => date("Y-m-d H:i:s")
+                    )
+                );
+                $wpdb->update( 
+                    $wpdb->prefix . $obj->getDbSourceName('subscription'), 
+                    array( 
+                        'Status'          => 3,
+                        'UpdatedAt'       => date("Y-m-d")
+                    ),
+                    array(
+                        'Subscription_Id' => $arrDate['NotifySubscription']['SubscriptionID']
+                    )
+                );
             }
             
 

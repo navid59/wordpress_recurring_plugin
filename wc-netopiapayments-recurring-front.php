@@ -27,7 +27,10 @@ function frontResource() {
    wp_localize_script( 'my-jquery', 'frontAjax', array('ajax_url' => admin_url( 'admin-ajax.php' )));
 }
 
-/** Assign stripe js payment */
+/**
+ * Assign stripe js payment card validation
+ * To validat card in front, before submit
+*/
 add_action('wp_enqueue_scripts', 'stripePaymentJS');
 function stripePaymentJS() {
    wp_enqueue_script('stripejQueryPayment',plugin_dir_url( __FILE__ ).'js/jquery.payment.js', array('jquery'));

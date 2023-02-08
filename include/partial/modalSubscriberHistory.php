@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-              <h2 class="modal-title" id="nextPaymentModalLabel"><?php echo __('Payment history','ntpRp');?></h2>
+              <h2 class="modal-title" id="nextPaymentModalLabel"><?php echo __('History','ntpRp');?></h2>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>
