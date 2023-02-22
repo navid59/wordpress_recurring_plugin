@@ -466,7 +466,7 @@ class NetopiapaymentsRecurringPayment extends recurring
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="?page=recurring_subscription_ajax&tab=subscription_list" class="nav-tab <?php echo $active_tab == 'subscription_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Subscription list','ntpRp')?></a>
-                <a href="?page=recurring_subscription_ajax&tab=subscription_search" class="nav-tab <?php echo $active_tab == 'subscription_search' ? 'nav-tab-active' : ''; ?>"><?php echo __('Search','ntpRp')?></a>
+                <!-- <a href="?page=recurring_subscription_ajax&tab=subscription_search" class="nav-tab <?php echo $active_tab == 'subscription_search' ? 'nav-tab-active' : ''; ?>"><?php echo __('Search','ntpRp')?></a> -->
             </h2>
             
             <?php 

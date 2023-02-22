@@ -19,7 +19,7 @@ function notify() {
     return getHeaderRequest();
 }
 
-// function showSlug2($slug) {
+// function notifyMod($slug) {
 //     return $slug['slug'];
 // }
 
@@ -34,9 +34,9 @@ add_action('rest_api_init', function() {
         'callback' => 'notify',
     ]);
     
-    // register_rest_route('ntp/v1', 'posts/(?P<slug>[a-zA-Z0-9-]+)', [
-    //     'methods' => 'GET',
-    //     'callback' => 'showSlug2',
+    // register_rest_route('ntp-recurring/v1', 'notify/(?P<slug>[a-zA-Z0-9-]+)', [
+    //     'methods' => 'POST',
+    //     'callback' => 'notifyMod',
     // ]);
 });
 
@@ -129,13 +129,14 @@ function getHeaderRequest() {
                     )
                 );
             } else {
+                $lonkToPay = !empty($arrDate['NotifyPayment']['PaymentURL']) ? "(Link to pay : ".$arrDate['NotifyPayment']['PaymentURL'].")" : "";
                 $insertResult = $wpdb->insert( 
                     $wpdb->prefix . $obj->getDbSourceName('history'), 
                     array( 
                         'Subscription_Id'=> $arrDate['NotifySubscription']['SubscriptionID'],
                         'TransactionID'  => $arrDate['NotifyOrder']['orderID'],
                         'NotifyContent'  => $data,
-                        'Comment'        => $arrDate['NotifyPayment']['Message'],
+                        'Comment'        => $arrDate['NotifyPayment']['Message'].$lonkToPay,
                         'Status'         => $arrDate['NotifyPayment']['Status'],
                         'CreatedAt'      => date("Y-m-d H:i:s")
                     )

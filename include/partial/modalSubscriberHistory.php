@@ -15,7 +15,7 @@
                             <thead>
                             <tr>
                                 <th><?php echo __('Date','ntpRp');?></th>
-                                <th><?php echo __('Title & Amount','ntpRp');?></th>
+                                <th><?php echo __('Title, Amount & Transaction ID','ntpRp');?></th>
                                 <!-- <th><?php echo __('Transaction ID','ntpRp');?></th> -->
                                 <th><?php echo __('Comment','ntpRp');?></th>
                                 <th><?php echo __('Status','ntpRp');?></th>
@@ -27,7 +27,7 @@
                             <tfoot>
                             <tr>
                                 <th><?php echo __('Date','ntpRp');?></th>
-                                <th><?php echo __('Title & Amount','ntpRp');?></th>
+                                <th><?php echo __('Title, Amount & Transaction ID','ntpRp');?></th>
                                 <!-- <th><?php echo __('Transaction ID','ntpRp');?></th> -->
                                 <th><?php echo __('Comment','ntpRp');?></th>
                                 <th><?php echo __('Status','ntpRp');?></th>

@@ -181,7 +181,13 @@ function recurring_verifyAuth(){
 
 function recurring_addSubscription() {
     global $wpdb;
+    
+    // set DateTimeZone() for Romania 
+    // $timezone = new DateTimeZone( 'Europe/Bucharest' );
+
     $obj = new recurringFront();
+
+
 
     $current_user = wp_get_current_user();  
     if($current_user->ID == 0) {
@@ -230,6 +236,10 @@ function recurring_addSubscription() {
     $obj3DS = json_decode(stripslashes($_POST['ThreeDS']));
     $arr3DS = (array)$obj3DS;
     
+    /**
+     * Make new subscription request
+     */
+
     $subscriptionData = array(
         "Member" => array (
             "UserID" => $Member['UserID'],
@@ -239,7 +249,7 @@ function recurring_addSubscription() {
             "Address" => $Member['Address'],
             "City" => $Member['City'],
             "Tel" => strval($Member['Tel']),
-            'IsTestMod' => $obj->isLive() ? "false" : "true" 
+            'IsTestMod' => $obj->isLive() ? false : true 
         ),
         "Merchant" => array(
             "Apikey"        => $obj->getApiKey(),
@@ -788,7 +798,7 @@ function recurring_account_getMySubscriptions() {
                                           s.id as userId,
                                           s.First_Name,
                                           s.Last_Name,
-                                          s.Status,
+                                          s.Status as userStatus,
                                           s.Subscription_Id
                                     FROM  ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                     LEFT JOIN ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
@@ -798,20 +808,43 @@ function recurring_account_getMySubscriptions() {
     $htmlThem = '';
     if(count($myPlans)) {
         foreach($myPlans as $plan) {
-            $htmlThem.= '<div class="col-sm-6 pb-2">
+            if($plan['userStatus'] == 3 ) {
+                $htmlThem.= '<div class="col-sm-6 pb-2">
                             <div class="card">
                                 <div class="card-body">
                                 <h2 class="card-title">'.$plan['Title'].'</h2>
                                 <h3 class="card-title">'.$plan['Amount'].' '.$plan['Currency'].'</h3>
                                 <h4 class="card-title">'.$plan['Frequency_Type'].' / '.$plan['Frequency_Value'].'</h4>
                                 <p class="card-text">'.$plan['Description'].'</p>
-                                <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" data-subscriptionId="'.$plan['Subscription_Id'].'" data-userId="'.$plan['userId'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
-                                    '.__('Unsubscription','ntpRp').'
-                                </button>
-                                <button type="button" class="btn btn-info" title="'.__('Check next payment','ntpRp').'" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')"><i class="fa fa-credit-card"></i></button>
+                                <div class="alert alert-warning">
+                                <strong>'.__('Warning!','ntpRp').'</strong>
+                                '.$plan['Title'].
+                                __(' inactivated for you','ntpRp').'
+                                </div>
                                 </div>
                             </div>
                         </div>';
+            } else {
+                $htmlThem.= '<div class="col-sm-6 pb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                <h2 class="card-title">'.$plan['Title'].'</h2>
+                                <h3 class="card-title">'.$plan['Amount'].' '.$plan['Currency'].'</h3>
+                                <h4 class="card-title">'.$plan['Frequency_Type'].' / '.$plan['Frequency_Value'].'</h4>
+                                <p class="card-text">'.$plan['Description'].'</p>
+                                <button type="button" class="btn btn-primary unsubscriptionMyAccounButton" title="'.__('Unsubscribe','ntpRp').'" data-subscriptionId="'.$plan['Subscription_Id'].'" data-userId="'.$plan['userId'].'" data-planTitle="'.$plan['Title'].'" data-toggle="modal" data-target="#unsubscriptionMyAccountModal" >
+                                    '.__('Unsubscription','ntpRp').'
+                                </button>
+                                <button type="button" class="btn btn-info" title="'.__('Check next payment','ntpRp').'" onclick="frontSubscriptionNextPayment('.$plan['Subscription_Id'].','.$plan['id'].',\''.$plan['Title'].'\')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"></path>
+                                        <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"></path>
+                                    </svg>
+                                </button>
+                                </div>
+                            </div>
+                        </div>';
+            }
         }
     } else {
         $htmlThem = '<h4>'.__('You are not subscribe in any of our plans!','ntpRp').'</h4>';
@@ -992,6 +1025,8 @@ function recurringModal($planId , $button, $title) {
 
     $modalHtml = '';
     $verifyAuthFormHtml = '';
+    $suspendedAlertTitile = __('Warning!','ntpRp');
+    $suspendedAlertMessage = __(' inactivated for you','ntpRp');
     $unsubscriptionButtonTitile = __('Unsubscription','ntpRp');
     $unsubscriptionTitle = __('Unsubscription','ntpRp'); 
     
@@ -1005,13 +1040,22 @@ function recurringModal($planId , $button, $title) {
             /** Check if user already exist */
             $subscription = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `Email` LIKE '".$current_user->user_email."' and `PlanId` = $planId and `Status` <> 2 LIMIT 1");
             if(count($subscription)) {
-                /** Display Unsubscriptiuon */
-                $buttonHtml = '
+                if ($subscription[0]->Status == "3") {
+                    /** Display Inactive alarm */
+                    $buttonHtml = '
+                    <!-- Alert trigger -->
+                    <div class="alert alert-warning">
+                        <strong>'.$suspendedAlertTitile.'</strong> '.$planData['Title'].$suspendedAlertMessage.'.
+                    </div>';
+                } else {
+                    /** Display Unsubscriptiuon */
+                    $buttonHtml = '
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#unsubscriptionRecurringModal'.$planId.'">
                         '.$unsubscriptionButtonTitile.'
                     </button>';
-                   $modalHtml = getUnsubscribeModalHtml($planId, $unsubscriptionTitle, $planData, $subscription);
+                $modalHtml = getUnsubscribeModalHtml($planId, $unsubscriptionTitle, $planData, $subscription);
+                }
             } else {
                 /** Display Subscribe buttomn & Modal subscription for Logedin users */    
                 $buttonHtml = '

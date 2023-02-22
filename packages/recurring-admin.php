@@ -233,6 +233,17 @@ class recurringAdmin extends recurring {
         $resultData = self::getData($url, $postData);
         return $resultData;
     }
+
+    /**
+    * Resubscribe user
+    */
+    function setResubscription($formData){
+        $url = self::getApiUrl('subscription/renew'); 
+        $postData = json_encode($formData);
+    
+        $resultData = self::getData($url, $postData);
+        return $resultData;
+    }
 }
 
 /** Add Plan */
@@ -668,7 +679,6 @@ function recurring_getSubscriptionHistory() {
                                             WHERE s.UserId = '$userId'
                                             ORDER BY `CreatedAt` DESC", "ARRAY_A");
 
-    // $obj = new recurringAdmin();
     for($i = 0; $i < count($userPaymentHistory); $i++) {
         $userPaymentHistory[$i]['Status'] = $obj->getStatusStr('report', $userPaymentHistory[$i]['Status']);
     }
@@ -754,6 +764,52 @@ function recurring_adminUnsubscription() {
         );
     
     wp_send_json(json_encode($unsubscribeResult));
+}
+
+/** Resubscription Admin */
+add_action('wp_ajax_adminResubscription', 'recurring_adminResubscription');
+function recurring_adminResubscription() {
+    global $wpdb;
+    $obj = new recurringAdmin();
+
+    $subscriptionData = array(
+            "Signature" => $obj->getSignature(),
+            "SubscriptionId" => $_POST['SubscriptionId']+0,
+            "isTestMod" => !$obj->isLive() 
+      );   
+
+    $jsonResultData = $obj->setResubscription($subscriptionData); 
+
+    // Update subscription to DB 
+    if($jsonResultData['code'] === "00") {
+        $status = true; 
+        $msg = $jsonResultData['message'];
+
+        $wpdb->update( 
+            $wpdb->prefix . $obj->getDbSourceName('subscription'), 
+            array( 
+                'Status'          => 1,
+                'UpdatedAt'       => date("Y-m-d")
+            ),
+            array(
+                'Subscription_Id' => $_POST['SubscriptionId']
+            )
+        );
+
+        // Sned mail
+        $obj->informMember(__('Resubscription','ntpRp'), __('Your subscription is reactive by Administrator','ntpRp'));
+    } else {
+        $status = false;
+        $msg = $jsonResultData['message'];
+    }
+
+
+    $resubscribeResult = array(
+        'status'=> $status,
+        'msg'=> $msg,
+        );
+    
+    wp_send_json(json_encode($resubscribeResult));
 }
 
 

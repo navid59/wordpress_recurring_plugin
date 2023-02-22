@@ -42,6 +42,7 @@
                     <span class="sr-only">Loading...</span>
                   </div>
                   <button id="unsubscriptionByAdminButton" class="btn btn-secondary" type="submit" >Unsubscribe</button>
+                  <button id="resubscriptionByAdminButton" class="btn btn-secondary" type="submit" >Resubscribe</button>
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
               </div>
               <div class="alert alert-dismissible fade" id="unsubscribeAdminMsgBlock" role="alert">

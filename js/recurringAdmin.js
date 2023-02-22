@@ -65,7 +65,7 @@ function subscriptionHistory(userId) {
         const rows = jsonResponse.histories.map(history => {
             const tr = jQuery('<tr></tr>');
             tr.append(jQuery('<td></td>').text(history.CreatedAt.split(' ')[0]));
-            tr.append(jQuery('<td></td>').text(history.Title + ' - ' + history.Amount));
+            tr.append(jQuery('<td></td>').text(history.Title + ' - ' + history.Amount + ' - ('+history.TransactionID+')'));
             // tr.append(jQuery('<td></td>').text(history.TransactionID));
             tr.append(jQuery('<td></td>').text(history.Comment));
             tr.append(jQuery('<td></td>').text(history.Status));
@@ -126,6 +126,7 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
     jQuery('#textAlreadyUnsubscribed').hide();
     jQuery('#textContinueUnsubscribe').hide();
     jQuery('#unsubscriptionByAdminButton').hide();
+    jQuery('#resubscriptionByAdminButton').hide();
     jQuery('#unsubscriptionByAdminActionLoading').hide();
     jQuery('#unsubscribeAdminMsgBlock').removeClass('show');
     jQuery('#subscriberDetails').hide();
@@ -148,11 +149,15 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
             } else {
                 jQuery("#userCurrentStatus").html('Inactive');
                 jQuery('#textAlreadyUnsubscribed').show();
+                if(jsonResponse.data.UserStatus == 3 ) {
+                    jQuery('#resubscriptionByAdminButton').show();
+                }
                 
             }
             jQuery("#userPaymentDate").html(jsonResponse.data.nextPayment);
             jQuery('#subscriberDetails').show();
 
+            /** Unsubscription action */
             jQuery('#unsubscriptionByAdminButton').click(function (e){
                 jQuery('#unsubscriptionByAdminActionLoading').show();
                 jQuery('#unsubscriptionByAdminButton').hide();
@@ -180,6 +185,37 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
                     }
                 });
             });
+
+            /** Resubscription action */
+            jQuery('#resubscriptionByAdminButton').click(function (e){
+                alert("CHOOOS");
+                jQuery('#unsubscriptionByAdminActionLoading').show();
+                jQuery('#resubscriptionByAdminButton').hide();
+
+                unsubscribeData = {
+                    action : 'adminResubscription',
+                    SubscriptionId : getNextPaymentData.subscriptionId,
+                }
+
+                jQuery.post(ajaxurl, unsubscribeData, function(response){
+                    jsonResponse = JSON.parse(response);
+                    // console.log(jsonResponse);
+                    if(jsonResponse.status) {
+                        jQuery('#unsubscriptionByAdminActionLoading').hide();
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('alert-success');
+                        jQuery('#unsubscribeAdminAlertTitle').html('Success!');
+                        jQuery('#unsubscribeAdminMsgContent').html(jsonResponse.msg);
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('show');
+                    } else {
+                        jQuery('#resubscriptionByAdminActionLoading').hide();
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('alert-warning');
+                        jQuery('#unsubscribeAdminAlertTitle').html('Error!');
+                        jQuery('#unsubscribeAdminMsgContent').html(jsonResponse.msg);
+                        jQuery('#unsubscribeAdminMsgBlock').addClass('show');
+                    }
+                });
+            });
+
         } else {
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
