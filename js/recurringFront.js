@@ -3,6 +3,7 @@ jQuery(document).ready(function () {
         jQuery('#frontAccountMysubscription').removeClass('active');
         jQuery('#frontAccountMyPaymentHistory').addClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
+        // jQuery('#frontCardInfoUpdate').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
         
         data = {
@@ -44,6 +45,7 @@ jQuery(document).ready(function () {
         jQuery('#frontAccountMysubscription').addClass('active');
         jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
+        // jQuery('#frontCardInfoUpdate').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
 
         data = {
@@ -74,6 +76,7 @@ jQuery(document).ready(function () {
         jQuery('#frontAccountMysubscription').removeClass('active');
         jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').removeClass('active');
+        // jQuery('#frontCardInfoUpdate').removeClass('active');
         jQuery('#frontAccountLogout').addClass('active');
 
         data = {
@@ -103,6 +106,7 @@ jQuery(document).ready(function () {
         jQuery('#frontAccountMysubscription').removeClass('active');
         jQuery('#frontAccountMyPaymentHistory').removeClass('active');
         jQuery('#frontAccountDetails').addClass('active');
+        // jQuery('#frontCardInfoUpdate').removeClass('active');
         jQuery('#frontAccountLogout').removeClass('active');
         
         data = {
@@ -127,6 +131,41 @@ jQuery(document).ready(function () {
             }
         });
     });
+
+    /**
+     * To update card data
+     * Not implimented complitlly 
+     * Do not remove
+     */
+    // jQuery('#frontCardInfoUpdate').click(function() {
+    //     jQuery('#frontAccountMysubscription').removeClass('active');
+    //     jQuery('#frontAccountMyPaymentHistory').removeClass('active');
+    //     jQuery('#frontAccountDetails').removeClass('active');
+    //     jQuery('#frontCardInfoUpdate').addClass('active');
+    //     jQuery('#frontAccountLogout').removeClass('active');
+        
+    //     data = {
+    //         action : 'getMyCardDetails'
+    //     }
+    
+    //     jQuery.ajax({
+    //         url: frontAjax.ajax_url,
+    //         type: 'POST',
+    //         dataType: 'json',
+    //         data: data,
+    //         success: function( response ){
+    //             if(response.status) {                    
+    //                 jQuery('#ntpAccountBody').html(response.data);
+                    
+    //             } else {
+    //                 jQuery('#ntpAccountBody').html(response.msg);
+    //             }
+    //         },
+    //         error: function( error ){
+    //             jQuery('#ntpAccountBody').html(response.msg);
+    //         }
+    //     });
+    // });
 
     // Ltrim  Card Number
     jQuery('input[name=cc-number]').change(function() {

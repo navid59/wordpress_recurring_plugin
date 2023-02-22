@@ -35,7 +35,10 @@
                 <h6><?php echo __('To unsubscribe click on unsubscribe button.','ntpRp').__('Otherwise close the window','ntpRp');?></h6>
               </div>
               <div id="textAlreadyUnsubscribed" class="alert-light">
-                <h6><?php echo __('The user is already is unscubscribed / suspended.','ntpRp')?></h6>
+                <h6><?php echo __('The user is already unscubscribed.','ntpRp')?></h6>
+              </div>
+              <div id="textAlreadySuspended" class="alert-light">
+                <h6><?php echo __('The user subscription is suspended.To resubscription click on resubscribe button','ntpRp')?></h6>
               </div>
               <div class="modal-footer">
                   <div id="unsubscriptionByAdminActionLoading" class="spinner-border text-success" role="status">

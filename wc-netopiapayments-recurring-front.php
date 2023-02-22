@@ -14,6 +14,7 @@
  add_action('wp_ajax_getMyHistory', 'recurring_account_getMyHistory');
  add_action('wp_ajax_getMyNextPayment', 'recurring_getMyNextPayment');
  add_action('wp_ajax_getMyAccountDetails', 'recurring_getMyAccountDetails');
+//  add_action('wp_ajax_getMyCardDetails', 'recurring_getMyCardDetails');
  add_action('wp_ajax_logoutAccount', 'recurring_logoutAccount');
 
 /** To assign shortcode */
@@ -572,6 +573,27 @@ function recurring_getMyAccountDetails() {
     wp_send_json($subscriberPersonalData);
 }
 
+/**
+ * Update card data
+ * NOt implimented yet
+ */
+/*
+function recurring_getMyCardDetails() {
+    global $wpdb;
+    // 1- Get masked card data 
+    // 2- Display form to update de card
+    // 3- update the card
+    
+    $renewCard = array(
+                        'status' => true,
+                        'msg'    => '',
+                        'data'   => getCardInfoHtml(),
+                        );
+
+    wp_send_json($renewCard);
+}
+*/
+
 function recurring_updateSubscriberAccountDetails() {
     global $wpdb;
     $msg = '';
@@ -975,6 +997,9 @@ function ntpMyAccount() {
                                 <li class="nav-item">
                                     <a href="#" class="nav-link border-bottom" id="frontAccountDetails" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Account details', 'ntpRp').'</a>
                                 </li>
+                                <!--<li class="nav-item">
+                                    <a href="#" class="nav-link border-bottom" id="frontCardInfoUpdate" ><i class="fa fa-user-circle" style="padding-right:15px;"></i> '.__('Update Card', 'ntpRp').'</a>
+                                </li>-->
                                 <li class="nav-item">
                                     <a href="#" class="nav-link border-bottom" id="frontAccountLogout" ><i class="fas fa-sign-out-alt" style="padding-right:15px;"></i> '.__('Logout', 'ntpRp').'</a>
                                 </li>

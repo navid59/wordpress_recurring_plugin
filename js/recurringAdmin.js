@@ -124,6 +124,7 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
     jQuery('#unSubscriberPlanTitle').html(planTitle);
 
     jQuery('#textAlreadyUnsubscribed').hide();
+    jQuery('#textAlreadySuspended').hide();
     jQuery('#textContinueUnsubscribe').hide();
     jQuery('#unsubscriptionByAdminButton').hide();
     jQuery('#resubscriptionByAdminButton').hide();
@@ -148,9 +149,11 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
                 jQuery('#unsubscriptionByAdminButton').show();
             } else {
                 jQuery("#userCurrentStatus").html('Inactive');
-                jQuery('#textAlreadyUnsubscribed').show();
                 if(jsonResponse.data.UserStatus == 3 ) {
+                    jQuery('#textAlreadySuspended').show();
                     jQuery('#resubscriptionByAdminButton').show();
+                } else if(jsonResponse.data.UserStatus == 2 ) {
+                    jQuery('#textAlreadyUnsubscribed').show();
                 }
                 
             }
