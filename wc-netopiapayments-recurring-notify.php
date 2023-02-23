@@ -83,12 +83,12 @@ function getHeaderRequest() {
     
     /** Log Durring Implimentare*/
     $dumpHTTPRequestToFile = new DumpHTTPRequestToFile();
-    $dumpHTTPRequestToFile->execute(WP_PLUGIN_DIR . '/netopia-recurring/log/notifyUrl-'.date("yy-mm-dd").'.log');
+    $dumpHTTPRequestToFile->execute(WP_PLUGIN_DIR . '/netopia-recurring/log/notifyUrl-'.date("d-m-y").'.log');
     
     /** Log Time & Path*/
     $logDate = new DateTime();
     $logDate = $logDate->format("y:m:d h:i:s");
-    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_'.date("j.n.Y").'.log';
+    $logFile = WP_PLUGIN_DIR . '/netopia-recurring/log/log_'.date("d-m-y").'.log';
 
     $ntpIpn = new IPN();
     $ntpIpn->logFile           = $logFile;
@@ -232,8 +232,3 @@ function isValidToken($apiKey) {
         return false;
     }
 }
-
-
-
-
-
