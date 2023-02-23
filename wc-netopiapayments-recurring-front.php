@@ -516,7 +516,7 @@ function recurring_getMyAccountDetails() {
                                                     
                                                     <div class="mb-3">
                                                         <label for="address">'.__('Address','ntpRp').'</label>
-                                                        <input type="text" class="form-control" id="address" placeholder="1234 Main St" value="'.$MyDetails[0]['Address'].'" required>
+                                                        <input type="text" class="form-control" id="address" placeholder="'.__('Your full address','ntpRp').'" value="'.$MyDetails[0]['Address'].'" required>
                                                         <div class="invalid-feedback">
                                                             Please enter your shipping address.
                                                         </div>
