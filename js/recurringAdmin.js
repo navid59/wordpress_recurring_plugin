@@ -191,7 +191,6 @@ function unsubscriptionAdminModal(subscriptionId, subscriberName, planTitle) {
 
             /** Resubscription action */
             jQuery('#resubscriptionByAdminButton').click(function (e){
-                alert("CHOOOS");
                 jQuery('#unsubscriptionByAdminActionLoading').show();
                 jQuery('#resubscriptionByAdminButton').hide();
 

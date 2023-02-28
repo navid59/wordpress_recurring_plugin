@@ -203,12 +203,6 @@ class NetopiapaymentsRecurringPayment extends recurring
     public function recurring_setup_section() {
         add_settings_section( 'general', 'General section ', array( $this, 'section_callback' ), 'netopia_recurring' );
         add_settings_section( 'mood', 'Plugin work mood', array( $this, 'section_callback' ), 'netopia_recurring' );
-
-        /**
-         * Temporary deactive the Uploaded certificate ,...
-         * Public key is Unique for all, currently
-         */
-        // add_settings_section( 'certificate', 'Certificate keys', array( $this, 'section_callback' ), 'netopia_recurring' );
         }
 
     

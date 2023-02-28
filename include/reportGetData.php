@@ -22,12 +22,10 @@ if(isset($arrayData['code']) && ($arrayData['code'] == 11 || $arrayData['code'] 
             printf("<td>%1s</td>",$payArchive['Title']);
             printf("<td>%1s</td>",$payArchive['Amount']);
             printf("<td>%1s</td>",$obj->getStatusStr('report',$payArchive['Status']));
+            printf("<td>%1s</td>",$payArchive['Comment']);            
+            printf("<td>%1s</td>",$payArchive['TransactionID']);
             $date = new DateTime($payArchive['CreatedAt']);
             printf("<td>%1s</td>",$date->format('Y-m-d'));
-            // printf("<td>%1s</td>",$payArchive['Comment']);            
-            // printf("<td>%1s</td>",$payArchive['TransactionID']);
-            
-            
         echo "</tr>";
     }
 }

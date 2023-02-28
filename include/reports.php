@@ -8,9 +8,9 @@
             <th>Plan</th>
             <th>Amount</th>
             <th>Status</th>
+            <th>PaymentComment</th>
+            <th>TransactionID</th>
             <th>Date</th>
-            <!-- <th>PaymentComment</th> -->
-            <!--<th>TransactionID</th> -->
           </tr>
         </thead>
         <tbody>
@@ -23,9 +23,9 @@
             <th>Plan</th>
             <th>Amount</th>
             <th>Status</th>
+            <th>PaymentComment</th>
+            <th>TransactionID</th>
             <th>Date</th>
-            <!-- <th>PaymentComment</th> -->
-            <!--<th>TransactionID</th> -->
           </tr>
         </tfoot>
       </table>
