@@ -460,12 +460,12 @@ class NetopiapaymentsRecurringPayment extends recurring
             </div>
             <h2 class="nav-tab-wrapper">
                 <a href="?page=recurring_subscription_ajax&tab=subscription_list" class="nav-tab <?php echo $active_tab == 'subscription_list' ? 'nav-tab-active' : ''; ?>"><?php echo __('Subscription list','ntpRp')?></a>
-                <a href="?page=recurring_subscription_ajax&tab=inactive_subscribers" class="nav-tab <?php echo $active_tab == 'inactive_subscribers' ? 'nav-tab-active' : ''; ?>"><?php echo __('Inactive subscribers','ntpRp')?></a>
+                <a href="?page=recurring_subscription_ajax&tab=next_scheduled_payments" class="nav-tab <?php echo $active_tab == 'next_scheduled_payments' ? 'nav-tab-active' : ''; ?>"><?php echo __('Next scheduled Payments','ntpRp')?></a>
             </h2>
             
             <?php 
-            if($active_tab == 'inactive_subscribers') {
-                include_once('include/inactiveSubscribers.php');
+            if($active_tab == 'next_scheduled_payments') {
+                include_once('include/nextScheduledPayments.php');
             }else {
                 include_once('include/subscriptionsInfinite.php');
                 include_once('include/partial/modalSubscriberInfo.php');

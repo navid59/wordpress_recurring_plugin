@@ -1,6 +1,6 @@
 <div class="">
     <div>
-      <table id="dtInfiniteScrollingInactiveSubscribers" class="table display nowrap" width="100%">
+      <table id="dtInfiniteScrollingNextPayment" class="table display nowrap" width="100%">
         <thead>
           <tr>
             <th><?php echo __('First Name','ntpRp');?></th>

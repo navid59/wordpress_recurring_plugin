@@ -567,9 +567,10 @@ function getInfinitSubscribtion() {
 }
 
 
-/** get Infinit Subscribtion list*/
-add_action('wp_ajax_getInfinitInactiveSubscribtion', 'getInfinitInactiveSubscribtion');
-function getInfinitInactiveSubscribtion() {
+/** get Infinit Next Payment  list*/
+add_action('wp_ajax_getInfinitsNextPaymentList', 'getInfinitsNextPaymentList');
+function getInfinitsNextPaymentList() {
+    $today = date( 'Y-m-d' );
     $obj = new recurringAdmin();
     $start = $_POST['start']; 
     $limit = $_POST['limit'];
@@ -600,6 +601,7 @@ function getInfinitInactiveSubscribtion() {
                                                     min(s.Status) as Status,
                                                     s.StartDate,
                                                     s.Subscription_Id,
+                                                    s.NextPaymentDate,
                                                     COUNT(*) as planCounter,
                                                     concat('[', group_concat(
                                                         json_object(
@@ -611,9 +613,10 @@ function getInfinitInactiveSubscribtion() {
                                                 FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                                 INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                                 WHERE s.PlanId = p.PlanId 
-                                                AND Status > 1 
+                                                AND s.s.Status = 1
+                                                AND s.NextPaymentDate >= ".$today."
                                                 GROUP BY UserID
-                                                ORDER BY s.id DESC 
+                                                ORDER BY s.NextPaymentDate DESC 
                                                 LIMIT ".$start.",".$limit, "ARRAY_A");
 
         $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix.$obj->getDbSourceName('subscription')." GROUP BY UserID ) as ntp_s", "ARRAY_A");
@@ -638,7 +641,7 @@ function getInfinitInactiveSubscribtion() {
             }
             
             $subscriptions[$i]['PlanTitle'] = $planInfoStr;
-            $subscriptions[$i]['StartDate'] = date('Y-m-d', strtotime($subscriptions[$i]['StartDate']));
+            $subscriptions[$i]['NextPaymentDate'] = date('Y-m-d', strtotime($subscriptions[$i]['NextPaymentDate']));
             $subscriptions[$i]['Action'] = '
             <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>
             <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>

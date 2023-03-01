@@ -49,8 +49,8 @@ jQuery(document).ready(function () {
 	} );
 
 
-    // Infinit scrolling for Inactive Subscriptions 
-	jQuery('#dtInfiniteScrollingInactiveSubscribers').dataTable( {
+    // Infinit scrolling for Next Payment 
+	jQuery('#dtInfiniteScrollingNextPayment').dataTable( {
 		serverSide: true,
         ordering : false,
         searching : false,
@@ -59,7 +59,7 @@ jQuery(document).ready(function () {
         scroller: true,
         ajax: function ( data, callback ) {
             ntpPluginSetting = {
-                action : 'getInfinitInactiveSubscribtion',
+                action : 'getInfinitsNextPaymentList',
                 start  : data.start,
                 limit  : data.length
             };
