@@ -567,6 +567,96 @@ function getInfinitSubscribtion() {
 }
 
 
+/** get Infinit Subscribtion list*/
+add_action('wp_ajax_getInfinitInactiveSubscribtion', 'getInfinitInactiveSubscribtion');
+function getInfinitInactiveSubscribtion() {
+    $obj = new recurringAdmin();
+    $start = $_POST['start']; 
+    $limit = $_POST['limit'];
+    $maxInDT = 2;
+    global $wpdb;
+        /**
+         * Query by pagination 
+         * 
+         * 	{ "data": "First_Name" },
+		 * 	{ "data": "Last_Name" },
+		 * 	{ "data": "Email" },
+		 * 	{ "data": "Tel" },
+		 * 	{ "data": "UserID" },
+		 * 	{ "data": "PlanTitle" },
+		 * 	{ "data": "Status" },
+		 * 	{ "data": "StartDate" },
+		 * 	{ "data": "Subscription_Id" }
+         * 
+         * 
+         */
+        $subscriptions = $wpdb->get_results("SELECT s.id,
+                                                    s.First_Name,
+                                                    s.Last_Name,
+                                                    s.Email,
+                                                    s.Tel,
+                                                    s.UserID,
+                                                    p.Title,
+                                                    min(s.Status) as Status,
+                                                    s.StartDate,
+                                                    s.Subscription_Id,
+                                                    COUNT(*) as planCounter,
+                                                    concat('[', group_concat(
+                                                        json_object(
+                                                            'name', p.Title,
+                                                            'amount', p.Amount,
+                                                            'currency', p.Currency
+                                                        )
+                                                    ), ']') as PlanList
+                                                FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
+                                                INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
+                                                WHERE s.PlanId = p.PlanId 
+                                                AND Status > 1 
+                                                GROUP BY UserID
+                                                ORDER BY s.id DESC 
+                                                LIMIT ".$start.",".$limit, "ARRAY_A");
+
+        $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix.$obj->getDbSourceName('subscription')." GROUP BY UserID ) as ntp_s", "ARRAY_A");
+
+
+        for ($i = 0 ; $i < count($subscriptions) ; $i++) {
+            $subscriptions[$i]['Status'] = $obj->getStatusStr('subscription',$subscriptions[$i]['Status']);
+            
+            // Customize Plan info for Datatable
+            $PlanList = json_decode($subscriptions[$i]['PlanList'], true);
+            $planInfoStr = '';
+            for($j=0; $j < $maxInDT ; $j++) {
+                $planInfoStr .= $PlanList[$j]['name'].' , '.$PlanList[$j]['amount'].' '.$PlanList[$j]['currency'];
+                if(count($PlanList) >= $maxInDT ) {
+                    $planInfoStr .= '<br>';
+                } else {
+                    break;
+                }
+            }
+            if(count($PlanList) > $maxInDT) {
+                $planInfoStr.= __(' & more','ntpRp');
+            }
+            
+            $subscriptions[$i]['PlanTitle'] = $planInfoStr;
+            $subscriptions[$i]['StartDate'] = date('Y-m-d', strtotime($subscriptions[$i]['StartDate']));
+            $subscriptions[$i]['Action'] = '
+            <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>
+            <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>
+            <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'" title="'.__('Total Nr of subscription','ntpRp').'">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
+            </span>';
+        }
+    
+    $resultData = array (
+        'recordsTotal' => $subscriptionsTotalCount[0]['count'],
+        'data' => $subscriptions
+      );
+
+    wp_send_json(json_encode($resultData));
+}
+
+
 /** Get Next Payment */
 add_action('wp_ajax_getNextPayment', 'recurring_getNextPayment');
 function recurring_getNextPayment() {

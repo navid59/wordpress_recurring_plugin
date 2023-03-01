@@ -47,6 +47,49 @@ jQuery(document).ready(function () {
 			{ "data": "Action" },
 		]
 	} );
+
+
+    // Infinit scrolling for Inactive Subscriptions 
+	jQuery('#dtInfiniteScrollingInactiveSubscribers').dataTable( {
+		serverSide: true,
+        ordering : false,
+        searching : false,
+        scrollY:        500,
+        deferRender:    true,
+        scroller: true,
+        ajax: function ( data, callback ) {
+            ntpPluginSetting = {
+                action : 'getInfinitInactiveSubscribtion',
+                start  : data.start,
+                limit  : data.length
+            };
+
+            // Get Subscriptions by AJAX 
+            jQuery.post(ajaxurl, ntpPluginSetting, function(response){
+                // console.log(ntpPluginSetting.action + ' | start: ' + ntpPluginSetting.start + ' | limit : '+ ntpPluginSetting.limit);
+                const responseObj = JSON.parse(response);
+   
+                callback( {
+                    draw: data.draw,
+                    data: responseObj.data,
+                    recordsTotal: responseObj.recordsTotal,
+                    recordsFiltered: responseObj.recordsTotal
+                } );
+            });
+        },
+        paging : true,
+		columns: [
+			{ "data": "First_Name" },
+			{ "data": "Last_Name" },
+			// { "data": "Email" },
+			// { "data": "Tel" },
+			{ "data": "UserID" },
+			{ "data": "PlanTitle" },
+			{ "data": "Status" },
+			{ "data": "StartDate" },
+			{ "data": "Action" },
+		]
+	} );
  
     // Hide Normal pagination 
     jQuery('#dtInfiniteScrollingExample_paginate').hide();
