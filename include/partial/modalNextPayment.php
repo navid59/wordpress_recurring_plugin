@@ -3,6 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
               <h2 class="modal-title" id="nextPaymentModalLabel"><?php echo __('Payment Schedule','ntpRp');?></h2>
+              <div id="nextPaymentByAdminLoading" class="spinner-grow" style="color: darkgreen" role="status" aria-hidden="true"></div>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
               </button>

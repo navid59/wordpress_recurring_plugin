@@ -602,6 +602,7 @@ function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
         data: getNextPaymentData,
         success: function( response ){
             if(response.status) {
+                jQuery("#nextPaymentByFrontLoading").hide();
                 if(response.data.isValid) {
                     jQuery("#nextPaymentStatus").html('Active');
                 } else {
@@ -618,6 +619,7 @@ function frontSubscriptionNextPayment(subscriptionId, palanId, subscriberName) {
             }
         },
         error: function( error ){
+            jQuery("#nextPaymentByFrontLoading").hide();
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
             jQuery('#msgContent').html(response.msg);

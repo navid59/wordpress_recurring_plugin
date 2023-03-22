@@ -10,8 +10,8 @@
             <th><?php echo __('UserID','ntpRp');?></th>
             <th><?php echo __('Plan information','ntpRp');?></th>
             <th><?php echo __('Status','ntpRp');?></th>
-            <th><?php echo __('Date','ntpRp');?></th>
-            <th><?php echo __('Action','ntpRp');?></th>
+            <th><?php echo __('Scheduled payments','ntpRp');?></th>
+            <!-- <th><?php echo __('Action','ntpRp');?></th> -->
           </tr>
         </thead>
         
@@ -24,8 +24,8 @@
             <th><?php echo __('UserID','ntpRp');?></th>
             <th><?php echo __('Plan information','ntpRp');?></th>
             <th><?php echo __('Status','ntpRp');?></th>
-            <th><?php echo __('Date','ntpRp');?></th>
-            <th><?php echo __('Action','ntpRp');?></th>
+            <th><?php echo __('Scheduled payments','ntpRp');?></th>
+            <!-- <th><?php echo __('Action','ntpRp');?></th> -->
           </tr>
         </tfoot>
       </table>

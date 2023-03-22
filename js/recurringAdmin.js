@@ -2,7 +2,10 @@ jQuery(document).ready(function () {
     // Without Scrolling , Subscription - TMP 
     jQuery('#dtBasicExampleDeleted_REC').DataTable();
     jQuery('#planDtBasic').DataTable();
-    jQuery('#reportDtBasic').DataTable();
+    jQuery('#reportDtBasic').DataTable({
+        order: [[0, 'desc']],
+    });
+
     jQuery('#subscriberInfoDtBasic').DataTable();
     jQuery('.dataTables_length').addClass('bs-select');
 
@@ -66,7 +69,7 @@ jQuery(document).ready(function () {
 
             // Get Subscriptions by AJAX 
             jQuery.post(ajaxurl, ntpPluginSetting, function(response){
-                // console.log(ntpPluginSetting.action + ' | start: ' + ntpPluginSetting.start + ' | limit : '+ ntpPluginSetting.limit);
+                console.log('Next Payment LIST ' + ntpPluginSetting.action + ' | start: ' + ntpPluginSetting.start + ' | limit : '+ ntpPluginSetting.limit);
                 const responseObj = JSON.parse(response);
    
                 callback( {
@@ -86,8 +89,8 @@ jQuery(document).ready(function () {
 			{ "data": "UserID" },
 			{ "data": "PlanTitle" },
 			{ "data": "Status" },
-			{ "data": "StartDate" },
-			{ "data": "Action" },
+			{ "data": "NextPaymentDate" },
+			// { "data": "Action" },
 		]
 	} );
  
@@ -292,6 +295,7 @@ function subscriptionNextPayment(subscriptionId, subscriberName, planTitle) {
         jsonResponse = JSON.parse(response);
         console.log(jsonResponse);
         if(jsonResponse.status) {
+            jQuery("#nextPaymentByAdminLoading").hide();
             if(jsonResponse.data.isValid) {
                 jQuery("#nextPaymentStatus").html('Active');
             } else {
@@ -300,6 +304,7 @@ function subscriptionNextPayment(subscriptionId, subscriberName, planTitle) {
             
             jQuery("#nextPaymentDate").html(jsonResponse.data.nextPayment);
         } else {
+            jQuery("#nextPaymentByAdminLoading").hide();
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
             jQuery('#msgContent').html(jsonResponse.msg);

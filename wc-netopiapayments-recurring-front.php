@@ -623,35 +623,35 @@ function recurring_updateSubscriberAccountDetails() {
     if($current_user->user_login != $subscriptionAccountDetails['UserID']) {
         $validateAuthResult = array(
             'status'=> false,
-            'msg'=> __('You are not allowded to change Username','ntpRp'),
+            'msg'=> __('You are not allowded to change Username','ntpRp')
         );
-        wp_send_json(json_encode($validateAuthResult));
+        wp_send_json($validateAuthResult);
     }
 
     if(!is_email($subscriptionAccountDetails['Email'])) {
         $validateEmailFormat = array(
             'status'=> false,
-            'msg'=> __('The email address is not correct!', 'ntpRp'),
+            'msg'=> __('The email address is not correct!', 'ntpRp')
         );
-        wp_send_json(json_encode($validateEmailFormat));
+        wp_send_json($validateEmailFormat);
     }
 
     $validateChosenEmail = email_exists( $subscriptionAccountDetails['Email']);
     if($validateChosenEmail != false && $validateChosenEmail != $current_user->id) {
         $validateEmailResult = array(
             'status'=> false,
-            'msg'=> __('The email is already exist', 'ntpRp'),
+            'msg'=> __('The email is already exist', 'ntpRp')
         );
-        wp_send_json(json_encode($validateEmailResult));
+        wp_send_json($validateEmailResult);
     }
 
     if($subscriptionAccountDetails['Pass'] != "") {
         if(!isStrongPass($subscriptionAccountDetails['Pass'])) {
             $validatePassLenght = array(
                 'status'=> false,
-                'msg'=> __('The password is not a suitable password!','ntpRp'),
+                'msg'=> __('The password is not a suitable password!','ntpRp')
             );
-            wp_send_json(json_encode($validatePassLenght));
+            wp_send_json($validatePassLenght);
         } else {
             /*
             * ChangePassword
@@ -879,6 +879,7 @@ function recurring_account_getMySubscriptions() {
                                 <div class="modal-content">
                                     <div class="modal-header">
                                     <h2 class="modal-title" id="nextPaymentModalLabel">'. __('Payment Schedule','ntpRp') .'</h2>
+                                    <div id="nextPaymentByFrontLoading" class="spinner-grow" style="color: darkgreen" role="status" aria-hidden="true"></div>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -910,7 +911,7 @@ function recurring_account_getMySubscriptions() {
                                         <div class="modal-dialog modal-lg modal-dialog-scrollable">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                                                    <img src="'.URL_NETOPIA_PAYMENTS_LOGO_GLOBAL.'" width="100" style="padding: 5px 15px 0px 0px;">
                                                     <h2 class="modal-title" id="unsubscriptionRecurringModalLabel">'.__('Unsubscription', 'ntpRp').'</h2>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -1160,7 +1161,7 @@ function getUnsubscribeModalHtml ($planId, $unsubscriptionTitle, $planData, $sub
                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                            <img src="'.URL_NETOPIA_PAYMENTS_LOGO_GLOBAL.'" width="100" style="padding: 5px 15px 0px 0px;">
                             <h2 class="modal-title" id="unsubscriptionRecurringModalLabel">'.$unsubscriptionTitle.'</h2>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -1206,13 +1207,14 @@ function getModalHtml($planId, $modalTitle, $planData, $userInfo, $authInfo, $ca
     } else {
         $gracePeriodStr = '<h5 class="card-title ">'.__("Grace period","ntpRp").' : '.$planData['GracePeriod'] . " " . $planData['Frequency']['Type'].'</h5>';
     }
+
     
     return '<!-- Modal -->
     <div class="modal fade recurringModal" id="recurringModal'.$planId.'" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <img src="https://suport.mobilpay.ro/np-logo-blue.svg" width="100" style="padding: 5px 15px 0px 0px;">
+                    <img src="'.URL_NETOPIA_PAYMENTS_LOGO_GLOBAL.'" width="100" style="padding: 5px 15px 0px 0px;">
                     <h2 class="modal-title" id="recurringModalLabel">'.$modalTitle.'</h2>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -1328,14 +1330,19 @@ function getMemberInfoHtml() {
     /** Warrning for un complited info */
     $htmlCompletPersonalData = '
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                '.__('Dear', 'ntpRp').' <strong>'.$current_user->user_login.'!</strong> '.__('You should complete your personal data from', 'ntpRp').'  <a href="subscription-account">'.__('Account details', 'ntpRp').'</a> '.__('before subscribe', 'ntpRp').'.
+                '.__('Dear', 'ntpRp').' <strong>'.$current_user->user_login.'!</strong> '.__('You should complete your personal data,like <b>Address, City, Tel</b>, ... from', 'ntpRp').'  <a href="subscription-account">'.__('Account details', 'ntpRp').'</a> '.__('before subscription.', 'ntpRp').'
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 ';
 
-    /** Get Current user Info */
+    /**
+     *  Get Current user Info 
+     *  If subscriptioin pesonal Data will not found, 
+     *  Then user personal data will added during subscription.
+     *  If Personal data will found in DB but is not complited user will recive an Alert to complete personal data
+     * */
     if($isLoggedIn) {
         $subscriptionInfo = $wpdb->get_results("SELECT * FROM `".$wpdb->prefix.$obj->getDbSourceName('subscription')."` WHERE `UserID` LIKE '".$current_user->user_login."'");
         if(count($subscriptionInfo)) {
@@ -1344,9 +1351,6 @@ function getMemberInfoHtml() {
                 // subscriptioin pesonal Data is not complited, So must completed the data first
                 echo ($htmlCompletPersonalData);
             } 
-        } else {
-            // subscriptioin pesonal Data Not found , So must be added subscripber info first
-            // Becuse there is no any record , can not update the record
         }
     }
 

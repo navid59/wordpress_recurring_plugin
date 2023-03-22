@@ -324,7 +324,7 @@ function recurring_addPlan() {
             'status'=> $status,
             'msg'=> $msg,
             );
-    wp_send_json(json_encode($addPlanResult));
+    wp_send_json($addPlanResult);
 }
 
 
@@ -359,7 +359,7 @@ function recurring_delPlan() {
             'status'=> $jsonResultData['code'] === "00" ? true : false,
             'msg'=> $jsonResultData['message'],
             );
-    wp_send_json(json_encode($delPlanResult));
+    wp_send_json($delPlanResult);
 }
 
 
@@ -433,7 +433,7 @@ function recurring_editPlan() {
             'msg'=> $msg,
             'data'=> $planData,
             );
-    wp_send_json(json_encode($editPlanResult));
+    wp_send_json($editPlanResult);
 }
 
 /** Get plan details */
@@ -570,7 +570,8 @@ function getInfinitSubscribtion() {
 /** get Infinit Next Payment  list*/
 add_action('wp_ajax_getInfinitsNextPaymentList', 'getInfinitsNextPaymentList');
 function getInfinitsNextPaymentList() {
-    $today = date( 'Y-m-d' );
+    $todayDate = date( 'Y-m-d' );
+    $zeroTime = date( 'H:i:s',0 );
     $obj = new recurringAdmin();
     $start = $_POST['start']; 
     $limit = $_POST['limit'];
@@ -586,7 +587,7 @@ function getInfinitsNextPaymentList() {
 		 * 	{ "data": "UserID" },
 		 * 	{ "data": "PlanTitle" },
 		 * 	{ "data": "Status" },
-		 * 	{ "data": "StartDate" },
+		 * 	{ "data": "NextPaymentDate" },
 		 * 	{ "data": "Subscription_Id" }
          * 
          * 
@@ -600,8 +601,8 @@ function getInfinitsNextPaymentList() {
                                                     p.Title,
                                                     min(s.Status) as Status,
                                                     s.StartDate,
-                                                    s.Subscription_Id,
                                                     s.NextPaymentDate,
+                                                    s.Subscription_Id,
                                                     COUNT(*) as planCounter,
                                                     concat('[', group_concat(
                                                         json_object(
@@ -613,11 +614,12 @@ function getInfinitsNextPaymentList() {
                                                 FROM  ".$wpdb->prefix . $obj->getDbSourceName('subscription')." as s 
                                                 INNER JOIN ".$wpdb->prefix . $obj->getDbSourceName('plan')." as p 
                                                 WHERE s.PlanId = p.PlanId 
-                                                AND s.s.Status = 1
-                                                AND s.NextPaymentDate >= ".$today."
+                                                AND s.Status = 1 
+                                                AND s.NextPaymentDate >= '".$todayDate." ".$zeroTime."'
                                                 GROUP BY UserID
-                                                ORDER BY s.NextPaymentDate DESC 
+                                                ORDER BY s.NextPaymentDate ASC 
                                                 LIMIT ".$start.",".$limit, "ARRAY_A");
+
 
         $subscriptionsTotalCount = $wpdb->get_results("SELECT count(*) as count FROM  (SELECT * FROM ".$wpdb->prefix.$obj->getDbSourceName('subscription')." GROUP BY UserID ) as ntp_s", "ARRAY_A");
 
@@ -642,13 +644,13 @@ function getInfinitsNextPaymentList() {
             
             $subscriptions[$i]['PlanTitle'] = $planInfoStr;
             $subscriptions[$i]['NextPaymentDate'] = date('Y-m-d', strtotime($subscriptions[$i]['NextPaymentDate']));
-            $subscriptions[$i]['Action'] = '
-            <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>
-            <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>
-            <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'" title="'.__('Total Nr of subscription','ntpRp').'">
-                <i class="fa fa-circle fa-stack-2x"></i>
-                <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
-            </span>';
+            // $subscriptions[$i]['Action'] = '
+            // <button type="button" class="btn btn-secondary" onclick="subscriptionHistory(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber history','ntpRp').'"><i class="fa fa-history"></i></button>
+            // <button type="button" class="btn btn-success" onclick="subscriptionDetails(\''.$subscriptions[$i]['UserID'].'\')" style="margin-right:5px;" title="'.__('Subscriber Info','ntpRp').'"><i class="fa fa-info"></i></button>
+            // <span class="fa-stack fa-1x" data-count="'.$subscriptions[$i]['planCounter'].'" title="'.__('Total Nr of subscription','ntpRp').'">
+            //     <i class="fa fa-circle fa-stack-2x"></i>
+            //     <i class="fa fa-bell fa-stack-1x fa-inverse"></i>
+            // </span>';
         }
     
     $resultData = array (
@@ -783,17 +785,6 @@ function recurring_getSubscriptionHistory() {
     wp_send_json(json_encode($resultData));
 }
 
-
-/** For Uploade keys 
- *  Currently not use it
-*/
-// add_action('wp_ajax_uploadKey', 'recurring_uploadKey');
-// function recurring_uploadKey() {
-//     $objCertificate = new certificate();
-//     $uploadeResult = $objCertificate->cerValidation();
-
-//     wp_send_json(json_encode($uploadeResult));
-// }
 
 /** To verify Credential Data
  * Currently not use it
