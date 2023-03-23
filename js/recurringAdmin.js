@@ -147,7 +147,7 @@ function subscriptionDetails(userId) {
                 tr.append(jQuery('<td></td>').text(plan.StartDate.split(' ')[0]));
                 tr.append(jQuery('<td></td>').text(plan.Status));
                 // tr.append(jQuery('<td></td>').text(plan.LastPayment));
-                tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-danger " title="Unsubscribe,..." onclick="unsubscriptionAdminModal('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-sliders"></i></button>'));
+                tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-danger " title="Unsubscribe / Resubscribe" onclick="unsubscriptionAdminModal('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-sliders"></i></button>'));
                 tr.append(jQuery('<td></td>').html('<button type="button" class="btn btn-info" title="Next payment" onclick="subscriptionNextPayment('+plan.Subscription_Id+',\''+plan.First_Name+' '+plan.Last_Name+'\',\''+plan.Title+'\')"><i class="fa fa-credit-card"></i></button>'));                
                 return tr;
             });
