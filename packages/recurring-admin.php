@@ -323,7 +323,7 @@ function recurring_addPlan() {
     $addPlanResult = array(
             'status'=> $status,
             'msg'=> $msg,
-            );
+            );    
     wp_send_json($addPlanResult);
 }
 

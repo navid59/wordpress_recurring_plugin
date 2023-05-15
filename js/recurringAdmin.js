@@ -351,12 +351,16 @@ function doDeletePlan(e) {
     };
 
     if(acceptedConditions) {
+        jQuery('#delPlanLoading').show();
+        jQuery('#deletePlan').prop('disabled', true);
         jQuery.post(ajaxurl, data, function(response){
-            jsonResponse = JSON.parse(response);
-            if(jsonResponse.status) {
+            if(response.status) {
+                jQuery('#delPlanLoading').hide();
+                jQuery('#deletePlan').hide();
+
                 jQuery('#msgBlock').addClass('alert-success');
                 jQuery('#alertTitle').html('Congratulation!');
-                jQuery('#msgContent').html(jsonResponse.msg);
+                jQuery('#msgContent').html(response.msg);
                 jQuery('#msgBlock').addClass('show');
 
                 // Refresh page after close Modal
@@ -364,13 +368,17 @@ function doDeletePlan(e) {
                     window.location.reload();
                 });
             } else {
+                jQuery('#delPlanLoading').hide();
+                jQuery('#deletePlan').prop('disabled', false);
+
                 jQuery('#msgBlock').addClass('alert-warning');
                 jQuery('#alertTitle').html('Error!');
-                jQuery('#msgContent').html(jsonResponse.msg);
+                jQuery('#msgContent').html(response.msg);
                 jQuery('#msgBlock').addClass('show');
             }
         });
     } else {
+        
         jQuery('#msgBlock').addClass('alert-warning');
         jQuery('#alertTitle').html('Error!');
         jQuery('#msgContent').html('You should to accept terms & conditions!');
@@ -462,12 +470,15 @@ function doUpdatePlan(e) {
     };
     
     if(acceptedConditions) {
+        jQuery('#editPlanLoading').show();
+        jQuery('#editPlan').prop('disabled', true);
         jQuery.post(ajaxurl, data, function(response){
-            jsonResponse = JSON.parse(response);
-            if(jsonResponse.status) {
+            if(response.status) {
+                jQuery('#editPlanLoading').hide();
+                
                 jQuery('#editMsgBlock').addClass('alert-success');
                 jQuery('#editAlertTitle').html('Congratulation!');
-                jQuery('#editMsgContent').html(jsonResponse.msg);
+                jQuery('#editMsgContent').html(response.msg);
                 jQuery('#editMsgBlock').addClass('show');
 
                 // Disable after success update
@@ -490,9 +501,11 @@ function doUpdatePlan(e) {
                     window.location.reload();
                 });
             }else {
+                jQuery('#editPlanLoading').hide();
+                jQuery('#editPlan').prop('disabled', false);
                 jQuery('#editMsgBlock').addClass('alert-warning');
                 jQuery('#editAlertTitle').html('Error!');
-                jQuery('#editMsgContent').html(jsonResponse.msg);
+                jQuery('#editMsgContent').html(response.msg);
                 jQuery('#editMsgBlock').addClass('show'); 
             }
         });
@@ -540,15 +553,12 @@ function addPlanInAction() {
         GracePeriod : GracePeriod,
         InitialPayment : InitialPayment,
     };
-
-    console.log(data);
-
+   
     jQuery.post(ajaxurl, data, function(response){
-        jsonResponse = JSON.parse(response);
-        if(jsonResponse.status) {
+        if(response.status) {
             jQuery('#msgBlock').addClass('alert-success');
             jQuery('#alertTitle').html('Congratulation!');
-            jQuery('#msgContent').html(jsonResponse.msg);
+            jQuery('#msgContent').html(response.msg);
             jQuery('#msgBlock').addClass('show');
 
             // Reset form and hide it
@@ -559,11 +569,10 @@ function addPlanInAction() {
         }else {
             jQuery('#msgBlock').addClass('alert-warning');
             jQuery('#alertTitle').html('Error!');
-            jQuery('#msgContent').html(jsonResponse.msg);
+            jQuery('#msgContent').html(response.msg);
             jQuery('#msgBlock').addClass('show');
         }
     });
-
 }
 
 jQuery("#recurring-plan-form").submit(function (e) {

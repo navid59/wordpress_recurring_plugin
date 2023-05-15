@@ -77,6 +77,9 @@
                             <div class="form-group col-md-4">
                                 <button type="submit" id="editPlan" class="btn btn-success"><?php echo __('Submmit', 'ntpRp');?></button>
                                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                <div id="editPlanLoading" class="spinner-border" role="status" style="display: none;">
+                                    <span class="sr-only">Deleting...</span>
+                                </div>
                             </div>                        
                         </div>
                     </div>
