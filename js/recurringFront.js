@@ -17,7 +17,6 @@ jQuery(document).ready(function () {
             data: data,
             success: function( response ){
                 if(response.status) {      
-                    // console.log(response);
                     jQuery('#ntpAccountBody').html(response.data);
  
                     const rows = response.histories.map(history => {
@@ -29,7 +28,6 @@ jQuery(document).ready(function () {
                         tr.append(jQuery('<td></td>').text(history.Status));
                         return tr;
                     });
-                    // console.log(rows);
                     jQuery("#mySubscriberPaymentHistoryList").html(rows);               
                 } else {
                     jQuery('#ntpAccountBody').html(response.msg);
@@ -178,33 +176,39 @@ jQuery(document).ready(function () {
      * Find month and year of Exp Date
      */
 
-     var liveValidateDetails = function() {      
-        var live_expiry = jQuery('.cc-exp__example').payment('cardExpiryVal');
-        var live_validateExpiry = jQuery.payment.validateCardExpiry(live_expiry["month"], live_expiry["year"]);
-      
+     var liveValidateDetails = function(ntpRecurringFormID) { 
+     var thePlanID = ntpRecurringFormID.split(/subscription-form(.*)/)[1];
+        
+     var live_expiry = jQuery('.cc-exp_recurring_'+thePlanID).payment('cardExpiryVal');
+     var live_validateExpiry = jQuery.payment.validateCardExpiry(live_expiry["month"], live_expiry["year"]);
+     
+     
         if (live_validateExpiry) {
-            jQuery('#cc-expiration-month').val(live_expiry["month"]);
-            jQuery('#cc-expiration-year').val(live_expiry["year"]);
+            jQuery('#cc-expiration-month_'+thePlanID).val(live_expiry["month"]);
+            jQuery('#cc-expiration-year_'+thePlanID).val(live_expiry["year"]);
 
-            jQuery('.ntpRecurringCheckout').prop('disabled', false);
+            // jQuery('.ntpRecurringCheckout').prop('disabled', false);
+            jQuery('#addSubscriptionButton'+thePlanID).prop('disabled', false);
+            
 
-          jQuery('.cc-exp__example').addClass('identified');
-          jQuery('.cc-exp__ouputValid').text('Yes');
+            jQuery('.cc-exp_recurring_'+thePlanID).addClass('identified');
+            jQuery('.cc-exp__ouputValid').text('Yes');
         } else {
             // To clear Month & Year
-            jQuery('#cc-expiration-month').val("");
-            jQuery('#cc-expiration-year').val("");
+            jQuery('#cc-expiration-month_'+thePlanID).val("");
+            jQuery('#cc-expiration-year_'+thePlanID).val("");
 
-            jQuery('.ntpRecurringCheckout').prop('disabled', true);
+            // jQuery('.ntpRecurringCheckout').prop('disabled', true);
+            jQuery('#addSubscriptionButton'+thePlanID).prop('disabled', true);
 
-          jQuery('.cc-exp__example').removeClass('identified');
-          jQuery('.cc-exp__ouputValid').text('No');
+            jQuery('.cc-exp_recurring_'+thePlanID).removeClass('identified');
+            jQuery('.cc-exp__ouputValid').text('No');
         }
-      }
+    }
 
      jQuery('.cc-exp').payment('formatCardExpiry');
-     jQuery('.cc-exp__example').bind('change exp keyup', function() {
-        liveValidateDetails();
+     jQuery('.cc-exp').bind('change exp keyup', function() {
+        liveValidateDetails(this.form.id);
       });
     
     jQuery('.add-subscription-form').on('submit', addSubscription);
@@ -232,7 +236,6 @@ function unsubscription(e) {
         SubscriptionId : SubscriptionId,
     }
 
-    console.log('SubscriptionId : '+SubscriptionId);
     jQuery.ajax({
         url: frontAjax.ajax_url,
         type: 'POST',
@@ -487,7 +490,6 @@ function addSubscription(e) {
                                 tmpVar.setAttribute("name", propName);
                                 tmpVar.setAttribute("value", propVal);
                                 dynamicForm.appendChild(tmpVar);
-                                // console.log(tmpVar);
                         });
 
                         // create a submit button
@@ -637,10 +639,6 @@ jQuery(document).on("click", ".unsubscriptionMyAccounButton", function () {
     var planTitle = jQuery(this).data('plantitle');
     var userId = jQuery(this).data('userid'); 
     var subscriptionId = jQuery(this).data('subscriptionid');
-
-    console.log('planTitle : ' + planTitle);
-    console.log('userId : ' + userId);
-    console.log('subscriptionId : ' + subscriptionId);
 
     jQuery('#PlanTitle').html(planTitle);
     jQuery('#Id').val(userId);

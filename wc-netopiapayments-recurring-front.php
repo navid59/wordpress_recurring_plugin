@@ -1111,7 +1111,7 @@ function recurringModal($planId , $button, $title) {
 
             
         
-            $cardInfo    = getCardInfoHtml();
+            $cardInfo    = getCardInfoHtml($planId);
             $threeDsForm = get3DsFormHtml($planId);
             $userInfo    = getMemberInfoHtml();
             $authInfo    = getAuthFromHtml($isLoggedIn);
@@ -1141,7 +1141,7 @@ function recurringModal($planId , $button, $title) {
                 $buttonHtml .= $verifyAuthFormHtml;
             }          
            
-            $cardInfo    = getCardInfoHtml();
+            $cardInfo    = getCardInfoHtml($planId);
             $threeDsForm = get3DsFormHtml($planId);
             $userInfo    = getMemberInfoHtml();
             $authInfo    = getAuthFromHtml($isLoggedIn);
@@ -1536,7 +1536,7 @@ function generateVerifyAuthForm($postParams, $planId) {
     return $tmpHtml;
 }
 
-function getCardInfoHtml() {
+function getCardInfoHtml($planId) {
     $minYear = Date('Y');
     $maxYear = date('Y', strtotime('+10 year'));
     return '<h4 class="mb-3">'.__('Payment information', 'ntpRp').'</h4>
@@ -1558,9 +1558,9 @@ function getCardInfoHtml() {
         </div>
         <div class="col-md-2 mb-2">
             <label for="cc-expiration-month">'.__('Exp Date','ntpRp').'</label>
-            <input id="cc-exp" type="tel" class="cc-exp cc-exp__example form-control" placeholder="MM / YY" autocompletetype="cc-exp" required="required">
-            <input type="hidden" min="1" max="12" class="form-control" id="cc-expiration-month" name="cc-expiration-month" placeholder=""  title="'.__('Month moust be a number between 1 and 12','ntpRp').'" required>
-            <input type="hidden" min="'.$minYear.'" max="'.$maxYear.'" class="form-control" id="cc-expiration-year" name="cc-expiration-year" pattern="[0-9]{4}" placeholder="" title="'.__('Expire year must contain 4 number','ntpRp').'" required>
+            <input id="cc-exp" type="tel" class="cc-exp cc-exp_recurring_'.$planId.' form-control" placeholder="MM / YY" autocompletetype="cc-exp" required="required">
+            <input type="hidden" min="1" max="12" class="form-control" id="cc-expiration-month_'.$planId.'" name="cc-expiration-month" placeholder=""  title="'.__('Month moust be a number between 1 and 12','ntpRp').'" required>
+            <input type="hidden" min="'.$minYear.'" max="'.$maxYear.'" class="form-control" id="cc-expiration-year_'.$planId.'" name="cc-expiration-year" pattern="[0-9]{4}" placeholder="" title="'.__('Expire year must contain 4 number','ntpRp').'" required>
         </div>
         <div class="col-md-2 mb-2">
             <label for="cc-expiration">CVV</label>

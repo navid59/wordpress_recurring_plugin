@@ -59,7 +59,7 @@ $sql_subscription_sandbox = "CREATE TABLE $subscription_sandbox_table_name (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     PlanId varchar(50) NOT NULL,
     Title varchar(50) NOT NULL,
-    Amount DOUBLE(5,2) NOT NULL,
+    Amount DOUBLE(10,2) NOT NULL,
     Currency varchar(5) NULL,
     Description varchar(255) NOT NULL,
     Recurrence_Type varchar(15) NOT NULL,
