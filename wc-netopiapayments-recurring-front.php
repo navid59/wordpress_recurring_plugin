@@ -45,15 +45,15 @@ function ntp_recurring_enqueue_scripts() {
     wp_enqueue_script ('ntp_recurring_admin_script_datatables' );
 }
 
-/** Assign Bootstrap CSS, JS & 3DS */
+/** Assign Bootstrap CSS, JS & 3DS in Fronend */
 function enqueue_and_register_ntp_recurring_js_scripts(){
-    wp_enqueue_style  ( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
-    
-    wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.1.0', true );
-    wp_enqueue_script ( 'ntp_recurring_script' );
-
-    wp_register_script( 'ntp_recurring_3ds', plugin_dir_url( __FILE__ ) . 'js/3DS.js', array('jquery'), '1.0.0', true );
-    wp_enqueue_script ( 'ntp_recurring_3ds' ); 
+    if (is_page() && (has_shortcode(get_post()->post_content, 'NTP-Recurring') || has_shortcode(get_post()->post_content, 'NTP-Recurring-My-Account'))) {
+        wp_enqueue_style  ( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
+        wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.1.0', true );
+        wp_enqueue_script ( 'ntp_recurring_script' );
+        wp_register_script( 'ntp_recurring_3ds', plugin_dir_url( __FILE__ ) . 'js/3DS.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_script ( 'ntp_recurring_3ds' ); 
+    }
  }
 
 
@@ -436,7 +436,7 @@ function recurring_logoutAccount() {
     $logoutArr = array(
         'status'=> true,
         'msg'=> __('Logout with success','ntpRp'),
-        'redirectUrl'=> get_home_url().'/subscription-account',
+        'redirectUrl'=> get_home_url().'/index.php/subscription-account',
     );
     
     wp_send_json($logoutArr);
@@ -1016,7 +1016,8 @@ function ntpMyAccount() {
                     </div>';
     } else {
         $strHTML = '
-                    <div class="">
+                        <div class="row" id="ntpAccountLogOut">
+                        </div>
                         <div class="row">
                             '.wp_login_form().'
                             <p class="">'.__('Forgot password? Click','ntpRp').' <a href="'.wp_lostpassword_url().'.">'.__('here', 'ntpRp').'</a> '.__('to reset it', 'ntpRp').'.</p>
@@ -1031,7 +1032,9 @@ function ntpMyAccount() {
                                 </p>
                             </div>
                         </div>
-                    </div>';
+                        <script>
+                        jQuery("#ntpAccountLogOut").html(jQuery("#loginform"));
+                        </script>';
     }
     ob_start();
     echo $strHTML;
@@ -1659,7 +1662,7 @@ function planInfo($planId) {
     $a = new recurringFront();
     $arrayData = $a->getPlan($planId);
 
-    if(isset($arrayData['code']) && in_array($arrayData['code'], array(11, 12, 404))) {
+    if(is_null($arrayData) || isset($arrayData['code']) && in_array($arrayData['code'], array(11, 12, 404))) {
         $planData = array();
     } else {
         $plan = $arrayData['plan'];

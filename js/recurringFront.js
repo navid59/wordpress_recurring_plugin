@@ -88,7 +88,7 @@ jQuery(document).ready(function () {
             data: data,
             success: function( response ){
                 if(response.status) {
-                    location.replace(response.redirectUrl);
+                    location.replace(response.redirectUrl);                  
                 } else {
                     //
                 }
