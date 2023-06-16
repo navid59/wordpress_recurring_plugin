@@ -100,6 +100,7 @@ function sendClientBrowserInfo() {
         BROWSER_SCREEN_WIDTH: screen && screen[0] ? screen[0] : 0,
         BROWSER_PLUGINS: client.getPlugins(),
         BROWSER_JAVA_ENABLED: client.isJava().toString(),
+        BROWSER_JAVASCRIPT_ENABLED: "false",
         BROWSER_LANGUAGE: client.getLanguage(),
         BROWSER_TZ: Intl.DateTimeFormat().resolvedOptions().timeZone,
         BROWSER_TZ_OFFSET: new Date().getTimezoneOffset().toString()

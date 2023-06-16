@@ -32,8 +32,7 @@ class IPN {
     public const ERROR_TYPE_TEMPORARY 	= 0x01;
     public const ERROR_TYPE_PERMANENT 	= 0x02;
 
-    const ERROR_LOAD_X509_CERTIFICATE	= 0x10000001;
-	const ERROR_ENCRYPT_DATA			= 0x10000002;
+	
 
     const RECURRING_ERROR_CODE_NEED_VERIFY  = 0x200; // Need Verify Recurring API Key
 
@@ -428,20 +427,4 @@ class IPN {
             }
         return null;
     }
-
-    // public function encrypt($x509FilePath)
-	//     {		
-	// 	$publicKey = openssl_pkey_get_public("file://{$x509FilePath}");
-	// 	if($publicKey === false)
-	// 	{
-    //         file_put_contents($this->logFile, "Error while loading X509 public key certificate! \n", FILE_APPEND);
-	// 		$errorMessage = "Error while loading X509 public key certificate! Reason:";
-	// 		while(($errorString = openssl_error_string()))
-	// 		{
-	// 			$errorMessage .= $errorString . "\n";
-	// 		}
-	// 		throw new Exception($errorMessage, self::ERROR_LOAD_X509_CERTIFICATE);
-	// 	}
-	// 	return $publicKey;
-	// }
 }

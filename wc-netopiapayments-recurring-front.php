@@ -51,7 +51,7 @@ function enqueue_and_register_ntp_recurring_js_scripts(){
         wp_enqueue_style  ( 'ntp_recurring_front_css', plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css',array(),'3.0' ,false);
         wp_register_script( 'ntp_recurring_script', plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), '1.1.0', true );
         wp_enqueue_script ( 'ntp_recurring_script' );
-        wp_register_script( 'ntp_recurring_3ds', plugin_dir_url( __FILE__ ) . 'js/3DS.js', array('jquery'), '1.0.0', true );
+        wp_register_script( 'ntp_recurring_3ds', plugin_dir_url( __FILE__ ) . 'js/3DS.js', array('jquery'), '1.0.1', true );
         wp_enqueue_script ( 'ntp_recurring_3ds' ); 
     }
  }
