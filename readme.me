@@ -5,6 +5,23 @@
 PHP 7.4.x
 Wordpress 6.0
 
+## Require 
+- Active rewrite mod
+To active rewrite mod , you can add the following code in your ".htaccess" file
+
+Ex. 
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+In Wordpress Admin -> Setting -> Permalink as Permalink structure, set to use rewrite mod.
+
 ## Instalare 
 - instalarea pluginului se face din WordPress>Plugins>Add new
 - Add plugins (top left)- Upload Plugin

@@ -7,7 +7,10 @@ const BASE_URL_RECURRING_API_SANDBOX    = "https://recurring-api-fqvtst6pfa-ew.a
 
 const URL_NETOPIA_PAYMENTS              = "https://netopia-payments.com/";
 const URL_NETOPIA_PAYMENTS_REGISTRATION = "https://netopia-payments.com/register/";
-const URL_NETOPIA_PAYMENTS_LOGO         = "../wp-content/plugins/netopia-recurring/img/NETOPIA_Payments.svg";
-const URL_NETOPIA_PAYMENTS_LOGO_GLOBAL  = "../../wp-content/plugins/netopia-recurring/img/NETOPIA_Payments.svg";
-const PATH_VISA_MASTER_LOGO             = "../wp-content/plugins/netopia-recurring/img/Visa_Mastercard_logo.png";
+
+
+$pluginPath = plugins_url('/', __DIR__);
+define('URL_NETOPIA_PAYMENTS_LOGO', $pluginPath . 'img/NETOPIA_Payments.svg');
+define('URL_NETOPIA_PAYMENTS_LOGO_GLOBAL', $pluginPath . 'img/NETOPIA_Payments.svg');
+define('PATH_VISA_MASTER_LOGO', $pluginPath . 'img/NETOPIA_Payments.svg');
 ?>
