@@ -5782,6 +5782,7 @@ a.close.disabled {
 
 .modal-dialog-scrollable .modal-body {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-dialog-centered {

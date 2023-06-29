@@ -215,6 +215,9 @@ jQuery(document).ready(function () {
     jQuery('.unsubscription-form').on('submit', unsubscription);
     /** Verify Auth */
     jQuery('.verify-action-botton').on('click', VerifyAuthAction);
+
+    /**To move Modal for IOS */
+    jQuery('.recurringModal').appendTo('body');
 });
 
 
